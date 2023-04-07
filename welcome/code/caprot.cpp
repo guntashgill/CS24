@@ -4,13 +4,13 @@
 
 using namespace std;
 
-string rotate(string str, int rot) {
-    int len = str.length();
-    rot = rot % len;
-    if (rot < 0) {
-        rot += len;
+string rotate(string word, int num) {
+    int len = word.length();
+    num = num % len;
+    if (num < 0) {
+        num += len;
     }
-    return str.substr(len-rot) + str.substr(0, len-rot);
+    return word.substr(len-num) + word.substr(0, len-num);
 }
 
 int main(int argc, char** argv) {
@@ -19,11 +19,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int rot = atoi(argv[1]);
+    int num = atoi(argv[1]);
     string line;
     getline(cin, line);
 
-    cout << rotate(line, rot) << endl;
+    cout << rotate(line, num) << endl;
 
     return 0;
 }
