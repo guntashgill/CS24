@@ -1,32 +1,28 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: caprot <num_chars>" << std::endl;
-        return 1;
-    }
 
-
-    int num_chars = std::stoi(argv[1]);
-
-
+    argc = argc + 1; 
     std::string line;
     std::getline(std::cin, line);
 
     
     int len = line.length();
-    std::string result;
+    std::string result = "";
+    result = line;
     for (int i = 0; i < len; i++) {
-        char c = line[(i + len - num_chars) % len];
-        if (std::islower(c)) {
-            c = std::toupper(c);
-        }
-        result += c;
+        result[i] = tolower(result[i]);
     }
-
-    std::cout << result << std::endl;
-
-    return 0;
+    for (int i = 0; i < len; i++) {
+        if (isupper(line[i])){
+            int p = i + (atoi(argv[1]));
+            result[p] = toupper(result[p]); 
+        }
+    }
+    cout << result << endl;
 }
+
+
 
