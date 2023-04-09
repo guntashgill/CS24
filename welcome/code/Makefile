@@ -6,4 +6,4 @@ caprot: caprot.cpp
 	g++ $(CFLAGS) caprot.cpp
 
 clean: 
-	rm -f*.o *.out caprot 
+	rm -f *.o *.out caprot 
