@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     }
     for (int i = 0; i < len; i++) {
         if (isupper(line[i])){
-            int p = i + (atoi(argv[1]));
+            int p = (i + (atoi(argv[1])) )%len;
             result[p] = toupper(result[p]); 
         }
     }
