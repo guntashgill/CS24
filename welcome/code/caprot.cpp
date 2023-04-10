@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) {
                 while (p >= len) {
                     p -= len;
                 }
+                cout << p<<endl;
+                cout << len <<endl;
                 result[p] = toupper(result[p]); 
             }
         }
