@@ -24,12 +24,10 @@ int main(int argc, char* argv[]) {
         }
         for (int i = 0; i < len; i++) {
             if (isupper(line[i])){
-                int p = (i + (input1));
+                long p = (i + (input1));
                 while (p >= len) {
                     p -= len;
                 }
-                cout << p<<endl;
-                cout << len <<endl;
                 result[p] = toupper(result[p]); 
             }
         }
