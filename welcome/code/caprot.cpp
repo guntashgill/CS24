@@ -18,7 +18,10 @@ int main(int argc, char* argv[]) {
         }
         for (int i = 0; i < len; i++) {
             if (isupper(line[i])){
-                int p = (i + (atoi(argv[1])) )%len;
+                int p = (i + (atoi(argv[1])));
+                while (p > len-1) {
+                    p -= len;
+                }
                 result[p] = toupper(result[p]); 
             }
         }
@@ -46,7 +49,6 @@ int main(int argc, char* argv[]) {
 
 
 
-//abCdEfghIjklMnopqrStuvwxYz
-//AbcdEfghijKlmnopQrstUvWxyz
+
 
 
