@@ -12,14 +12,14 @@ int main(int argc, char* argv[]) {
     if (atoi(argv[1]) > 0) {
         int len = line.length();
         std::string result = "";
-        result = line;
+        result = string(line);
         for (int i = 0; i < len; i++) {
             result[i] = tolower(result[i]);
         }
         for (int i = 0; i < len; i++) {
             if (isupper(line[i])){
                 int p = (i + (atoi(argv[1])));
-                while (p > len-1) {
+                while (p >= len) {
                     p -= len;
                 }
                 result[p] = toupper(result[p]); 
