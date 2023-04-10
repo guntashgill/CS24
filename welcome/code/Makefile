@@ -1,4 +1,4 @@
-CFLAGS= -Wall -Wextra -Werror
+CFLAGS= -Wall -Wextra -Werror -std=c++17 
 
 all: caprot
 

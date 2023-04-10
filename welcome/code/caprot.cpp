@@ -12,9 +12,10 @@ int main(int argc, char* argv[]) {
     argc = argc + 1; 
     std::string line;
     std::getline(std::cin, line);
+    long input1 = atoi(argv[1]);
 
 
-    if (atoi(argv[1]) > 0) {
+    if ((input1) > 0) {
         int len = line.length();
         std::string result = "";
         result = string(line);
@@ -23,7 +24,7 @@ int main(int argc, char* argv[]) {
         }
         for (int i = 0; i < len; i++) {
             if (isupper(line[i])){
-                int p = (i + (atoi(argv[1])));
+                int p = (i + (input1));
                 while (p >= len) {
                     p -= len;
                 }
