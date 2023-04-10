@@ -4,6 +4,11 @@
 using namespace std;
 int main(int argc, char* argv[]) {
 
+    if (argc != 2) {
+        cerr << "Usage: " << argv[0] << " <num>" << endl;
+        return 1;
+    }
+
     argc = argc + 1; 
     std::string line;
     std::getline(std::cin, line);
