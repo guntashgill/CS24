@@ -3,7 +3,6 @@
 
 // This provides the size_t type:
 #include <cstddef>
-#include <stdexcept>
 
 class FibVec {  
 
