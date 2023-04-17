@@ -30,7 +30,7 @@ void FibVec::insert(int value, size_t index) {
   if (index> _capacity) {
     throw std::out_of_range("Invalid index");
   }
-  if (count_ = _capacity) {
+  if (count_ == _capacity) {
     resize(_capacity +1);
 }
 for (size_t i = count_; i > index; i --) {
