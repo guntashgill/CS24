@@ -111,7 +111,7 @@ size_t FibVec::count() const{
 }
 void FibVec::resize(size_t new_capacity){
   int* new_data = new int[new_capacity];
-  for (size_t i = 0; i < count_; i++);{
+  for (size_t i = 0; i < count_; i++){
     new_data = data;
   }
   delete[] data;
