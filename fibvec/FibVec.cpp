@@ -120,7 +120,7 @@ void FibVec::resize(size_t new_capacity){
 }
 
 void FibVec::insert(int value, size_t index){
-  if (index >count_ || index < 0) {
+  if (index >count_) {
     throw std::out_of_range("index out of range");
   }
   if (count_ == _capacity) {
