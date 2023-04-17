@@ -155,6 +155,24 @@ int FibVec::pop() {
   }
   return data[count_];
 }
+int FibVec::remove(size_t index) {
+    if (index >= count_) {
+        throw std::out_of_range("Invalid index");
+    }
+
+    int value = data[index];
+
+    for (size_t i = index; i < count_ - 1; i++) {
+        data[i] = data[i + 1];
+    }
+
+    count_--;
+
+    if (count_ <= _capacity / 2 && _capacity > 1) {
+resize(_capacity - 1);
+}
+return value;
+}
 
 void FibVec::push(int value){
   insert(value, count_);
