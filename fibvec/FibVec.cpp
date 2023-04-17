@@ -119,45 +119,24 @@ void FibVec::resize(size_t new_capacity){
   _capacity = new_capacity;
 }
 
-// void FibVec::insert(int value, size_t index){
-//   if (index >count_ || index < 0) {
-//     throw std::out_of_range("index out of range");
-//   }
-//   if (count_ == _capacity) {
-//     size_t new_capacity = fib(3);
-//     while (new_capacity <= count_) {
-//       new_capacity = fib(new_capacity +1);
-//     }
-//     resize(new_capacity);
-//   }
-//   for (size_t i = count_; i > index; i --) {
-//     data[i] = data[i-1];
-//   }
-//   data[index] = value;
-//   count_++;
-// }
-void FibVec::insert(int value, size_t index) {
-  if (index > count_) {
+void FibVec::insert(int value, size_t index){
+  if (index >count_ || index < 0) {
     throw std::out_of_range("index out of range");
   }
   if (count_ == _capacity) {
-    size_t new_capacity = 3; // Start with the third Fibonacci number
-    size_t prev1 = 1; // Keep track of the previous two Fibonacci numbers
-    size_t prev2 = 1;
+    size_t new_capacity = fib(3);
     while (new_capacity <= count_) {
-      size_t next = prev1 + prev2; // Calculate the next Fibonacci number
-      prev1 = prev2; // Update the previous two Fibonacci numbers
-      prev2 = next;
-      new_capacity = next;
+      new_capacity = fib(new_capacity +1);
     }
     resize(new_capacity);
   }
-  for (size_t i = count_; i > index; i--) {
-    data[i] = data[i - 1];
+  for (size_t i = count_; i > index; i --) {
+    data[i] = data[i-1];
   }
   data[index] = value;
   count_++;
 }
+
 
 int FibVec::lookup(size_t index) const{
   if (index >= count_) {
