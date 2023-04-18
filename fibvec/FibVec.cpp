@@ -61,6 +61,9 @@ void FibVec::insert(int value, size_t index){
     store_++; 
     size_t new_capacity = fib(store_);
     while (new_capacity <= count_) {
+      if (new_capacity == SIZE_MAX) {
+        throw std::overflow_error("new_capacity exceeds maximum value of size_t");
+      }
       new_capacity = fib(new_capacity +1);
     }
     resize(new_capacity);
@@ -74,8 +77,9 @@ void FibVec::insert(int value, size_t index){
 
 
 
+
 int FibVec::lookup(size_t index) const{
-  if (index >= count_ || count_ == 0) {
+  if (count_ == 0 || index >= count_) {
     throw std::out_of_range("index out of range");
   }
   return data[index];
@@ -83,34 +87,30 @@ int FibVec::lookup(size_t index) const{
 
 
 int FibVec::pop() {
-    if (count_ == 0) {
-        throw std::underflow_error("Underflow.");
-    } else if (count_ == 1) {
-        int value = data[0];
-        count_ = 0;
-        resize(1);
-        return value;
-    }
+if (count_ == 0) {
+  throw std::underflow_error("Underflow.");
+} else if (count_ == 1) {
+  int value = data[0];
+  count_ = 0;
+  resize(1);
+  return value;
+}
+  int value = data[count_ - 1];
+  count_--;
 
-    int value = data[count_ - 1];
-    count_--;
+if (count_ == 0) {
+  resize(1);
+} else {
+  int fib_idx = 2; 
+  while (fib(fib_idx) <= count_) {
+    fib_idx++;
+  }
 
-    if (count_ == 0) {
-        resize(1);
-    } else {
-        int fib_seq[3] = {0, 1, 1};
-        int fib_idx = 2;
-        while (fib_seq[fib_idx] <= static_cast<int>(count_)) {
-            fib_idx++;
-            fib_seq[fib_idx] = fib_seq[fib_idx - 1] + fib_seq[fib_idx - 2];
-        }
-
-        resize(fib_seq[fib_idx]);
-    }
-
-    return value;
+  resize(fib(fib_idx));
 }
 
+  return value; 
+}
 
 
 
