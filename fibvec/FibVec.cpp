@@ -133,7 +133,7 @@ if (count_ == 0) {
   resize(1);
 } else {
   int fib_idx = 2; 
-  while (fib(fib_idx) <= count_+1) {
+  while (fib(fib_idx) <= count_) {
     fib_idx++;
   }
 
