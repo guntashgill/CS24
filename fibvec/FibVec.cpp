@@ -87,30 +87,28 @@ int FibVec::lookup(size_t index) const{
 
 
 int FibVec::pop() {
-if (count_ == 0) {
-  throw std::underflow_error("Underflow.");
-} else if (count_ == 1) {
-  int value = data[0];
-  count_ = 0;
-  resize(1);
-  return value;
-}
-  int value = data[count_ - 1];
-  count_--;
+    if (count_ == 0) {
+        throw std::underflow_error("Underflow.");
+    } else if (count_ == 1) {
+        int value = data[0];
+        count_ = 0;
+        resize(1);
+        return value;
+    }
+    int value = data[count_ - 1];
+    count_--;
 
-if (count_ == 0) {
-  resize(1);
-} else {
-  int fib_idx = 2; 
-  while (fib(fib_idx) <= count_) {
-    fib_idx++;
-  }
+    if (count_ <= _capacity / 2 && _capacity > 2 && count_ <= fib(store_ - 1)) {
+        int fib_idx = 1;
+        while (fib(fib_idx) <= count_) {
+            fib_idx++;
+        }
+        resize(fib(fib_idx));
+    }
 
-  resize(fib(fib_idx));
+    return value;
 }
 
-  return value; 
-}
 
 
 
