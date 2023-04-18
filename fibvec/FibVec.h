@@ -17,7 +17,7 @@ public:
   //returns value at given index
   int lookup(size_t index) const;
   //removes and retuns value
-  void pop();
+  int pop();
   //inserts value at the end of the vector
   void push(int value);
   //removes and returns value
