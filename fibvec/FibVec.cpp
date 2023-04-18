@@ -135,17 +135,10 @@ if (count_ == 0) {
   bool is_fib = false;
   int fib_idx = 2; 
   while (fib(fib_idx) <= count_+1) {
-    if (fib(fib_idx) == count_+1) {
-      is_fib = true;
-      break;
-    }
     fib_idx++;
   }
 
-  if (!is_fib) {
-    size_t new_capacity = fib(fib_idx - 1);
-    resize(new_capacity);
-  }
+  resize(fib(fib_idx));
 }
 
   return value; 
