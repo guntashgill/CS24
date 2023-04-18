@@ -73,18 +73,32 @@ int FibVec::lookup(size_t index) const{
 }
 
 int FibVec::pop() {
-  if(count_ == 0) {
+  if (count_ == 0) {
     throw std::underflow_error("Underflow."); // Throw an underflow error
   }
 
   int value = data[count_ - 1]; // Get the value to be popped
   count_--;
 
-  if(count_ == 0) {
+  if (count_ == 0) {
     resize(1);
-  } else if(count_ <= fib(_capacity-3)){
-    size_t new_capacity = fib(_capacity-3);
-    resize(new_capacity);
+  } else {
+    // Check if the new count is a Fibonacci number
+    bool is_fib = false;
+    int fib_idx = 2; // Start from the third Fibonacci number
+    while (fib(fib_idx) <= count_) {
+      if (fib(fib_idx) == count_) {
+        is_fib = true;
+        break;
+      }
+      fib_idx++;
+    }
+
+    if (!is_fib) {
+      // If the new count is not a Fibonacci number, resize to the nearest smaller Fibonacci number
+      size_t new_capacity = fib(fib_idx - 1);
+      resize(new_capacity);
+    }
   }
 
   return value; // Return the popped value
