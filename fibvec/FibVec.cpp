@@ -77,6 +77,7 @@ void FibVec::pop() {
     throw std::underflow_error("vector is empty");
   }
   count_--;
+
   if(count_ == 0) {
     resize(1);
   } else if(count_ <= fib(_capacity-3)){
