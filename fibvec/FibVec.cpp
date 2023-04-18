@@ -129,16 +129,16 @@ if (count_ == 0) {
   int value = data[count_ - 1];
   count_--;
 
-if (count_ == 0) {
-  resize(1);
-} else {
-  int fib_idx = 2; 
-  while (fib(fib_idx) <= count_) {
-    fib_idx++;
-  }
+  if (count_ == 0) {
+    resize(1);
+  } else {
+    int fib_idx = 0; 
+    while (fib(fib_idx) < count_) {
+      fib_idx++;
+    }
 
-  resize(fib(fib_idx));
-}
+    resize(fib(fib_idx+1));
+  }
 
   return value; 
 }
