@@ -98,8 +98,8 @@ int FibVec::pop() {
     int value = data[count_ - 1];
     count_--;
 
-    if (count_ <= _capacity / 2 && _capacity > 2 && count_ <= fib(store_ - 1)) {
-        int fib_idx = 1;
+    if (count_ <= _capacity / 2 && _capacity > 2 && count_ < fib(store_ - 1)) {
+        int fib_idx = 1; // start from the previous store index
         while (fib(fib_idx) <= count_) {
             fib_idx++;
         }
@@ -108,9 +108,6 @@ int FibVec::pop() {
 
     return value;
 }
-
-
-
 
 int FibVec::remove(size_t index) {
     if (index >= count_) {
@@ -125,11 +122,16 @@ int FibVec::remove(size_t index) {
 
     count_--;
 
-    if (count_ <= _capacity / 2 && _capacity > 2 && count_ <= fib(store_ - 1)) {
-        resize(_capacity - 1);
+    if (count_ <= _capacity / 2 && _capacity > 2 && count_ < fib(store_ - 1)) {
+        int fib_idx = 1; // start from the previous store index
+        while (fib(fib_idx) <= count_) {
+            fib_idx++;
+        }
+        resize(fib(fib_idx));
     }
     return value;
 }
+
 
 void FibVec::push(int value){
   insert(value, count_);
