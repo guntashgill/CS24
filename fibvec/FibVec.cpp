@@ -93,10 +93,14 @@ int FibVec::pop() {
     bool is_fib = false;
     int fib_idx = 2; 
     while (fib(fib_idx) < count_) {
+      if (fib(fib_idx) == count_) {
+        is_fib = true;
+        break;
+      }
       fib_idx++;
     }
 
-    if (fib(fib_idx) > count_) {
+    if (!is_fib && count_ > 0) {
       size_t new_capacity = fib(fib_idx - 1);
       resize(new_capacity);
     }
@@ -104,7 +108,6 @@ int FibVec::pop() {
 
   return value; 
 }
-
 
 int FibVec::remove(size_t index) {
     if (index >= count_) {
