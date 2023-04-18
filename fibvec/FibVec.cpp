@@ -1,4 +1,3 @@
-
 #include "FibVec.h"
 
 // This provides exception types:
@@ -61,9 +60,6 @@ void FibVec::insert(int value, size_t index){
     store_++; 
     size_t new_capacity = fib(store_);
     while (new_capacity <= count_) {
-      if (new_capacity == SIZE_MAX) {
-        throw std::overflow_error("new_capacity exceeds maximum value of size_t");
-      }
       new_capacity = fib(new_capacity +1);
     }
     resize(new_capacity);
@@ -77,9 +73,8 @@ void FibVec::insert(int value, size_t index){
 
 
 
-
 int FibVec::lookup(size_t index) const{
-  if (count_ == 0 || index >= count_) {
+  if (index >= count_ || count_ == 0) {
     throw std::out_of_range("index out of range");
   }
   return data[index];
@@ -87,29 +82,32 @@ int FibVec::lookup(size_t index) const{
 
 
 int FibVec::pop() {
-    if (count_ == 0) {
-        throw std::underflow_error("Underflow.");
-    } else if (count_ == 1) {
-        int value = data[0];
-        count_ = 0;
-        resize(1);
-        store_ = 0; // update store_ index to 0
-        return value;
-    }
-    int value = data[count_ - 1];
-    count_--;
-
-    if (count_ <= _capacity / 2 && _capacity > 2 && count_ < fib(store_ - 1)) {
-        int fib_idx = 1; // start from the previous store index
-        while (fib(fib_idx) <= count_) {
-            fib_idx++;
-        }
-        resize(fib(fib_idx));
-        store_ = fib_idx - 1; // update store_ index to the new store index
-    }
-
-    return value;
+if (count_ == 0) {
+  throw std::underflow_error("Underflow.");
+} else if (count_ == 1) {
+  int value = data[0];
+  count_ = 0;
+  resize(1);
+  return value;
 }
+  int value = data[count_ - 1];
+  count_--;
+
+if (count_ == 0) {
+  resize(1);
+} else {
+int fib_idx = 2; 
+while (fib(fib_idx) <= count_) {
+  fib_idx++;
+}
+
+resize(fib(fib_idx - 1));
+
+}
+
+  return value; 
+}
+
 
 
 int FibVec::remove(size_t index) {
@@ -125,16 +123,11 @@ int FibVec::remove(size_t index) {
 
     count_--;
 
-    if (count_ <= _capacity / 2 && _capacity > 2 && count_ < fib(store_ - 1)) {
-        int fib_idx = 1; // start from the previous store index
-        while (fib(fib_idx) <= count_) {
-            fib_idx++;
-        }
-        resize(fib(fib_idx));
+    if (count_ <= fib(store_ - 2) && _capacity > 2) {
+      resize(_capacity - 1);
     }
     return value;
 }
-
 
 void FibVec::push(int value){
   insert(value, count_);
