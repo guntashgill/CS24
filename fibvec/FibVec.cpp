@@ -72,16 +72,17 @@ int FibVec::lookup(size_t index) const{
   return data[index];
 }
 
-int FibVec::pop() {
+void FibVec::pop() {
   if(count_ == 0) {
     throw std::underflow_error("vector is empty");
   }
   count_--;
-  if(count_ <= fib(_capacity-2)){
+  if(count_ == 0) {
+    resize(1);
+  } else if(count_ <= fib(_capacity-3)){
     size_t new_capacity = fib(_capacity-3);
     resize(new_capacity);
   }
-  return data[count_];
 }
 
 int FibVec::remove(size_t index) {
@@ -97,7 +98,7 @@ int FibVec::remove(size_t index) {
 
     count_--;
 
-    if (count_ <= _capacity / 2 && _capacity > 1) {
+    if (count_ <= _capacity / 2 && _capacity > 2) {
         resize(_capacity - 1);
     }
     return value;
