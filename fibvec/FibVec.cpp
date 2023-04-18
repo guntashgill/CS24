@@ -53,26 +53,29 @@ try {
   _capacity = new_capacity;
 }
 
-void FibVec::insert(int value, size_t index){
-  if (index >count_) {
-    throw std::out_of_range("index out of range");
-  }
-  if (count_ == _capacity) {
-    store_++; 
-    size_t new_capacity = fib(store_);
-    while (new_capacity <= count_) {
-      if (new_capacity == SIZE_MAX) {
-        throw std::overflow_error("new_capacity exceeds maximum value of size_t");
-      }
-      new_capacity = fib(new_capacity +1);
+int FibVec::pop() {
+    if (count_ == 0) {
+        throw std::underflow_error("Underflow.");
+    } else if (count_ == 1) {
+        int value = data[0];
+        count_ = 0;
+        resize(1);
+        store_ = 0; 
+        return value;
     }
-    resize(new_capacity);
-  }
-  for (size_t i = count_; i > index; i--) {
-    data[i] = data[i-1];
-  }
-  data[index] = value;
-  count_++;
+    int value = data[count_ - 1];
+    count_--;
+
+    if (count_ <= _capacity / 2 && _capacity > 2 && count_ < fib(store_ - 1)) {
+        int fib_idx = 1;
+        while (fib(fib_idx) <= count_) {
+            fib_idx++;
+        }
+        resize(fib(fib_idx));
+        store_ = fib_idx - 1; 
+    }
+
+    return value;
 }
 
 
