@@ -74,7 +74,7 @@ int FibVec::lookup(size_t index) const{
 
 int FibVec::pop() {
   if(count_ == 0) {
-    throw std::underflow_error("vector is empty");
+    throw std::underflow_error("Underflow."); // Throw an underflow error
   }
 
   int value = data[count_ - 1]; // Get the value to be popped
