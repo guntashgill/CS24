@@ -137,7 +137,7 @@ if (count_ == 0) {
       fib_idx++;
     }
 
-    resize(fib(fib_idx+1));
+    resize(fib(fib_idx));
   }
 
   return value; 
