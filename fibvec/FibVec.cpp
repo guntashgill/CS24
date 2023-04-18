@@ -132,7 +132,6 @@ if (count_ == 0) {
 if (count_ == 0) {
   resize(1);
 } else {
-  bool is_fib = false;
   int fib_idx = 2; 
   while (fib(fib_idx) <= count_+1) {
     fib_idx++;
