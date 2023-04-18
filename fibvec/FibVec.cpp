@@ -98,7 +98,7 @@ if (count_ == 0) {
 } else {
   bool is_fib = false;
   int fib_idx = 2; 
-  while (fib(fib_idx) <= count_) {
+  while (fib(fib_idx) < count_) {
     if (fib(fib_idx) == count_) {
       is_fib = true;
       break;
