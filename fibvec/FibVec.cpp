@@ -100,7 +100,7 @@ int FibVec::pop() {
     } else {
         int fib_seq[3] = {0, 1, 1};
         int fib_idx = 2;
-        while (fib_seq[fib_idx] < count_) {
+        while (fib_seq[fib_idx] <= static_cast<int>(count_)) {
             fib_idx++;
             fib_seq[fib_idx] = fib_seq[fib_idx - 1] + fib_seq[fib_idx - 2];
         }
