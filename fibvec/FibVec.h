@@ -32,6 +32,7 @@ private:
   int* data;
   size_t _capacity;
   size_t count_;
+  size_t store_;
   void resize(size_t new_capacity);
 
 

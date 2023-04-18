@@ -99,6 +99,7 @@ FibVec::FibVec() {
     data = new int[1];
     _capacity = 1;
     count_ = 0;
+    store_ = 2;
 }
 FibVec::~FibVec() {
   delete[] data;
@@ -124,7 +125,8 @@ void FibVec::insert(int value, size_t index){
     throw std::out_of_range("index out of range");
   }
   if (count_ == _capacity) {
-    size_t new_capacity = fib(3);
+    store_++; 
+    size_t new_capacity = fib(store_);
     while (new_capacity <= count_) {
       new_capacity = fib(new_capacity +1);
     }
@@ -136,6 +138,7 @@ void FibVec::insert(int value, size_t index){
   data[index] = value;
   count_++;
 }
+
 
 
 int FibVec::lookup(size_t index) const{
