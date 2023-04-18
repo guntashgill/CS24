@@ -88,6 +88,7 @@ int FibVec::pop() {
   count_--;
 
   if (count_ == 0) {
+    resize(1);
   } else {
     bool is_fib = false;
     int fib_idx = 2; 
@@ -99,7 +100,7 @@ int FibVec::pop() {
       fib_idx++;
     }
 
-    if (!is_fib) {
+    if (!is_fib && count_ > 0) {
       size_t new_capacity = fib(fib_idx - 1);
       resize(new_capacity);
     }
