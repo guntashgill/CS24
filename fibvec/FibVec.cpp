@@ -132,7 +132,7 @@ void FibVec::insert(int value, size_t index){
     }
     resize(new_capacity);
   }
-  for (size_t i = count_-1; i > index; i--) {
+  for (size_t i = count_; i > index; i--) {
     data[i] = data[i-1];
   }
   data[index] = value;
