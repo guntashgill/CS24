@@ -12,21 +12,12 @@ FibVec* create_fibvec() {
 }
 
 static size_t fib(size_t n) {
-    size_t a = 0;
-    size_t b = 1;
-    size_t result = 0;
-
     if (n == 0) {
-        return a;
+        return 0;
     } else if (n == 1) {
-        return b;
+        return 1;
     } else {
-        for (size_t i = 2; i <= n; i++) {
-            result = a + b;
-            a = b;
-            b = result;
-        }
-        return result;
+        return fib(n-1) + fib(n-2);
     }
 }
 FibVec::FibVec() {
@@ -92,30 +83,34 @@ int FibVec::lookup(size_t index) const{
 
 
 int FibVec::pop() {
-if (count_ == 0) {
-  throw std::underflow_error("Underflow.");
-} else if (count_ == 1) {
-  int value = data[0];
-  count_ = 0;
-  resize(1);
-  return value;
-}
-  int value = data[count_ - 1];
-  count_--;
+    if (count_ == 0) {
+        throw std::underflow_error("Underflow.");
+    } else if (count_ == 1) {
+        int value = data[0];
+        count_ = 0;
+        resize(1);
+        return value;
+    }
 
-if (count_ == 0) {
-  resize(1);
-} else {
-  int fib_idx = 2; 
-  while (fib(fib_idx) <= count_) {
-    fib_idx++;
-  }
+    int value = data[count_ - 1];
+    count_--;
 
-  resize(fib(fib_idx));
+    if (count_ == 0) {
+        resize(1);
+    } else {
+        int fib_seq[3] = {0, 1, 1};
+        int fib_idx = 2;
+        while (fib_seq[fib_idx] <= count_) {
+            fib_idx++;
+            fib_seq[fib_idx] = fib_seq[fib_idx - 1] + fib_seq[fib_idx - 2];
+        }
+
+        resize(fib_seq[fib_idx]);
+    }
+
+    return value;
 }
 
-  return value; 
-}
 
 
 
