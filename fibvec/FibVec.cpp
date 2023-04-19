@@ -86,10 +86,8 @@ int FibVec::pop() {
     throw std::underflow_error("Underflow.");
   } 
   int re = remove(count_ - 1);
-  if (count_ == 0){
-    resize(1);
-  }
-  if (count_ == 1){
+
+  if (count_ == 0 || count_ == 0){
     resize(2);
   }
   return re; 
