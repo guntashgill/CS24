@@ -114,8 +114,8 @@ int FibVec::remove(size_t index) {
       }
     }
 
-    if (count_ >= 2 && count_ <= fib(indexOfFib - 2)) {
-        resize(fib(indexOfFib));
+    if (count_ >= 2 && count_ < fib(indexOfFib - 2)) {
+        resize(fib(indexOfFib - 1));
     }
     return value;
 }
