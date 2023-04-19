@@ -103,8 +103,19 @@ int FibVec::remove(size_t index) {
 
     count_--;
 
-    if (count_ <= _capacity / 2 && _capacity > 2 && count_ <= fib(store_ - 2)) {
-        resize(_capacity - 1);
+    size_t indexOfFib = 0;
+    size_t i = 0;
+    while (i != 1){
+      if(fib(indexOfFib) == _capacity){
+        i = 1;
+      }
+      else{
+        indexOfFib++;
+      }
+    }
+
+    if (count_ <= fib(index - 2)) {
+        resize(fib(index - 2));
     }
     return value;
 }
