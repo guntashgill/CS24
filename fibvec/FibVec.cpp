@@ -88,10 +88,10 @@ int FibVec::pop() {
   int re = remove(count_ - 1);
 
   if (count_ == 0) {
-    resize(1);
+    resize(2);
   }
   if (count_ == 1) {
-    resize(1);
+    resize(2);
   }
   return re; 
 }
