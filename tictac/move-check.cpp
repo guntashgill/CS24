@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-
 int main(int argc, char** argv) {
   bool verbose = false;
   int exitCode = 0; // Initialize exit code to 0
@@ -40,4 +39,5 @@ int main(int argc, char** argv) {
 
   return exitCode; // Return the correct exit code
 }
+
 
