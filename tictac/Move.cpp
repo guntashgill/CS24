@@ -1,58 +1,51 @@
 #include "Errors.h"
 #include "Move.h"
+#include <iostream>
 #include <cctype>
+#include <sstream>
 
 Move::Move(const std::string& input) {
-    size_t pos = 0;
+  // Parse the input string and validate it
+  std::istringstream iss(input);
+  int moveNumber;
+  char playerCode;
+  char rowCode;
+  char columnCode;
+  std::string comment;
 
-    // Parse move number
-    number = std::stoi(input, &pos);
-    if (number < 1 || number > 9 || pos == 0 || input[pos] != ' ') {
-        throw InvalidMove("Invalid move: " + input);
-    }
+  if (!(iss >> moveNumber >> std::ws >> playerCode >> std::ws >> rowCode >> columnCode)) {
+    throw ParseError("Invalid input: " + input);
+  }
 
-    // Skip whitespace
-    pos++;
+  // Validate move number
+  if (moveNumber < 1 || moveNumber > 9) {
+    throw InvalidMove("Invalid move number: " + std::to_string(moveNumber));
+  }
 
-    // Parse player code
-    player = input[pos++];
-    if (player != 'X' && player != 'O' && player != 'x' && player != 'o') {
-        throw InvalidMove("Invalid move: " + input);
-    }
-    player = std::toupper(player);
+  // Validate player code
+  if (playerCode != 'X' && playerCode != 'O') {
+    throw InvalidMove("Invalid player code: " + std::string(1, playerCode));
+  }
 
-    // Skip whitespace
-    pos++;
+  // Validate row code
+  if (rowCode < 'A' || rowCode > 'C') {
+    throw InvalidMove("Invalid row code: " + std::string(1, rowCode));
+  }
 
-    // Parse square code
-    if (pos + 1 >= input.size() || !std::isalpha(input[pos]) || !std::isdigit(input[pos + 1])) {
-        throw InvalidMove("Invalid move: " + input);
-    }
-    row = input[pos++] - 'A' + 1; // Convert row letter to corresponding integer (A=1, B=2, C=3)
-    column = input[pos++] - '0'; // Convert column digit to integer
+  // Validate column code
+  if (columnCode < '1' || columnCode > '3') {
+    throw InvalidMove("Invalid column code: " + std::string(1, columnCode));
+  }
 
-    // Skip optional whitespace
-    while (pos < input.size() && std::isspace(input[pos])) {
-        pos++;
-    }
-
-    // Check for optional comment
-    if (pos < input.size() && input[pos] == '#') {
-        // Comment found, skip to end of line
-        pos = input.size();
-    }
-
-    // If there are any characters left, it's not a valid move
-    if (pos != input.size()) {
-        throw InvalidMove("Invalid move: " + input);
-    }
+  // Extract relevant information from the input and initialize member variables
+  number = moveNumber;
+  player = std::toupper(playerCode);
+  row = std::toupper(rowCode);
+  column = columnCode;
 }
 
 std::ostream& operator << (std::ostream& stream, const Move& move) {
-    stream << move.number << " " << move.player << " ";
-    char rowLetter = move.row + 'A' - 1; // Convert row integer to corresponding letter (1=A, 2=B, 3=C)
-    stream << rowLetter << move.column;
-    return stream;
+  // Generate the output string for the Move object
+  stream << move.number << " " << move.player << " " << move.row << move.column;
+  return stream;
 }
-
-
