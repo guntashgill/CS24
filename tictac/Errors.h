@@ -10,20 +10,21 @@
 #include <stdexcept>
 
 // Throw one of these when you can't parse a Move.
-class ParseError: public std::runtime_error {
+class ParseError : public std::runtime_error {
 public:
-  ParseError(const std::string& message): std::runtime_error(message) {
+  ParseError(const std::string& message) : std::runtime_error(message) {
     // Nothing else to do.
   }
 };
 
 // Throw one of these when a Move is illegal.
-class InvalidMove: public std::runtime_error {
+class InvalidMove : public std::runtime_error {
 public:
-  InvalidMove(const std::string& message): std::runtime_error(message) {
+  InvalidMove(const std::string& message) : std::runtime_error(message) {
     // Nothing else to do.
   }
 };
 
 #endif
+
 

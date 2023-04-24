@@ -1,28 +1,58 @@
-#include <iostream>
-#include <cctype>
-#include <string>
-#include "Move.h"
 #include "Errors.h"
+#include "Move.h"
+#include <cctype>
 
-using namespace std;
+Move::Move(const std::string& input) {
+    size_t pos = 0;
 
-// Function to check if a character is a valid player code (X or O)
-bool isValidPlayerCode(char c) {
-    return c == 'X' || c == 'O' || c == 'x' || c == 'o';
-}
-
-// Function to check if a character is a valid square code (A, B, C, D) as row and (1, 2, 3) as column
-bool isValidSquareCode(char c) {
-    return c == 'A' || c == 'B' || c == 'C' || c == 'D' ||
-           c == 'a' || c == 'b' || c == 'c' || c == 'd';
-}
-
-// Function to print a move in the required format
-void printMove(const Move& move) {
-    cout << move.number << ' ' << toupper(move.player) << ' ' << static_cast<char>('A' + move.row) << move.col + 1;
-    if (!move.comment.empty()) {
-        cout << ' ' << move.comment;
+    // Parse move number
+    number = std::stoi(input, &pos);
+    if (number < 1 || number > 9 || pos == 0 || input[pos] != ' ') {
+        throw InvalidMove("Invalid move: " + input);
     }
-    cout << endl;
+
+    // Skip whitespace
+    pos++;
+
+    // Parse player code
+    player = input[pos++];
+    if (player != 'X' && player != 'O' && player != 'x' && player != 'o') {
+        throw InvalidMove("Invalid move: " + input);
+    }
+    player = std::toupper(player);
+
+    // Skip whitespace
+    pos++;
+
+    // Parse square code
+    if (pos + 1 >= input.size() || !std::isalpha(input[pos]) || !std::isdigit(input[pos + 1])) {
+        throw InvalidMove("Invalid move: " + input);
+    }
+    row = input[pos++] - 'A' + 1; // Convert row letter to corresponding integer (A=1, B=2, C=3)
+    column = input[pos++] - '0'; // Convert column digit to integer
+
+    // Skip optional whitespace
+    while (pos < input.size() && std::isspace(input[pos])) {
+        pos++;
+    }
+
+    // Check for optional comment
+    if (pos < input.size() && input[pos] == '#') {
+        // Comment found, skip to end of line
+        pos = input.size();
+    }
+
+    // If there are any characters left, it's not a valid move
+    if (pos != input.size()) {
+        throw InvalidMove("Invalid move: " + input);
+    }
 }
+
+std::ostream& operator << (std::ostream& stream, const Move& move) {
+    stream << move.number << " " << move.player << " ";
+    char rowLetter = move.row + 'A' - 1; // Convert row integer to corresponding letter (1=A, 2=B, 3=C)
+    stream << rowLetter << move.column;
+    return stream;
+}
+
 
