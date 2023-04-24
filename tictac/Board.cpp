@@ -17,7 +17,7 @@ void Board::applyMove(const Move& move) {
   }
 
   // Apply the move
-  cells_[move.row][move.column] = static_cast<char>(move.player);
+  cells_[move.row][move.col] = static_cast<char>(move.player);
 }
 
 bool Board::checkWin(Player player) const {
@@ -33,7 +33,7 @@ bool Board::isGameOver() const {
 }
 
 bool Board::isValidMove(const Move& move) const {
-  return move.row >= 0 && move.row < 3 && move.column >= 0 && move.column < 3 && cells_[move.row][move.column] == ' ';
+  return move.row >= 0 && move.row < 3 && move.col >= 0 && move.col < 3 && cells_[move.row][move.col] == ' ';
 }
 
 bool Board::checkRowWin(Player player) const {
@@ -100,3 +100,4 @@ std::ostream& operator<<(std::ostream& os, const Board& board) {
 }  
 
 // Space for implementing Board functions.
+ 

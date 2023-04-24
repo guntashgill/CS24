@@ -11,17 +11,28 @@
 
 struct Move {
   // Member Variables
-  int number;
+  int  number;
   char player;
-  int row;
-  int column;
+  int  row;
+  int  column;
+  std::string comment; // Added member variable for comment
+
+  // Constructor
+  Move(int number, char player, char row, int column, const std::string& comment);
 
   // The constructor parses a string.
   Move(const std::string& input);
 
-  // Overloaded << operator for printing Move object in required format
-  friend std::ostream& operator<<(std::ostream& stream, const Move& move);
-  Move(int row, int column) : row(row), column(column) {}
+  // Getter for comment
+  const std::string& getComment() const;
+
+  // Setter for comment
+  void setComment(const std::string& comment);
 };
 
+// Adding a << operator allows easy printing to std::cout.
+// This should print the Move in the format described in the readme.
+std::ostream& operator << (std::ostream& stream, const Move& move);
+
 #endif
+
