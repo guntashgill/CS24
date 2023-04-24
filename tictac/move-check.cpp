@@ -32,4 +32,15 @@ int main(int argc, char** argv) {
 
     return 1;
   }
+  catch(const std::exception& e) {
+    // Catch any other exceptions that may occur and print an error message
+    if(verbose) {
+      std::cout << "Error: " << e.what() << '\n';
+    }
+    else {
+      std::cout << "Error.\n";
+    }
+
+    return 1;
+  }
 }
