@@ -1,51 +1,43 @@
 
-#include "Errors.h"
 #include "Move.h"
+#include "Errors.h"
 
-// Space for implementing Move functions.
+#include <iostream>
+#include <sstream>
 
-Move::Move(const std::string& input) {
-  size_t pos = 0;
-  size_t next_pos = 0;
+int main(int argc, char** argv) {
+  bool verbose = false;
 
-  // Parse number
-  number = std::stoi(input, &next_pos);
-  if (next_pos == pos || input[next_pos] != ' ') {
-    throw ParseError("Failed to parse Move: " + input);
+  // Parse command line arguments
+  if (argc == 2 && std::string(argv[1]) == "-v") {
+    verbose = true;
   }
-  pos = next_pos + 1;
 
-  // Parse player
-  if (pos >= input.length() || input[pos] == ' ') {
-    throw ParseError("Failed to parse Move: " + input);
+  if (verbose) {
+    std::cout << "> ";
   }
-  player = input[pos];
-  pos += 2;
 
-  // Parse row
-  if (pos >= input.length() || input[pos] != ' ') {
-    throw ParseError("Failed to parse Move: " + input);
-  }
-  pos += 1;
-  next_pos = input.find(' ', pos);
-  if (next_pos == std::string::npos) {
-    throw ParseError("Failed to parse Move: " + input);
-  }
-  row = std::stoi(input.substr(pos, next_pos - pos), &next_pos);
-  if (next_pos == pos || input[next_pos] != ' ') {
-    throw ParseError("Failed to parse Move: " + input);
-  }
-  pos = next_pos + 1;
+  std::string inputLine;
+  std::getline(std::cin, inputLine);
 
-  // Parse column
-  if (pos >= input.length()) {
-    throw ParseError("Failed to parse Move: " + input);
+  try {
+    // Attempt to parse the input line into a Move object
+    Move move(inputLine);
+    std::cout << move << '\n';
+    return 0;
+  } catch (const ParseError& e) {
+    if (verbose) {
+      std::cout << "Parse error: " << e.what() << '\n';
+    } else {
+      std::cout << "Parse error.\n";
+    }
+    return 1;
   }
-  column = std::stoi(input.substr(pos));
 }
 
-
-std::ostream& operator << (std::ostream& stream, const Move& move) {
-  stream << move.number << " " << move.player << " " << move.row << " " << move.column;
+// Definition of the overloaded << operator for Move object
+std::ostream& operator<<(std::ostream& stream, const Move& move) {
+  // Print move number, player code, row code, and column code in the required format
+  stream << move.number << ' ' << move.player << ' ' << static_cast<char>('A' + move.row - 1) << move.column;
   return stream;
 }
