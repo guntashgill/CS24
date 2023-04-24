@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cctype>
 #include <string>
-#include "move.h"
-#include "errors.h"
+#include "Move.h"
+#include "Errors.h"
 
 using namespace std;
 
