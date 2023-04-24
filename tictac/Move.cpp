@@ -19,14 +19,14 @@ bool isValidSquareCode(char c) {
 
 // Function to print a move in the required format
 void printMove(const Move& move) {
-    cout << move.number << ' ' << toupper(move.player) << ' ' << static_cast<char>('A' + move.row) << move.column + '0';
+    cout << move.number << ' ' << toupper(move.player) << ' ' << static_cast<char>('A' + move.row) << move.col + 1;
     if (!move.comment.empty()) {
         cout << ' ' << move.comment;
     }
     cout << endl;
 }
 
-int main() {
+int main(int argc, char** argv) {
     int moveNumber;
     char playerCode;
     char rowCode;

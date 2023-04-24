@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "Errors.h"
+#include "Move.h"
 
 Board::Board() {
   // Initialize the board cells

@@ -11,14 +11,14 @@
 
 struct Move {
   // Member Variables
-  int  number;
+  int number;
   char player;
-  int  row;
-  int  column;
+  int row;
+  int col; // Added member variable for column
   std::string comment; // Added member variable for comment
 
   // Constructor
-  Move(int number, char player, char row, int column, const std::string& comment);
+  Move(int number, char player, int row, int col, const std::string& comment);
 
   // The constructor parses a string.
   Move(const std::string& input);
@@ -35,4 +35,3 @@ struct Move {
 std::ostream& operator << (std::ostream& stream, const Move& move);
 
 #endif
-
