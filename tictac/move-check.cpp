@@ -1,6 +1,5 @@
 #include "Errors.h"
 #include "Move.h"
-#include "Move.cpp"
 
 #include <iostream>
 
