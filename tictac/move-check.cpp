@@ -28,7 +28,6 @@ int main(int argc, char** argv) {
       std::cout << "Parse error.\n";
     }
 
-    // Rethrow the exception to propagate the correct exit code
-    throw;
+    return 1;
   }
 }
