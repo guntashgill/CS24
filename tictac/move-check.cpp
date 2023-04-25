@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     std::cout << move << '\n';
     return 0;
   }
-  catch(const ParseError& e) {
+  catch(const MoveError& e) {
     if(verbose) {
       std::cout << "Parse error: " << e.what() << '\n';
     }
@@ -30,10 +30,9 @@ int main(int argc, char** argv) {
       std::cout << "Parse error.\n";
     }
 
-    return 0; // Fix: return 0 instead of 1
+    return 1;
   }
   catch(const std::exception& e) {
-    // Catch any other exceptions that may occur and print an error message
     if(verbose) {
       std::cout << "Error: " << e.what() << '\n';
     }
@@ -41,6 +40,6 @@ int main(int argc, char** argv) {
       std::cout << "Error.\n";
     }
 
-    return 0; // Fix: return 0 instead of 1
+    return 1;
   }
 }

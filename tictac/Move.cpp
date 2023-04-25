@@ -18,7 +18,6 @@ Move::Move(const std::string& input) {
     throw MoveError("Unexpected character after move");
   }
 
-
   // Extract move number
   ss >> number;
 
@@ -35,16 +34,15 @@ Move::Move(const std::string& input) {
 
   // Ignore any remaining whitespace and comments
   ss >> std::ws;
+
+  // Extract comment
+  std::getline(ss, comment);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Move& move) {
   // Print move in the expected format
   stream << move.number << " " << move.player << " "
-         << static_cast<char>(move.row + 'A' - 1) << move.column;
+         << static_cast<char>(move.row + 'A' - 1) << move.column
+         << move.comment; // Print comment
   return stream;
-}
-
-void invalidMove() {
-  std::cerr << "Error: Invalid move." << std::endl;
-  exit(1);
 }
