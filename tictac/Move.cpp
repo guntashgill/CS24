@@ -14,6 +14,9 @@ Move::Move(const std::string& input) {
 
   // Extract move number
   ss >> number;
+  if (number = ' '){
+    throw ParseError("number empty");
+  }
 
   if (number > 9 || number < 1){
     throw ParseError("Number out of range");
