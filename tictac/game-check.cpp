@@ -22,8 +22,14 @@ int main() {
         }
         return 0; // Exit with status code 0
       } else {
-        // Print whose turn it is
-        std::cout << "Game in progress: " << (board.getCurrentPlayer() == Player::X ? "X's turn." : "O's turn.") << std::endl;
+        std::cout << "Game in progress: ";
+        if (board.getCurrentPlayer() == Player::X) {
+          std::cout << "X's turn." << std::endl;
+          return 0;
+        } else {
+          std::cout << "O's turn." << std::endl;
+          return 0;
+        }
       }
     } catch (const ParseError& e) {
       std::cout << "Parse error." << std::endl; // Print Parse error
