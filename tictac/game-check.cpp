@@ -15,14 +15,12 @@ int main() {
       if (board.isGameOver()) { // Check if the game is over
         if (board.checkWin(Player::X)) {
           std::cout << "Game over: X wins." << std::endl;
-          return 0; // Return 0 to indicate successful completion
         } else if (board.checkWin(Player::O)) {
           std::cout << "Game over: O wins." << std::endl;
-          return 0; // Return 0 to indicate successful completion
         } else if (board.isDraw()) {
           std::cout << "Game over: Draw." << std::endl;
-          return 0; // Return 0 to indicate successful completion
         }
+        break; // Exit the while loop when the game is over
       } else {
         std::cout << "Game in progress: ";
         if (board.getCurrentPlayer() == Player::X) {
@@ -46,5 +44,7 @@ int main() {
 
   return 0; // Exit with status code 0
 }
+
+
 
 
