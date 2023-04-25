@@ -1,3 +1,4 @@
+
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -5,7 +6,7 @@
 #include "Errors.h"
 
 enum Player {
-  None,
+  None, // Add None member
   X,
   O
 };
@@ -13,7 +14,6 @@ enum Player {
 class Board {
 public:
   Board();
-  ~Board();
 
   static const int BOARD_SIZE = 3; 
   char board_[BOARD_SIZE][BOARD_SIZE];
@@ -31,7 +31,7 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
 private:
-  char** cells_;
+  char cells_[3][3];
 
   Player currentPlayer_;
 
@@ -44,29 +44,6 @@ private:
   bool checkDiagonalWin(Player player) const;
 
   bool isBoardFull() const;
-  Board::Board() {
-  // Allocate memory for the 2D array
-  cells_ = new char*[BOARD_SIZE];
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    cells_[i] = new char[BOARD_SIZE];
-  }
-
-  // Initialize the cells with default values
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    for (int j = 0; j < BOARD_SIZE; j++) {
-      cells_[i][j] = ' ';
-    }
-  }
-}
-
-Board::~Board() {
-  // Deallocate the dynamic memory for the 2D array
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    delete[] cells_[i];
-  }
-  delete[] cells_;
-}
-
 };
 
 
