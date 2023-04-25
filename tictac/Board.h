@@ -18,10 +18,14 @@ public:
 
   bool isGameOver() const;
 
+  Player getCurrentPlayer() const;
+
   friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
 private:
   char cells_[3][3];
+
+  Player currentPlayer_;
 
   bool isValidMove(const Move& move) const;
 
@@ -33,5 +37,9 @@ private:
 
   bool isBoardFull() const;
 };
+
+
+// I recommended writing a Board class to manage your game state.
+// Here's some space for the class definition; member functions go in Board.cpp.
 
 #endif

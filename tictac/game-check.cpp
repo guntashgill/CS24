@@ -1,47 +1,44 @@
 #include <iostream>
+#include <string>
 #include "Board.h"
 #include "Errors.h"
-#include "Move.h"
 
 int main() {
-  Board board;
+  Board board; // Create an instance of the Board class
+  std::string input; // String to store input
 
-  Player currentPlayer = Player::X;
-
-  while (!board.isGameOver()) {
-    std::cout << "Current Board:" << std::endl;
-    std::cout << board << std::endl;
-
-    int row, col;
-    std::cout << "Player " << (currentPlayer == Player::X ? "X" : "O") << "'s turn" << std::endl;
-    std::cout << "Enter row (0-2): ";
-    std::cin >> row;
-    std::cout << "Enter column (0-2): ";
-    std::cin >> col;
-    std::string input = std::to_string(row) + " " + std::to_string(col) + " " + (currentPlayer == Player::X ? "X" : "O");
-    Move move(input);
+  while (std::getline(std::cin, input)) { // Read input from standard input
     try {
-     board.applyMove(move);
+      Move move(input); // Parse input as a Move object
+      board.applyMove(move); // Apply move to the board
 
-      if (board.checkWin(currentPlayer)) {
-        std::cout << "Player " << (currentPlayer == Player::X ? "X" : "O") << " wins!" << std::endl;
-        break;
+      if (board.isGameOver()) { // Check if the game is over
+        if (board.checkWin(Player::X)) {
+          std::cout << "Game over: X wins." << std::endl; // Print X wins
+        } else if (board.checkWin(Player::O)) {
+          std::cout << "Game over: O wins." << std::endl; // Print O wins
+        } else if (board.isDraw()) {
+          std::cout << "Game over: Draw." << std::endl; // Print Draw
+        }
+        return 0; // Exit with status code 0
+      } else {
+        // Print whose turn it is
+        std::cout << "Game in progress: " << (board.getCurrentPlayer() == Player::X ? "X's turn." : "O's turn.") << std::endl;
       }
-
-      if (board.isDraw()) {
-        std::cout << "It's a draw!" << std::endl;
-        break;
-      }
-
-      currentPlayer = (currentPlayer == Player::X ? Player::O : Player::X);
-
+    } catch (const ParseError& e) {
+      std::cout << "Parse error." << std::endl; // Print Parse error
+      return 1; // Exit with status code 1
     } catch (const InvalidMove& e) {
-      std::cout << "Invalid move. Please try again." << std::endl;
+      std::cout << "Invalid move." << std::endl; // Print Invalid move
+      return 2; // Exit with status code 2
     }
   }
 
-  std::cout << "Final Board:" << std::endl;
-  std::cout << board << std::endl;
+  // Print game result if end of input is reached
+  if (!board.isGameOver()) {
+    std::cout << "Game in progress: New game." << std::endl; // Print New game
+  }
 
-  return 0;
+  return 0; // Exit with status code 0
 }
+
