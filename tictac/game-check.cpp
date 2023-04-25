@@ -30,7 +30,7 @@ int main() {
       return 1; // Exit with status code 1
     } catch (const InvalidMove& e) {
       std::cout << "Invalid move." << std::endl; // Print Invalid move
-      continue; // Exit with status code 2
+      return 2; // Exit with status code 2
     }
   }
 
