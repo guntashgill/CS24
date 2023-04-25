@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
       std::cout << "Parse error.\n";
     }
 
-    return 1;
+    return 0; // Fix: return 0 instead of 1
   }
   catch(const std::exception& e) {
     // Catch any other exceptions that may occur and print an error message
@@ -41,6 +41,6 @@ int main(int argc, char** argv) {
       std::cout << "Error.\n";
     }
 
-    return 1;
+    return 0; // Fix: return 0 instead of 1
   }
 }
