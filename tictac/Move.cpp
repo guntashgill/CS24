@@ -4,26 +4,19 @@
 #include <sstream>
 #include <cctype>
 
+using namespace std;
+
 Move::Move(const std::string& input) {
   // Use a string stream to parse the input string
   std::stringstream ss(input);
-  char c;
   std::string temp;
 
-  if (!(ss >> number >> player >> row >> column)) {
-    throw MoveError("Failed to parse move");
-  }
-
-  if (!(ss >> c) || c != '\n') {
-    throw MoveError("Unexpected character after move");
-  }
 
   // Extract move number
   ss >> number;
 
   // Extract player code
   ss >> player;
-
   // Extract square code
   std::string squareCode;
   ss >> squareCode;
