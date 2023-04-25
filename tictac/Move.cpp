@@ -1,51 +1,44 @@
-#include "Errors.h"
-#include "Move.h"
+#include "move.h"
+#include "errors.h"
 #include <iostream>
-#include <cctype>
 #include <sstream>
+#include <cctype>
 
 Move::Move(const std::string& input) {
-  // Parse the input string to extract move components
-  std::istringstream iss(input);
-  iss >> number;
-  iss >> player;
-  iss >> row;
-  iss >> column;
+  // Use a string stream to parse the input string
+  std::stringstream ss(input);
 
+  // Extract move number
+  ss >> number;
 
-  if (!(iss >> number >> std::ws >> player >> std::ws >> row >> column)) {
-    throw ParseError("Invalid input: " + input);
-  }
+  // Extract player code
+  ss >> player;
 
-  // Validate move number
-  if (number < 1 || number > 9) {
-    throw InvalidMove("Invalid move number: " + std::to_string(number));
-  }
+  // Extract square code
+  std::string squareCode;
+  ss >> squareCode;
 
-  // Validate player code
-  if (player != 'X' && player != 'O') {
-    throw InvalidMove("Invalid player code: " + std::string(1, player));
-  }
+  // Extract row and column from square code
+  row = toupper(squareCode[0]) - 'A' + 1;
+  column = squareCode[1] - '0';
 
-  // Validate row code
-  if (row < 'A' || row > 'C') {
-    throw InvalidMove("Invalid row code: " + std::string(1, row));
-  }
-
-  // Validate column code
-  if (column < '1' || column > '3') {
-    throw InvalidMove("Invalid column code: " + std::string(1, column));
-  }
-
-  // Extract relevant information from the input and initialize member variables
-  number = number;
-  player = std::toupper(player);
-  row = std::toupper(row);
-  column = column;
+  // Ignore any remaining whitespace and comments
+  ss >> std::ws;
+  std::getline(ss, comment);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Move& move) {
-  // Generate the output string for the Move object
-  stream << move.number << " " << move.player << " " << static_cast<char>('A' + move.row - 1) << move.column;
+  // Print move in the expected format
+  stream << move.number << " " << move.player << " "
+         << static_cast<char>(move.row + 'A' - 1) << move.column;
+  if (!move.comment.empty()) {
+    stream << " " << move.comment;
+  }
   return stream;
 }
+
+void invalidMove() {
+  std::cerr << "Error: Invalid move." << std::endl;
+  exit(1);
+}
+
