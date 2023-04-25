@@ -11,9 +11,7 @@ Move::Move(const std::string& input) {
   std::stringstream ss(input);
   std::string temp;
 
-  if (sscanf(input.c_str(), "%d %c %d %d", &number, &player, &row, &column) != 4) {
-      throw ParseError("Error parsing move");
-  }
+
   // Extract move number
   ss >> number;
   if (number == ' '){
