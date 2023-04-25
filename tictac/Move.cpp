@@ -7,7 +7,6 @@
 using namespace std;
 
 Move::Move(const std::string& input) {
-  // Use a string stream to parse the input string
   std::stringstream ss(input);
   std::string temp;
 

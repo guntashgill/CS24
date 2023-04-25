@@ -52,10 +52,8 @@ Player Board::getCurrentPlayer() const {
   return currentPlayer_;
 }
 bool Board::isBoardFull() const {
-  // Iterate through all squares in the board
   for (int row = 0; row < BOARD_SIZE; ++row) {
     for (int col = 0; col < BOARD_SIZE; ++col) {
-      // If any square is unclaimed (empty), return false
       if (board_[row][col] == Player::None) {
         return false;
       }
