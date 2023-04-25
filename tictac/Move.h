@@ -10,10 +10,7 @@
 #include <string>
 
 
-class MoveError : public std::runtime_error {
-public:
-  MoveError(const std::string& error) : std::runtime_error(error) {}
-};
+
 struct Move {
   // Member Variables
   int  number;
