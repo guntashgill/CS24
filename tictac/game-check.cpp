@@ -32,6 +32,7 @@ int main() {
       std::cout << "Invalid move." << std::endl; // Print Invalid move
       return 2; // Exit with status code 2
     }
+    return 0;
   }
 
   // Print game result if end of input is reached
