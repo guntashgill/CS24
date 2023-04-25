@@ -51,6 +51,19 @@ Player Board::getCurrentPlayer() const {
   // Getter function for current player
   return currentPlayer_;
 }
+bool Board::isBoardFull() const {
+  // Iterate through all squares in the board
+  for (int row = 0; row < BOARD_SIZE; ++row) {
+    for (int col = 0; col < BOARD_SIZE; ++col) {
+      // If any square is unclaimed (empty), return false
+      if (board_[row][col] == Player::None) {
+        return false;
+      }
+    }
+  }
+  // If all squares are claimed but no player has formed a line, return true
+  return true;
+}
 
 bool Board::isDraw() const {
   return isBoardFull() && !checkWin(Player::X) && !checkWin(Player::O);

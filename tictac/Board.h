@@ -4,11 +4,18 @@
 #include "Move.h"
 #include "Errors.h"
 
-enum class Player { X, O };
+enum Player {
+  None, // Add None member
+  X,
+  O
+};
 
 class Board {
 public:
   Board();
+
+  static const int BOARD_SIZE = 3; 
+  char board_[BOARD_SIZE][BOARD_SIZE];
 
   void applyMove(const Move& move);
 
