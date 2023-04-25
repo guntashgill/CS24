@@ -44,7 +44,7 @@ Move::Move(const std::string& input) {
   column = columnCode;
 }
 
-std::ostream& operator << (std::ostream& stream, const Move& move) {
+std::ostream& operator<<(std::ostream& stream, const Move& move) {
   // Generate the output string for the Move object
   stream << move.number << " " << move.player << " " << move.row << move.column;
   return stream;
