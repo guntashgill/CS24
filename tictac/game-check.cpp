@@ -30,9 +30,8 @@ int main() {
       return 1; // Exit with status code 1
     } catch (const InvalidMove& e) {
       std::cout << "Invalid move." << std::endl; // Print Invalid move
-      return 2; // Exit with status code 2
+      return 0; // Exit with status code 2
     }
-    return 0;
   }
 
   // Print game result if end of input is reached
@@ -40,6 +39,6 @@ int main() {
     std::cout << "Game in progress: New game." << std::endl; // Print New game
   }
 
-  return 0; // Exit with status code 0
+  return 2; // Exit with status code 0
 }
 
