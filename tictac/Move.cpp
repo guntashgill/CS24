@@ -1,5 +1,5 @@
-#include "move.h"
-#include "errors.h"
+#include "Move.h"
+#include "Errors.h"
 #include <iostream>
 #include <sstream>
 #include <cctype>
