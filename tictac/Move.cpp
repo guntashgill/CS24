@@ -41,6 +41,11 @@ Move::Move(const std::string& input) {
   }
 
   // Ignore any remaining whitespace and comments
+  string comment; 
+  ss >> comment; 
+  if (comment[0] != '#'){
+    throw ParseError("Invalid Comment Start");
+  }
 
 }
 
