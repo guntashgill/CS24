@@ -14,7 +14,7 @@ Move::Move(const std::string& input) {
 
   // Extract move number
   ss >> number;
-  if (number = ' '){
+  if (number == ' '){
     throw ParseError("number empty");
   }
 
