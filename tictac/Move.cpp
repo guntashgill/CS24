@@ -30,11 +30,12 @@ Move::Move(const std::string& input) {
   // Extract square code
   std::string squareCode;
   ss >> squareCode;
-
+  if (squareCode.length() > 2){
+    throw ParseError("Move out of range");
+  }
   // Extract row and column from square code
   row = toupper(squareCode[0]) - 'A' + 1;
   column = squareCode[1] - '0';
-
   if (row < 1 || row > 3 || column < 1 || column > 3){
     throw ParseError("Row or column out of range"); 
   }
