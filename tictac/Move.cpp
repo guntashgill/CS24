@@ -18,13 +18,15 @@ Move::Move(const std::string& input) {
   if (number > 9 || number < 1){
     throw ParseError("Number out of range");
   }
-  if (player != 'X' || player != 'O' || player != 'x' || player != 'o'){
-    throw ParseError("player out of range");
-  }
 
 
   // Extract player code
   ss >> player;
+
+  if (!(player == 'X' || player == 'O' || player == 'x' || player == 'o')){
+    throw ParseError("player out of range");
+  }
+
   // Extract square code
   std::string squareCode;
   ss >> squareCode;
@@ -32,15 +34,13 @@ Move::Move(const std::string& input) {
   // Extract row and column from square code
   row = toupper(squareCode[0]) - 'A' + 1;
   column = squareCode[1] - '0';
+
   if (row < 1 || row > 3 || column < 1 || column > 3){
     throw ParseError("Row or column out of range"); 
   }
 
   // Ignore any remaining whitespace and comments
-  ss >> std::ws;
 
-  // Extract comment
-  std::getline(ss, comment);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Move& move) {
