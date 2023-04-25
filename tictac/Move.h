@@ -20,6 +20,7 @@ struct Move {
   char player;
   int  row;
   int  column;
+  int col;
   std::string comment; // Added member variable for comment
 
   // The constructor parses a string.
