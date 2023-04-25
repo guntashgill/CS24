@@ -24,16 +24,12 @@ Move::Move(const std::string& input) {
 
   // Ignore any remaining whitespace and comments
   ss >> std::ws;
-  std::getline(ss, comment);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Move& move) {
   // Print move in the expected format
   stream << move.number << " " << move.player << " "
          << static_cast<char>(move.row + 'A' - 1) << move.column;
-  if (!move.comment.empty()) {
-    stream << " " << move.comment;
-  }
   return stream;
 }
 
@@ -41,4 +37,3 @@ void invalidMove() {
   std::cerr << "Error: Invalid move." << std::endl;
   exit(1);
 }
-
