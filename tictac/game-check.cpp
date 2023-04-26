@@ -10,7 +10,10 @@ int main() {
 
     while (true) {
         std::cout << "Enter move (row col): ";
-        std::getline(std::cin, input);
+        if (!std::getline(std::cin, input) || input.empty()) {
+            // Check for end of file or empty input
+            break; // Exit the game loop
+        }
 
         if (input == "quit") {
             break; // Exit the game loop if input is "quit"
@@ -47,3 +50,4 @@ int main() {
 
     return 0;
 }
+
