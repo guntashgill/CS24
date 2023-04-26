@@ -13,7 +13,8 @@ void Board::applyMove(const Move& move) {
   if (!isValidMove(move)) {
     throw InvalidMove("Invalid move.");
   }
-  board_[move.row][move.column] = static_cast<char>(move.player);
+  cells_[move.row][move.column] = static_cast<char>(move.player);
+  // Update currentPlayer_ based on the current player's move
   if (currentPlayer_ == 'O') {
     currentPlayer_ = 'X';
   } 
@@ -51,7 +52,7 @@ char Board::getCurrentPlayer() const {
 bool Board::isBoardFull() const {
   for (int row = 0; row < BOARD_SIZE; ++row) {
     for (int col = 0; col < BOARD_SIZE; ++col) {
-      if (board_[row][col] == 0) {
+      if (cells_[row][col] == ' ') {
         return false;
       }
     }
@@ -62,7 +63,6 @@ bool Board::isBoardFull() const {
 bool Board::isDraw() const {
   return isBoardFull() && !checkWin('X') && !checkWin('O');
 }
-
 bool Board::isGameOver() const {
   return isBoardFull() || checkWin('X') || checkWin('O') || isDraw();
 }
@@ -105,6 +105,7 @@ bool Board::checkColWin(char player) const {
   }
   return false;
 }
+
 
 
 // Space for implementing Board functions.
