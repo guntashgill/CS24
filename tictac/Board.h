@@ -5,11 +5,6 @@
 #include "Move.h"
 #include "Errors.h"
 
-enum Player {
-  None, // Add None member
-  X,
-  O
-};
 
 class Board {
 public:
@@ -20,7 +15,7 @@ public:
 
   void applyMove(const Move& move);
 
-  bool checkWin(Player player) const;
+  bool checkWin(char player) const;
 
   bool isDraw() const;
 
@@ -33,15 +28,15 @@ public:
 private:
   char cells_[3][3];
 
-  Player currentPlayer_;
+  char currentPlayer_;
 
   bool isValidMove(const Move& move) const;
 
-  bool checkRowWin(Player player) const;
+  bool checkRowWin(char player) const;
 
-  bool checkColWin(Player player) const;
+  bool checkColWin(char player) const;
 
-  bool checkDiagonalWin(Player player) const;
+  bool checkDiagonalWin(char player) const;
 
   bool isBoardFull() const;
 };

@@ -14,15 +14,15 @@ void Board::applyMove(const Move& move) {
     throw InvalidMove("Invalid move.");
   }
   cells_[move.row][move.column] = static_cast<char>(move.player);
-  if (currentPlayer_ == Player::X) {
-    currentPlayer_ = Player::O;
+  if (currentPlayer_ == 'O') {
+    currentPlayer_ = 'O';
   } 
   else {
-    currentPlayer_ = Player::X;
+    currentPlayer_ = 'X';
   }
 }
 
-bool Board::checkWin(Player player) const {
+bool Board::checkWin(char player) const {
   char p = static_cast<char>(player);
   // Check for row win
   for (int i = 0; i < 3; i++) {
@@ -51,7 +51,7 @@ char Board::getCurrentPlayer() const {
 bool Board::isBoardFull() const {
   for (int row = 0; row < BOARD_SIZE; ++row) {
     for (int col = 0; col < BOARD_SIZE; ++col) {
-      if (board_[row][col] == Player::None) {
+      if (board_[row][col] == 0) {
         return false;
       }
     }
@@ -60,11 +60,11 @@ bool Board::isBoardFull() const {
 }
 
 bool Board::isDraw() const {
-  return isBoardFull() && !checkWin(Player::X) && !checkWin(Player::O);
+  return isBoardFull() && !checkWin('X') && !checkWin('O');
 }
 
 bool Board::isGameOver() const {
-  return isBoardFull() || checkWin(Player::X) || checkWin(Player::O);
+  return isBoardFull() || checkWin('X') || checkWin('O');
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& board) {
@@ -82,7 +82,7 @@ bool Board::isValidMove(const Move& move) const {
          cells_[move.row][move.column] == ' ';
 }
 
-bool Board::checkRowWin(Player player) const {
+bool Board::checkRowWin(char player) const {
   char p = static_cast<char>(player);
   for (int i = 0; i < 3; i++) {
     if (cells_[i][0] == p && cells_[i][1] == p && cells_[i][2] == p) {
@@ -92,7 +92,7 @@ bool Board::checkRowWin(Player player) const {
   return false;
 }
 
-bool Board::checkColWin(Player player) const {
+bool Board::checkColWin(char player) const {
   char p = static_cast<char>(player);
   for (int i = 0; i < 3; i++) {
     if (cells_[0][i] == p && cells_[1][i] == p && cells_[2][i] == p) {

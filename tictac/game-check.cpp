@@ -28,11 +28,11 @@ int main()
       
         if (board.isGameOver())
         {
-          if (board.checkWin(Player::X))
+          if (board.checkWin('X'))
           {
             std::cout << "Game over: X wins." << std::endl;
           }
-          if (board.checkWin(Player::O))
+          if (board.checkWin('O'))
           {
             std::cout << "Game over: O wins" << std::endl;
           }
