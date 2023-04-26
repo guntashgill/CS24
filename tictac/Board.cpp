@@ -1,7 +1,6 @@
 #include "Board.h"
 #include "Errors.h"
 #include <iostream>
-
 Board::Board() {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
@@ -46,7 +45,7 @@ bool Board::checkWin(Player player) const {
   }
   return false;
 }
-Player Board::getCurrentPlayer() const {
+char Board::getCurrentPlayer() const {
   return currentPlayer_;
 }
 bool Board::isBoardFull() const {

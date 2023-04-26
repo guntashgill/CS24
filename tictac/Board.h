@@ -26,7 +26,7 @@ public:
 
   bool isGameOver() const;
 
-  Player getCurrentPlayer() const;
+  char getCurrentPlayer() const;
 
   friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
