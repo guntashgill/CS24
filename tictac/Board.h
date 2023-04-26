@@ -4,6 +4,7 @@
 
 #include "Move.h"
 #include "Errors.h"
+#include <vector>
 
 
 class Board {
