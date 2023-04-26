@@ -6,6 +6,7 @@
 
 using namespace std;
 
+
 Move::Move(const std::string& input) {
   std::stringstream ss(input);
   std::string temp;

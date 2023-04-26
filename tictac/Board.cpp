@@ -8,6 +8,16 @@ Board::Board() {
     }
   }
 }
+void Board::printBoard() const {
+    // Implementation of printBoard() function
+    // Print the board state
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            std::cout << board[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
+}
 
 void Board::applyMove(const Move& move) {
   if (!isValidMove(move)) {

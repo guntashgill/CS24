@@ -1,61 +1,51 @@
-#include <iostream>
-#include <string>
+
+
 #include "Board.h"
-#include "Errors.h"
+#include "Move.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
-int main()
-{
-  Board board;
-  std::string input;
+int main() {
+    Board board; // Create an instance of the Board class
+    std::string input;
 
-  try
-  {
-    while (std::getline(std::cin, input))
-    {
-      if (!board.isGameOver())
-      {
+    while (true) {
+        std::cout << "Enter move (row col): ";
+        std::getline(std::cin, input);
 
-        if (board.getCurrentPlayer() == 'O')
-        {
-          std::cout << "O's turn." << std::endl;
-        }
-        else if (board.getCurrentPlayer() == 'X')
-        {
-          std::cout << "X's turn." << std::endl;
+        if (input == "quit") {
+            break; // Exit the game loop if input is "quit"
         }
 
-        if (board.isGameOver())
-        {
-          if (board.checkWin('X'))
-          {
-            std::cout << "Game over: X wins." << std::endl;
-          }
-          if (board.checkWin('O'))
-          {
-            std::cout << "Game over: O wins" << std::endl;
-          }
+        int row, col;
+        std::istringstream iss(input);
+        if (iss >> row >> col) {
+            // Validate row and col values
+            if (row >= 0 && row < Board::BOARD_SIZE && col >= 0 && col < Board::BOARD_SIZE) {
+                // Update the board with the move
+                std::string moveString = std::to_string(row) + " " + std::to_string(col);
+                Move move(moveString);
+                board.applyMove(move);
+
+                // Print the updated board
+                std::cout << board << std::endl;
+
+                // Check for game over condition
+                if (board.isGameOver()) {
+                    std::cout << "Game over: " << board.getCurrentPlayer() << " wins!" << std::endl;
+                    break; // Exit the game loop
+                } else if (board.isDraw()) {
+                    std::cout << "Game over: Draw!" << std::endl;
+                    break; // Exit the game loop
+                }
+            } else {
+                std::cout << "Invalid move. Row and col must be within the board size (0-" << (Board::BOARD_SIZE - 1) << "). Try again." << std::endl;
+            }
+        } else {
+            std::cout << "Invalid input. Try again." << std::endl;
         }
-        if (board.isDraw())
-        {
-          std::cout << "Game over: Draw" << std::endl;
-        }
-      }
     }
-    std::cout << "Game in progress: New game" << std::endl;
-  }
-  catch (const InvalidMove& e)
-  {
-    std::cout << "Invalid move." << std::endl;
-    return 2;
-  }
-  catch (const ParseError& e)
-  {
-    std::cout << "Parse error." << std::endl;
-    return 1;
-  }
 
-  return 0;
+    return 0;
 }
-
-
- 
