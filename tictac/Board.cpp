@@ -52,7 +52,7 @@ char Board::getCurrentPlayer() const {
 bool Board::isBoardFull() const {
   for (int row = 0; row < BOARD_SIZE; ++row) {
     for (int col = 0; col < BOARD_SIZE; ++col) {
-      if (cells_[row][col] == ' ') {
+      if (cells_[row][col] == ' ') { // Fix: Update to use cells_ instead of board_
         return false;
       }
     }
