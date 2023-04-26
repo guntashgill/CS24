@@ -47,7 +47,6 @@ bool Board::checkWin(Player player) const {
   return false;
 }
 Player Board::getCurrentPlayer() const {
-  // Getter function for current player
   return currentPlayer_;
 }
 bool Board::isBoardFull() const {
@@ -58,7 +57,6 @@ bool Board::isBoardFull() const {
       }
     }
   }
-  // If all squares are claimed but no player has formed a line, return true
   return true;
 }
 

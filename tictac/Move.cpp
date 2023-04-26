@@ -13,6 +13,7 @@ Move::Move(const std::string& input) {
 
   // Extract move number
   ss >> temp;
+  cout << temp.length();
   if(temp.length() != 1){
     throw ParseError("Not Valid Entry 1");
   }
