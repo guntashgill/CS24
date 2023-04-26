@@ -6,9 +6,6 @@
 int main() {
   Board board;
   std::string input;
-  int moves = 0; 
-  int row;
-  int column;
 
   while (std::getline(std::cin, input)){
     if (!board.isGameOver()) {
