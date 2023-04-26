@@ -9,7 +9,14 @@ int main() {
     std::string input;
 
     while (true) {
-        std::cout << board.getCurrentPlayer() << "'s Turn" << std::endl;
+        if (board.getCurrentPlayer() == 'X') {
+            std::cout << "Game in progress: X's turn." << std::endl;
+            return 0; // Exit the program with success status code
+        } else if (board.getCurrentPlayer() == 'O') {
+            std::cout << "Game in progress: O's turn." << std::endl;
+            return 0; // Exit the program with success status code
+        }
+
         std::cout << "Enter move (row col): ";
         if (!std::getline(std::cin, input) || input.empty()) {
             // Check for end of file or empty input
@@ -18,6 +25,11 @@ int main() {
 
         if (input == "quit") {
             break; // Exit the game loop if input is "quit"
+        }
+
+        if (input == "new game") {
+            std::cout << "Game in progress: New game." << std::endl;
+            return 0; // Exit the program with success status code
         }
 
         int row, col;
@@ -35,11 +47,16 @@ int main() {
 
                 // Check for game over condition
                 if (board.isGameOver()) {
-                    std::cout << "Game over: " << board.getCurrentPlayer() << " wins!" << std::endl;
-                    return 0; // Exit the program with success status code
-                } else if (board.isDraw()) {
-                    std::cout << "Game over: Draw!" << std::endl;
-                    return 0; // Exit the program with success status code
+                    if (board.getCurrentPlayer() == 'X') {
+                        std::cout << "Game over: X wins!" << std::endl;
+                        return 0; // Exit the program with success status code
+                    } else if (board.getCurrentPlayer() == 'O') {
+                        std::cout << "Game over: O wins!" << std::endl;
+                        return 0; // Exit the program with success status code
+                    } else if (board.isDraw()) {
+                        std::cout << "Game over: Draw!" << std::endl;
+                        return 0; // Exit the program with success status code
+                    }
                 }
             } else {
                 std::cout << "Invalid move. Row and col must be within the board size (0-" << (Board::BOARD_SIZE - 1) << "). Try again." << std::endl;
@@ -53,7 +70,6 @@ int main() {
 
     return 0; // Exit the program with success status code
 }
-
 
 
 
