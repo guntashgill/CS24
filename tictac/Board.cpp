@@ -64,7 +64,7 @@ bool Board::isDraw() const {
 }
 
 bool Board::isGameOver() const {
-  return isBoardFull() || checkWin('X') || checkWin('O');
+  return isBoardFull() || checkWin('X') || checkWin('O') || isDraw();
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& board) {
