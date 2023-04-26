@@ -9,6 +9,7 @@ int main() {
     std::string input;
 
     while (true) {
+        std::cout << board.getCurrentPlayer() << "'s Turn" << std::endl;
         std::cout << "Enter move (row col): ";
         if (!std::getline(std::cin, input) || input.empty()) {
             // Check for end of file or empty input
@@ -35,10 +36,10 @@ int main() {
                 // Check for game over condition
                 if (board.isGameOver()) {
                     std::cout << "Game over: " << board.getCurrentPlayer() << " wins!" << std::endl;
-                    break; // Exit the game loop
+                    return 0; // Exit the program with success status code
                 } else if (board.isDraw()) {
                     std::cout << "Game over: Draw!" << std::endl;
-                    break; // Exit the game loop
+                    return 0; // Exit the program with success status code
                 }
             } else {
                 std::cout << "Invalid move. Row and col must be within the board size (0-" << (Board::BOARD_SIZE - 1) << "). Try again." << std::endl;
@@ -48,6 +49,8 @@ int main() {
         }
     }
 
-    return 0;
+    return 1; // Exit the program with error status code
 }
+
+
 
