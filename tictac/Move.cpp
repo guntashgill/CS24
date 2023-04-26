@@ -12,18 +12,25 @@ Move::Move(const std::string& input) {
 
 
   // Extract move number
-  ss >> number;
+  ss >> temp;
+  if(temp.length() != 1){
+    throw ParseError("Not Valid Entry 1");
+  }
+  number = static_cast<int>(temp[0]) - '1' + 1; 
   if (number == ' '){
     throw ParseError("number empty");
   }
-
   if (number > 9 || number < 1){
     throw ParseError("Number out of range");
   }
 
 
   // Extract player code
-  ss >> player;
+  ss >> temp;
+  if(temp.length() != 1){
+    throw ParseError("Not Valid Entry 2");
+  }
+  player = temp[0]; 
 
   if (!(player == 'X' || player == 'O' || player == 'x' || player == 'o')){
     throw ParseError("player out of range");

@@ -12,6 +12,8 @@ CXX      = g++
 
 all: test
 
+
+
 test: test.o FibVec.o
 	${CXX} $(CXXFLAGS) -o $@ $+
 

@@ -6,13 +6,19 @@
 int main() {
   Board board;
   std::string input;
+  int moves = 0; 
+
 
   while (std::getline(std::cin, input)) {
     try {
+      if (input.empty() && moves == 0){
+        break;
+      }
+      moves++; 
       Move move(input); 
       board.applyMove(move);
 
-      if (board.isGameOver()) { // Check if the game is over
+      if (board.isGameOver()) {
         if (board.checkWin(Player::X)) {
           std::cout << "Game over: X wins." << std::endl;
         } else if (board.checkWin(Player::O)) {
@@ -37,14 +43,14 @@ int main() {
     } catch (const InvalidMove& e) {
       std::cout << "Invalid move." << std::endl; 
       return 2; 
-    }
+    } 
   }
 
   if (!board.isGameOver()) {
-    std::cout << "Game in progress: New game." << std::endl; // Print New game
+    std::cout << "Game in progress: New game." << std::endl;
   }
 
-  return 0; // Exit with status code 0
+  return 0;
 }
 
 

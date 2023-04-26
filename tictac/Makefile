@@ -10,7 +10,10 @@ CXX      = g++
 #  $+ is a list of all the dependencies
 #  $< is the first dependency
 
-all: move
+all: game-check move
+
+game-check: game-check.cpp move.o board.cpp
+	${CXX} ${CXXFLAGS} -o $@ $+
 
 move: move-check.o move.o
 	${CXX} ${CXXFLAGS} -o $@ $+
