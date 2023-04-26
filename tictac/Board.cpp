@@ -4,7 +4,7 @@
 Board::Board() {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      cells_[i][j] = ' ';
+      board_[i][j] = ' ';
     }
   }
 }
@@ -13,12 +13,12 @@ void Board::applyMove(const Move& move) {
   if (!isValidMove(move)) {
     throw InvalidMove("Invalid move.");
   }
-  cells_[move.row][move.column] = static_cast<char>(move.player);
+  board_[move.row][move.column] = static_cast<char>(move.player);
   if (currentPlayer_ == 'O') {
-    currentPlayer_ = 'O';
+    currentPlayer_ = 'X';
   } 
   else {
-    currentPlayer_ = 'X';
+    currentPlayer_ = 'O';
   }
 }
 
@@ -26,21 +26,21 @@ bool Board::checkWin(char player) const {
   char p = static_cast<char>(player);
   // Check for row win
   for (int i = 0; i < 3; i++) {
-    if (cells_[i][0] == p && cells_[i][1] == p && cells_[i][2] == p) {
+    if (board_[i][0] == p && board_[i][1] == p && board_[i][2] == p) {
       return true;
     }
   }
   // Check for column win
   for (int i = 0; i < 3; i++) {
-    if (cells_[0][i] == p && cells_[1][i] == p && cells_[2][i] == p) {
+    if (board_[0][i] == p && board_[1][i] == p && board_[2][i] == p) {
       return true;
     }
   }
   // Check for diagonal win
-  if (cells_[0][0] == p && cells_[1][1] == p && cells_[2][2] == p) {
+  if (board_[0][0] == p && board_[1][1] == p && board_[2][2] == p) {
     return true;
   }
-  if (cells_[0][2] == p && cells_[1][1] == p && cells_[2][0] == p) {
+  if (board_[0][2] == p && board_[1][1] == p && board_[2][0] == p) {
     return true;
   }
   return false;
@@ -78,10 +78,14 @@ std::ostream& operator<<(std::ostream& os, const Board& board) {
 }
 
 bool Board::isValidMove(const Move& move) const {
-  return move.row >= 0 && move.row < 3 && move.column >= 0 && move.column < 3 &&
-         cells_[move.row][move.column] == ' ';
+  if (move.row < 0 || move.row >= BOARD_SIZE || move.column < 0 || move.column >= BOARD_SIZE) {
+    return false;
+  }
+  if (board_[move.row][move.column] != ' ') {
+    return false;
+  }
+  return true;
 }
-
 bool Board::checkRowWin(char player) const {
   char p = static_cast<char>(player);
   for (int i = 0; i < 3; i++) {

@@ -26,4 +26,4 @@ move.o: Move.cpp
 
 
 clean:
-	rm -f *.o move-check 
+	rm -f *.o move-check game-check move
