@@ -43,16 +43,17 @@ int main() {
                 }
             } else {
                 std::cout << "Invalid move. Row and col must be within the board size (0-" << (Board::BOARD_SIZE - 1) << "). Try again." << std::endl;
-                return 2; // Exit the program with custom error status code for invalid move
+                continue; // Continue to next iteration of the game loop
             }
         } else {
             std::cout << "Invalid input. Try again." << std::endl;
-            return 1; // Exit the program with custom error status code for invalid input
+            continue; // Continue to next iteration of the game loop
         }
     }
 
     return 0; // Exit the program with success status code
 }
+
 
 
 
