@@ -10,7 +10,7 @@
 class Board {
 public:
   Board();
-  void printBoard() const;
+
   static const int BOARD_SIZE = 3; 
   char board_[BOARD_SIZE][BOARD_SIZE];
 
