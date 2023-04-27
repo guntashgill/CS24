@@ -27,4 +27,4 @@ public:
   size_t remove(const std::string& value);
 };
 
- #endif
+#endif
