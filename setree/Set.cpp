@@ -104,11 +104,11 @@ void Set::print() const {
     }
 
     std::cout << mRoot->value << std::endl;
-    std::cout << "|-";
+    std::cout << "-";
     if (mRoot->left) {
         mRoot->left->printSubtree(true, "");
     }
-    std::cout << "|-";
+    std::cout << "-";
     if (mRoot->right) {
         mRoot->right->printSubtree(false, "");
     }
