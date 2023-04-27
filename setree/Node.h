@@ -21,16 +21,16 @@ struct Node {
     void printSubtree(bool isLeft, std::string indent) const {
         std::cout << indent;
         if (isLeft) {
-            std::cout << "|-";
+            std::cout << "(-";
         } else {
-            std::cout << "| ";
+            std::cout << "() ";
         }
         std::cout << value << std::endl;
         if (left) {
-            left->printSubtree(true, indent + (isLeft ? "| " : " "));
+            left->printSubtree(true, indent + (isLeft ? "() " : " "));
         }
         if (right) {
-            right->printSubtree(false, indent + (isLeft ? " " : "| "));
+            right->printSubtree(false, indent + (isLeft ? " " : ") "));
         }
     }
     std::string toString() const;
