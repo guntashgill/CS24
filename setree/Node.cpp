@@ -1,3 +1,5 @@
+#ifndef NODE_CPP
+#define NODE_CPP
 #include "Node.h"
 #include "Set.h"
 
@@ -16,3 +18,4 @@ size_t countHelper(Node* node) {
     }
     return countHelper(node->left) + countHelper(node->right) + 1;
 }
+#endif
