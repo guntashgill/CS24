@@ -1,9 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 #include <iostream>
-#include <ostream>
-#include <queue>
-using namespace std;
+#include <vector>
 
 struct Node {
     int value;
@@ -12,36 +10,38 @@ struct Node {
     Node(int v, Node* l = nullptr, Node* r = nullptr) : value(v), left(l), right(r) {}
 };
 
-Node* buildTree(vector<int>& v) {
-    if (v.empty()) return nullptr;
-    queue<Node*> q;
-    Node* root = new Node(v[0]);
-    q.push(root);
-    int i = 1;
-    while (!q.empty() && i < v.size()) {
-        Node* curr = q.front();
-        q.pop();
-        if (v[i] != '-') {
-            curr->left = new Node(v[i]);
-            q.push(curr->left);
-        }
+Node* buildTreeHelper(const std::vector<int>& v, int& i) {
+    if (i >= v.size() || v[i] == -1) {
         i++;
-        if (i < v.size() && v[i] != '-') {
-            curr->right = new Node(v[i]);
-            q.push(curr->right);
-        }
-        i++;
+        return nullptr;
     }
+    Node* root = new Node(v[i]);
+    i++;
+    root->left = buildTreeHelper(v, i);
+    root->right = buildTreeHelper(v, i);
     return root;
 }
 
-void printTree(Node* root) {
-    if (!root) return;
-    cout << "(";
-    printTree(root->left);
-    cout << root->value;
-    printTree(root->right);
-    cout << ")";
+Node* buildTree(std::vector<int>& v) {
+    int i = 0;
+    return buildTreeHelper(v, i);
 }
+
+void printTreeHelper(Node* root) {
+    if (root == nullptr) {
+        std::cout << "- ";
+        return;
+    }
+    std::cout << root->value << " ";
+    printTreeHelper(root->left);
+    printTreeHelper(root->right);
+}
+
+void printTree(Node* root) {
+    printTreeHelper(root);
+    std::cout << std::endl;
+}
+
 #endif
+
 
