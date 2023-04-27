@@ -73,7 +73,6 @@ const std::string& Set::lookup(size_t n) const {
 
     while (node) {
         size_t leftSize = node->left ? node->left->size() : 0;
-        size_t rightSize = node->right ? node->right->size() : 0;
 
         if (n <= leftSize) {
             node = node->left;
