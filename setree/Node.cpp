@@ -1,46 +1,39 @@
 #include "Node.h"
 
-static std::string treeToString(const Node* node) {
-    if (node == nullptr) {
+std::string Node::to_tree_notation() {
+    if (this == nullptr) {
         return "-";
     }
-    std::string leftSubtreeStr = treeToString(node->left);
-    std::string rightSubtreeStr = treeToString(node->right);
-    if (leftSubtreeStr == "-" && rightSubtreeStr == "-") {
-        return node->value;
-    } else {
-        return "(" + leftSubtreeStr + " " + node->value + " " + rightSubtreeStr + ")";
+    else if (is_leaf()) {
+        return std::to_string(data);
+    }
+    else {
+        std::string left_subtree = left->to_tree_notation();
+        std::string right_subtree = right->to_tree_notation();
+        return "(" + left_subtree + " " + std::to_string(data) + " " + right_subtree + ")";
     }
 }
 
-static Node* treeFromString(const std::string& str, size_t& index) {
-    if (index >= str.size() || str[index] == '-') {
-        index++;
-        return nullptr;
+void Node::sorted_insert(int_fast32_t newData) {
+    if (data == '\0') {
+        data = newData;
     }
-    std::string value = "";
-    while (index < str.size() && str[index] != '(' && str[index] != ')' && str[index] != ' ') {
-        value += str[index];
-        index++;
+    else if (newData < data) {
+        if (left == nullptr) {
+            left = new Node(newData);
+        }
+        else {
+            left->sorted_insert(newData);
+        }
     }
-    Node* node = new Node(value);
-    if (index < str.size() && str[index] == '(') {
-        node->left = treeFromString(str, index);
+    else {
+        if (right == nullptr) {
+            right = new Node(newData);
+        }
+        else {
+            right->sorted_insert(newData);
+        }
     }
-    if (index < str.size() && str[index] == ' ') {
-        node->right = treeFromString(str, index);
-    }
-    index++;
-    return node;
-}
-
-std::string Node::toString() const {
-    return treeToString(this);
-}
-
-Node* Node::fromString(const std::string& str) {
-    size_t index = 0;
-    return treeFromString(str, index);
 }
 
 

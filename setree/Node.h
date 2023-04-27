@@ -2,40 +2,46 @@
 #define NODE_H
 #include <iostream>
 #include <ostream>
+#include <queue>
+using namespace std;
 
 struct Node {
-    std::string value;
+    int value;
     Node* left;
     Node* right;
-    size_t leftSubtreeSize;
-    size_t rightSubtreeSize;
-
-    Node(const std::string& value, Node* left = nullptr, Node* right = nullptr)
-        : value(value), left(left), right(right), leftSubtreeSize(0), rightSubtreeSize(0) {}
-
-
-    size_t size() const {
-        return leftSubtreeSize + rightSubtreeSize + 1;
-    }
-
-    void printSubtree(bool isLeft, std::string indent) const {
-        std::cout << indent;
-        if (isLeft) {
-            std::cout << "|-";
-        } else {
-            std::cout << "| ";
-        }
-        std::cout << value << std::endl;
-        if (left) {
-            left->printSubtree(true, indent + (isLeft ? "| " : " "));
-        }
-        if (right) {
-            right->printSubtree(false, indent + (isLeft ? " " : "| "));
-        }
-    }
-    std::string toString() const;
-    static Node* fromString(const std::string& str);
+    Node(int v, Node* l = nullptr, Node* r = nullptr) : value(v), left(l), right(r) {}
 };
 
+Node* buildTree(vector<int>& v) {
+    if (v.empty()) return nullptr;
+    queue<Node*> q;
+    Node* root = new Node(v[0]);
+    q.push(root);
+    int i = 1;
+    while (!q.empty() && i < v.size()) {
+        Node* curr = q.front();
+        q.pop();
+        if (v[i] != '-') {
+            curr->left = new Node(v[i]);
+            q.push(curr->left);
+        }
+        i++;
+        if (i < v.size() && v[i] != '-') {
+            curr->right = new Node(v[i]);
+            q.push(curr->right);
+        }
+        i++;
+    }
+    return root;
+}
+
+void printTree(Node* root) {
+    if (!root) return;
+    cout << "(";
+    printTree(root->left);
+    cout << root->value;
+    printTree(root->right);
+    cout << ")";
+}
 #endif
 
