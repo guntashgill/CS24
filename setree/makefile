@@ -24,4 +24,4 @@ Node.o: Node.cpp Node.h
 
 
 clean:
-	rm -f Set Set.o Node.o
+	rm -f Set Set.o Node.o test

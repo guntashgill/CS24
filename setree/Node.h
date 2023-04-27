@@ -9,15 +9,19 @@ struct Node {
     Node* right;
     size_t leftSubtreeSize;
     size_t rightSubtreeSize;
-    Node(const std::string& value)
-        : value(value), left(nullptr), right(nullptr), leftSubtreeSize(0), rightSubtreeSize(0){}
+
+    Node(const std::string& value, Node* left = nullptr, Node* right = nullptr)
+        : value(value), left(left), right(right), leftSubtreeSize(0), rightSubtreeSize(0) {}
+
     ~Node() {
         delete left;
         delete right;
     }
+
     size_t size() const {
         return leftSubtreeSize + rightSubtreeSize + 1;
     }
+
     void printSubtree(bool isLeft, std::string indent) const {
         std::cout << indent;
         if (isLeft) {
@@ -33,8 +37,9 @@ struct Node {
             right->printSubtree(false, indent + (isLeft ? " " : "| "));
         }
     }
+    std::string toString() const;
+    static Node* fromString(const std::string& str);
 };
-// Use this file to declare your Node type.
-// Implement Node member functions and helper functions in Node.cpp.
 
 #endif
+
