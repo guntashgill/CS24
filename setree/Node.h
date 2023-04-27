@@ -13,10 +13,6 @@ struct Node {
     Node(const std::string& value, Node* left = nullptr, Node* right = nullptr)
         : value(value), left(left), right(right), leftSubtreeSize(0), rightSubtreeSize(0) {}
 
-    ~Node() {
-        delete left;
-        delete right;
-    }
 
     size_t size() const {
         return leftSubtreeSize + rightSubtreeSize + 1;
