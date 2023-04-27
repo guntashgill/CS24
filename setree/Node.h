@@ -1,5 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
+#include <iostream>
+#include <ostream>
 
 struct Node {
     std::string value;

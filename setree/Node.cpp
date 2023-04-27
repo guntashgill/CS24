@@ -1,6 +1,5 @@
 #include "Node.h"
 #include "Set.h"
-#include <iostream>
 
 size_t clearHelper(Node* node) {
     if (!node) {
