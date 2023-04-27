@@ -23,14 +23,14 @@ struct Node {
         if (isLeft) {
             std::cout << "|-";
         } else {
-            std::cout << "|_";
+            std::cout << "| ";
         }
         std::cout << value << std::endl;
         if (left) {
-            left->printSubtree(true, indent + (isLeft ? "|  " : "   "));
+            left->printSubtree(true, indent + (isLeft ? "| " : " "));
         }
         if (right) {
-            right->printSubtree(false, indent + (isLeft ? "   " : "|  "));
+            right->printSubtree(false, indent + (isLeft ? " " : "| "));
         }
     }
 };

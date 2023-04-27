@@ -1,5 +1,4 @@
 #include "Set.h"
-#include "Node.cpp"
 #include <stdexcept>
 #include <iostream>
 
@@ -14,7 +13,14 @@ Set::Set(Set&& other) {
 Set::~Set() {
     clear();
 }
-
+size_t clearHelper(Node* node) {
+    if (!node) {
+        return 0;
+    }
+    size_t count = clearHelper(node->left) + clearHelper(node->right) + 1;
+    delete node;
+    return count;
+}
 size_t Set::clear() {
     size_t count = clearHelper(mRoot);
     mRoot = nullptr;
@@ -32,6 +38,12 @@ bool Set::contains(const std::string& value) const {
         }
     }
     return false;
+}
+size_t countHelper(Node* node) {
+    if (!node) {
+        return 0;
+    }
+    return countHelper(node->left) + countHelper(node->right) + 1;
 }
 size_t Set::count() const {
     return countHelper(mRoot);
