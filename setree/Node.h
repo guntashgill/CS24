@@ -39,6 +39,10 @@ struct Node {
         if (right) {
             totalLength += 1;
         }
+        int spacesToAdd = 20 - totalLength;
+        for (int i = 0; i < spacesToAdd; i++) {
+            std::cout << " ";
+        }
     }
 
     std::string toString() const;
