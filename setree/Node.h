@@ -18,31 +18,16 @@ struct Node {
     size_t size() const {
         return leftSubtreeSize + rightSubtreeSize + 1;
     }
-
     void printSubtree() const {
-        int valueLength = value.length();
         std::cout << "(";
         if (left) {
             left->printSubtree();
-            std::cout << " ";
         }
-        std::cout << value;
+        std::cout << " " << value << " ";
         if (right) {
-            std::cout << " ";
             right->printSubtree();
         }
         std::cout << ")";
-        int totalLength = 2 + valueLength;
-        if (left) {
-            totalLength += 1;
-        }
-        if (right) {
-            totalLength += 1;
-        }
-        int spacesToAdd = 20 - totalLength;
-        for (int i = 0; i < spacesToAdd; i++) {
-            std::cout << " ";
-        }
     }
 
     std::string toString() const;
