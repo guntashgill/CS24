@@ -20,17 +20,26 @@ struct Node {
     }
 
     void printSubtree() const {
+        int valueLength = value.length();
         std::cout << "(";
         if (left) {
             left->printSubtree();
+            std::cout << " ";
         }
-        std::cout << " " << value << " ";
+        std::cout << value;
         if (right) {
+            std::cout << " ";
             right->printSubtree();
         }
         std::cout << ")";
+        int totalLength = 2 + valueLength;
+        if (left) {
+            totalLength += 1;
+        }
+        if (right) {
+            totalLength += 1;
+        }
     }
-
 
     std::string toString() const;
     static Node* fromString(const std::string& str);
