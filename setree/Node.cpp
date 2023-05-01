@@ -26,12 +26,13 @@ static Node* treeFromString(const std::string& str, size_t& index) {
     }
     Node* node = new Node(value);
     if (index < str.size() && str[index] == '(') {
+        index++;
         node->left = treeFromString(str, index);
     }
     if (index < str.size() && str[index] == ' ') {
+        index++;
         node->right = treeFromString(str, index);
     }
-    index++;
     return node;
 }
 
@@ -43,5 +44,6 @@ Node* Node::fromString(const std::string& str) {
     size_t index = 0;
     return treeFromString(str, index);
 }
+
 
 

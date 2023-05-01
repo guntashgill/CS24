@@ -1,4 +1,3 @@
-
 #include "Set.h"
 #include <stdexcept>
 #include <iostream>
@@ -107,13 +106,14 @@ void Set::print() const {
     std::cout << mRoot->value << std::endl;
     std::cout << "-";
     if (mRoot->left) {
-        mRoot->left->printSubtree(true, "");
+        mRoot->left->printSubtree();
     }
     std::cout << "-";
     if (mRoot->right) {
-        mRoot->right->printSubtree(false, "");
+        mRoot->right->printSubtree();
     }
 }
+
 size_t Set::remove(const std::string& value) {
     size_t count = 0;
     Node* curr = mRoot;
