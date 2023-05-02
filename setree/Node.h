@@ -18,12 +18,13 @@ struct Node {
     size_t size() const {
         return leftSubtreeSize + rightSubtreeSize + 1;
     }
+
     void printSubtree() const {
         std::cout << "(";
         if (left) {
             left->printSubtree();
         }
-        std::cout << " " << value << " ";
+        std::cout << value;
         if (right) {
             right->printSubtree();
         }
