@@ -100,18 +100,11 @@ const std::string& Set::lookup(size_t n) const {
 }
 void Set::print() const {
     if (!mRoot) {
+        std::cout << "-" << std::endl;
         return;
     }
-
-    std::cout << mRoot->value << std::endl;
-    std::cout << "-";
-    if (mRoot->left) {
-        mRoot->left->printSubtree();
-    }
-    std::cout << "-";
-    if (mRoot->right) {
-        mRoot->right->printSubtree();
-    }
+    mRoot->printSubtree();
+    std::cout << std::endl;
 }
 
 size_t Set::remove(const std::string& value) {

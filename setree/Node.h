@@ -19,17 +19,25 @@ struct Node {
         return leftSubtreeSize + rightSubtreeSize + 1;
     }
 
-    void printSubtree() const {
-        std::cout << "(";
-        if (left) {
-            left->printSubtree();
-        }
+void printSubtree() const {
+    if (!left && !right) {
         std::cout << value;
-        if (right) {
-            right->printSubtree();
-        }
-        std::cout << ")";
+        return;
     }
+    std::cout << "(";
+    if (left) {
+        left->printSubtree();
+    } else {
+        std::cout << "-";
+    }
+    std::cout << " " << value << " ";
+    if (right) {
+        right->printSubtree();
+    } else {
+        std::cout << "-";
+    }
+    std::cout << ")";
+}
 
     std::string toString() const;
     static Node* fromString(const std::string& str);
