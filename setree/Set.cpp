@@ -77,7 +77,7 @@ size_t Set::insert(const std::string& value) {
     return 1;
 }
 const std::string& Set::lookup(size_t n) const {
-    if (!mRoot || n >= mRoot->size()) {
+    if (!mRoot || n > mRoot->size() - 1) {
         throw std::out_of_range("Index out of range");
     }
 
@@ -98,6 +98,7 @@ const std::string& Set::lookup(size_t n) const {
 
     throw std::out_of_range("Index out of range");
 }
+
 
 void Set::print() const {
     if (!mRoot) {
