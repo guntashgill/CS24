@@ -87,9 +87,9 @@ const std::string& Set::lookup(size_t n) const {
     while (node) {
         size_t leftSize = node->left ? node->left->size() : 0;
 
-        if (count + leftSize == n) {
+        if (leftSize == n - count) {
             return node->value;
-        } else if (count + leftSize > n) {
+        } else if (leftSize > n - count) {
             node = node->left;
         } else {
             count += leftSize + 1;
@@ -99,6 +99,7 @@ const std::string& Set::lookup(size_t n) const {
 
     throw std::out_of_range("Index out of range");
 }
+
 
 
 
