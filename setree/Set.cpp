@@ -77,27 +77,29 @@ size_t Set::insert(const std::string& value) {
     return 1;
 }
 const std::string& Set::lookup(size_t n) const {
-    if (!mRoot || n > mRoot->size() - 1) {
+    if (!mRoot || n >= mRoot->size()) {
         throw std::out_of_range("Index out of range");
     }
 
     Node* node = mRoot;
+    size_t count = 0;
 
     while (node) {
         size_t leftSize = node->left ? node->left->size() : 0;
 
-        if (n == leftSize) {
+        if (count + leftSize == n) {
             return node->value;
-        } else if (n < leftSize) {
+        } else if (count + leftSize > n) {
             node = node->left;
         } else {
-            n -= leftSize + 1;
+            count += leftSize + 1;
             node = node->right;
         }
     }
 
     throw std::out_of_range("Index out of range");
 }
+
 
 
 void Set::print() const {
