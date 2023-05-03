@@ -44,6 +44,15 @@ Node* Node::fromString(const std::string& str) {
     size_t index = 0;
     return treeFromString(str, index);
 }
+Node* Node::copyhelper(Node* node) {
+    if (node == nullptr) {
+    return nullptr;
+    }
+    Node* newNode = new Node(node->value);
+    newNode->left = copyhelper(node->left);
+    newNode->right = copyhelper(node->right);
+    return newNode;
+}
 
 
 

@@ -2,9 +2,13 @@
 #include <stdexcept>
 #include <iostream>
 
-Set::Set() : mRoot(nullptr) {}
+Set::Set() : mRoot(nullptr) {
+
+}
 Set::Set(const Set& other) {
-    mRoot = other.mRoot ? new Node(*other.mRoot) : nullptr;
+    mRoot = nullptr;
+    mRoot = mRoot -> copyhelper(other .mRoot);
+     
 }
 Set::Set(Set&& other) {
     mRoot = other.mRoot;
