@@ -38,7 +38,7 @@ void printSubtree() const {
     }
     std::cout << ")";
 }
-Node* copyhelper(Node* node) {}
+Node* copyhelper(Node* node);
     std::string toString() const;
     static Node* fromString(const std::string& str);
 };
