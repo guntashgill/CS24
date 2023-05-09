@@ -28,11 +28,12 @@ public:
 
   // List all the people in the database.
   std::set<Person*> everyone() const;
-
+  
   // Find a person in the database by name.
   // Return nullptr if there is no such person.
   Person* find(const std::string& name) const;
   std::set<Person*> people_;
+  
 };
 
 #endif

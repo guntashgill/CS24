@@ -65,13 +65,7 @@ public:
 
   // Other Member Functions
   bool is_parent(Person* person) const;
-  bool is_child(Person* person) const;
-  bool is_sibling(Person* person, SMod smod = SMod::ANY) const;
-  bool is_descendant(Person* person) const;
-  bool is_ancestor(Person* person, PMod pmod = PMod::ANY) const;
   
-  Person(const std::string& name, Gender gender, Person* mother, Person* father, int birth_year = -1)
-    : name_(name), gender_(gender), mother_(mother), father_(father), birth_year_(birth_year) {}
 
 };
 
