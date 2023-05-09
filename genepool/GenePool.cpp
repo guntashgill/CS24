@@ -52,7 +52,7 @@ GenePool::GenePool(std::istream& stream) {
         Person* father = find(father_name);
         if (father == nullptr) {
           father = new Person(father_name);
-          people_.insert(father);
+          people.insert(father);
         }
         person->is_parent(father);
       }
@@ -60,18 +60,18 @@ GenePool::GenePool(std::istream& stream) {
         Person* mother = find(mother_name);
         if (mother == nullptr) {
           mother = new Person(mother_name);
-          people_.insert(mother);
+          people.insert(mother);
         }
         person->is_parent(mother);
       }
     } else {
       person = new Person(name);
-      people_.insert(person);
+      people.insert(person);
       if (!father_name.empty()) {
         Person* father = find(father_name);
         if (father == nullptr) {
           father = new Person(father_name);
-          people_.insert(father);
+          people.insert(father);
         }
         person->is_parent(father);
       }
@@ -79,7 +79,7 @@ GenePool::GenePool(std::istream& stream) {
         Person* mother = find(mother_name);
         if (mother == nullptr) {
           mother = new Person(mother_name);
-          people_.insert(mother);
+          people.insert(mother);
         }
         person->is_parent(mother);
       }
@@ -88,17 +88,17 @@ GenePool::GenePool(std::istream& stream) {
 }
 
 GenePool::~GenePool() {
-  for (Person* person : people_) {
+  for (Person* person : people) {
     delete person;
   }
 }
 
 std::set<Person*> GenePool::everyone() const{
-  return people_;
+  return people;
 }
 
 Person* GenePool::find(const std::string& name) const{
-  for (Person* person : people_) {
+  for (Person* person : people) {
     if (person->name() == name) {
       return person;
     }
@@ -107,7 +107,7 @@ Person* GenePool::find(const std::string& name) const{
 }
 
 void GenePool::setChildren() {
-  for(Person* person : people_) {
+  for(Person* person : people) {
     if (person->mother() != nullptr) {
       person->mother()->is_child(person);
     }
@@ -118,7 +118,7 @@ void GenePool::setChildren() {
 }
 
 void GenePool::setSiblings() {
-  for (Person* person : people_) {
+  for (Person* person : people) {
     if (person->mother() != nullptr) {
       for (Person* child : person->mother()->children()) {
         if (child != person) {

@@ -14,7 +14,7 @@
 
 class GenePool {
 // Member Variables
-std::set<Person*> people_;
+std::set<Person*> people;
 std::map<std::string, Person*> peopleByName;
 
 // Helper Functions
@@ -30,14 +30,10 @@ GenePool(std::istream& stream);
 // List all the people in the database.
 std::set<Person*> everyone() const;
 
-// Find a person in the database by name.
-// Return nullptr if there is no such person.
 Person* find(const std::string& name) const;
 
-// Set the children of every person in the database.
 void setChildren();
 
-// Set the siblings of every person in the database.
 void setSiblings();
 };
 
