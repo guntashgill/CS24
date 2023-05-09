@@ -27,6 +27,14 @@ std::string trim(const std::string& str) {
 bool Person::is_parent(Person* other) const {
   return (father_ == other || mother_ == other);
 }
+void Person::is_child(Person* child) {
+  children_.insert(child);
+}
+
+void Person::is_sibling(Person* sibling) {
+  siblings_.insert(sibling);
+}
+
 GenePool::GenePool(std::istream& stream) {
   std::string line;
   while (std::getline(stream, line)) {
@@ -35,8 +43,8 @@ GenePool::GenePool(std::istream& stream) {
       continue;
     }
     std::string name = trim(fields[0]);
-    std::string father_name = trim(fields[1]);
-    std::string mother_name = trim(fields[2]);
+    std::string father_name = trim(fields[2]);
+    std::string mother_name = trim(fields[3]);
 
     Person* person = find(name);
     if (person != nullptr) {
@@ -80,20 +88,45 @@ GenePool::GenePool(std::istream& stream) {
 }
 
 GenePool::~GenePool() {
-  for (auto person : people_) {
+  for (Person* person : people_) {
     delete person;
   }
 }
 
-std::set<Person*> GenePool::everyone() const {
+std::set<Person*> GenePool::everyone() const{
   return people_;
 }
 
-Person* GenePool::find(const std::string& name) const {
-  for (auto person : people_) {
+Person* GenePool::find(const std::string& name) const{
+  for (Person* person : people_) {
     if (person->name() == name) {
       return person;
     }
   }
   return nullptr;
 }
+
+void GenePool::setChildren() {
+  for(Person* person : people_) {
+    if (person->mother() != nullptr) {
+      person->mother()->is_child(person);
+    }
+    if (person->father()!= nullptr){
+      person->father()->is_child(person);
+    }
+  }
+}
+
+void GenePool::setSiblings() {
+  for (Person* person : people_) {
+    if (person->mother() != nullptr) {
+      for (Person* child : person->mother()->children()) {
+        if (child != person) {
+          person->is_sibling(child);
+        }
+      }
+    }
+  }
+}
+   
+

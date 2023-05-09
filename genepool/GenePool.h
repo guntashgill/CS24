@@ -13,27 +13,32 @@
 // It reads people from a TSV-like file in the constructor.
 
 class GenePool {
-  // Member Variables
-  std::map<std::string, Person*> peopleByName;
+// Member Variables
+std::set<Person*> people_;
+std::map<std::string, Person*> peopleByName;
 
-  // Helper Functions
-  void addPersonToMap(Person* person);
+// Helper Functions
+void addPersonToMap(Person* person);
 
 public:
-  // Build a database of people from a TSV file.
-  GenePool(std::istream& stream);
+// Build a database of people from a TSV file.
+GenePool(std::istream& stream);
 
-  // Clean it up.
-  ~GenePool();
+// Clean it up.
+~GenePool();
 
-  // List all the people in the database.
-  std::set<Person*> everyone() const;
-  
-  // Find a person in the database by name.
-  // Return nullptr if there is no such person.
-  Person* find(const std::string& name) const;
-  std::set<Person*> people_;
-  
+// List all the people in the database.
+std::set<Person*> everyone() const;
+
+// Find a person in the database by name.
+// Return nullptr if there is no such person.
+Person* find(const std::string& name) const;
+
+// Set the children of every person in the database.
+void setChildren();
+
+// Set the siblings of every person in the database.
+void setSiblings();
 };
 
 #endif

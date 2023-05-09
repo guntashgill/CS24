@@ -19,6 +19,7 @@ private:
   Person* father_;
   std::set<Person*> children_;
   int birth_year_;
+  std::set<Person*> siblings_;
 
 public:
   // Constructor
@@ -65,6 +66,8 @@ public:
 
   // Other Member Functions
   bool is_parent(Person* person) const;
+  void is_child(Person* child);
+  void is_sibling(Person* sibling);
   
 
 };
