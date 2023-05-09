@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <sstream>
-
+#include <vector>
 // Helper function to split a string into fields.
 std::vector<std::string> split(const std::string& str, char delimiter) {
   std::vector<std::string> fields;
