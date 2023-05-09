@@ -12,19 +12,33 @@
 // Implement the member functions in Person.cpp.
 
 class Person {
-  // Member Variables
-
-  // Helper Functions
+private:
+  std::string name_;
+  Gender gender_;
+  Person* mother_;
+  Person* father_;
+  std::set<Person*> children_;
+  int birth_year_;
 
 public:
   // Constructor
-  // Destructor?
+  Person(const std::string& name) : name_(name), mother_(nullptr), father_(nullptr) {}
+  
+  // Copy Constructor
+  Person(const Person& other);
+  
+  // Copy Assignment Operator
+  Person& operator=(const Person& other);
+  
+  // Destructor
+  ~Person();
 
   // Required Getter Functions
-  const std::string& name()   const;
-  Gender             gender() const;
-  Person*            mother();
-  Person*            father();
+  const std::string& name() const;
+  Gender gender() const;
+  Person* mother();
+  Person* father();
+  int birth_year() const;
 
   // Required Relationship Functions
   std::set<Person*> ancestors(PMod pmod = PMod::ANY);
@@ -47,8 +61,22 @@ public:
   std::set<Person*> sisters(PMod pmod = PMod::ANY, SMod smod = SMod::ANY);
   std::set<Person*> sons();
   std::set<Person*> uncles(PMod pmod = PMod::ANY, SMod smod = SMod::ANY);
+  
 
   // Other Member Functions
+  bool is_parent(Person* person) const;
+  bool is_child(Person* person) const;
+  bool is_sibling(Person* person, SMod smod = SMod::ANY) const;
+  bool is_descendant(Person* person) const;
+  bool is_ancestor(Person* person, PMod pmod = PMod::ANY) const;
+  
+  Person(const std::string& name, Gender gender, Person* mother, Person* father, int birth_year = -1)
+    : name_(name), gender_(gender), mother_(mother), father_(father), birth_year_(birth_year) {}
+
 };
 
+
 #endif
+
+
+

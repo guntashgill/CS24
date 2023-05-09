@@ -14,8 +14,10 @@
 
 class GenePool {
   // Member Variables
+  std::map<std::string, Person*> peopleByName;
 
   // Helper Functions
+  void addPersonToMap(Person* person);
 
 public:
   // Build a database of people from a TSV file.
@@ -30,6 +32,7 @@ public:
   // Find a person in the database by name.
   // Return nullptr if there is no such person.
   Person* find(const std::string& name) const;
+  std::set<Person*> people_;
 };
 
 #endif
