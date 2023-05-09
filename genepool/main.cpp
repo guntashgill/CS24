@@ -1,6 +1,8 @@
 #include "Person.h"
 #include "GenePool.h"
 #include "Query.h"
+#include "Person.cpp"
+#include "GenePool.cpp"
 
 #include <algorithm>
 #include <fstream>
