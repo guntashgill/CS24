@@ -56,13 +56,6 @@ Person& Person::operator=(const Person& other) {
 }
 
 Person::~Person() {
-    if (mother_ != nullptr) {
-        mother_->children_.erase(this);
-    }
-
-    if (father_ != nullptr) {
-        father_->children_.erase(this);
-    }
 }
 
 // Required Getter Functions

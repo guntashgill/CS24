@@ -65,8 +65,8 @@ GenePool::GenePool(std::istream& stream) {
     
 
 GenePool::~GenePool() {
-  for (Person* person : people) {
-    delete person;
+  for (auto person : peopleByName) {
+    delete person.second;
   }
 }
 
