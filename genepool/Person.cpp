@@ -79,19 +79,15 @@ std::set<Person*> Person::ancestors(PMod pmod) {
     if (pmod == PMod::ANY || pmod == PMod::MATERNAL) {
         if (mother_) {
             ancestors.insert(mother_);
-            if (mother_->gender_ == Gender::FEMALE) {
-                std::set<Person*> maternal_ancestors = mother_->ancestors(PMod::MATERNAL);
-                ancestors.insert(maternal_ancestors.begin(), maternal_ancestors.end());
-            }
+            std::set<Person*> maternal_ancestors = mother_->ancestors(PMod::MATERNAL);
+            ancestors.insert(maternal_ancestors.begin(), maternal_ancestors.end());
         }
     }
     if (pmod == PMod::ANY || pmod == PMod::PATERNAL) {
         if (father_) {
             ancestors.insert(father_);
-            if (father_->gender_ == Gender::MALE) {
-                std::set<Person*> paternal_ancestors = father_->ancestors(PMod::PATERNAL);
-                ancestors.insert(paternal_ancestors.begin(), paternal_ancestors.end());
-            }
+            std::set<Person*> paternal_ancestors = father_->ancestors(PMod::PATERNAL);
+            ancestors.insert(paternal_ancestors.begin(), paternal_ancestors.end());
         }
     }
     return ancestors;
