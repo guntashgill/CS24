@@ -149,7 +149,7 @@ std::set<Person*> Person::cousins(PMod pmod, SMod smod) {
 
     if ((pmod == PMod::MATERNAL || pmod == PMod::ANY) && (smod == SMod::FULL || smod == SMod::ANY)) {
         if (mother_) {
-            std::set<Person*> maternal_siblings = mother_->siblings(PMod::ANY, SMod::ANY);
+            std::set<Person*> maternal_siblings = mother_->siblings(PMod::ANY, SMod::FULL);
 
             for (auto sibling : maternal_siblings) {
                 std::set<Person*> children = sibling->children();
@@ -171,7 +171,7 @@ std::set<Person*> Person::cousins(PMod pmod, SMod smod) {
 
     if ((pmod == PMod::PATERNAL || pmod == PMod::ANY) && (smod == SMod::FULL || smod == SMod::ANY)) {
         if (father_) {
-            std::set<Person*> paternal_siblings = father_->siblings(PMod::ANY, SMod::ANY);
+            std::set<Person*> paternal_siblings = father_->siblings(PMod::ANY, SMod::FULL);
 
             for (auto sibling : paternal_siblings) {
                 std::set<Person*> children = sibling->children();
@@ -194,6 +194,7 @@ std::set<Person*> Person::cousins(PMod pmod, SMod smod) {
     cousins.erase(this);
     return cousins;
 }
+
 
 
 std::set<Person*> Person::daughters() {
