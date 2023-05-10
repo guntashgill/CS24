@@ -18,7 +18,6 @@ private:
   Person* mother_;
   Person* father_;
   std::set<Person*> children_;
-  int birth_year_;
   std::set<Person*> siblings_;
 
 public:
@@ -35,11 +34,13 @@ public:
   // Destructor
   ~Person();
 
+
   // Required Getter Functions
   const std::string& name() const;
   Gender gender() const;
   Person* mother();
   Person* father();
+  const std::set<Person*> sibling();
 
   // Required Relationship Functions
   std::set<Person*> ancestors(PMod pmod = PMod::ANY);
@@ -65,8 +66,7 @@ public:
   
 
   // Other Member Functions
-  bool is_parent(Person* person) const;
-  void is_child(Person* child);
+  void is_child(Person* children);
   void is_sibling(Person* sibling);
   
 
