@@ -229,8 +229,11 @@ std::set<Person*> Person::grandfathers(PMod pmod) {
     if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
         auto maternal_parents = parents(PMod::MATERNAL);
         for (auto parent : maternal_parents) {
-            if (parent->gender() == Gender::MALE) {
-                result.insert(parent);
+            auto maternal_grandfathers = parent->parents(PMod::PATERNAL);
+            for (auto grandfather : maternal_grandfathers) {
+                if (grandfather && grandfather->gender() == Gender::MALE) {
+                    result.insert(grandfather);
+                }
             }
         }
     }
@@ -239,14 +242,18 @@ std::set<Person*> Person::grandfathers(PMod pmod) {
     if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
         auto paternal_parents = parents(PMod::PATERNAL);
         for (auto parent : paternal_parents) {
-            if (parent->gender() == Gender::MALE) {
-                result.insert(parent);
+            auto paternal_grandfathers = parent->parents(PMod::PATERNAL);
+            for (auto grandfather : paternal_grandfathers) {
+                if (grandfather && grandfather->gender() == Gender::MALE) {
+                    result.insert(grandfather);
+                }
             }
         }
     }
 
     return result;
 }
+
 
 
 
@@ -263,8 +270,6 @@ std::set<Person*> Person::grandmothers(PMod pmod) {
 
 std::set<Person*> Person::grandparents(PMod pmod) {
     std::set<Person*> result;
-
-    // Check if maternal grandparents are requested
     if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
         auto maternal_parents = parents(PMod::MATERNAL);
         for (auto parent : maternal_parents) {
@@ -272,8 +277,6 @@ std::set<Person*> Person::grandparents(PMod pmod) {
             result.insert(maternal_grandparents.begin(), maternal_grandparents.end());
         }
     }
-
-    // Check if paternal grandparents are requested
     if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
         auto paternal_parents = parents(PMod::PATERNAL);
         for (auto parent : paternal_parents) {
