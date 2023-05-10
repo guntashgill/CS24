@@ -105,63 +105,29 @@ std::set<Person*> Person::ancestors(PMod pmod) {
 
 
 std::set<Person*> Person::aunts(PMod pmod, SMod smod) {
-    std::set<Person*> result;
-    
-    // Check if maternal aunts are requested
-    if (pmod == PMod::MATERNAL) {
-        if (mother_) {
-            auto maternal_siblings = mother_->siblings(PMod::MATERNAL, SMod::ANY);
+    std::set<Person*> aunts;
+    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
+        if (mother_ != nullptr) {
+            std::set<Person*> maternal_siblings = mother_->siblings(pmod, smod);
             for (auto sibling : maternal_siblings) {
-                if (sibling != mother_) {
-                    result.insert(sibling);
+                if (sibling->gender() == Gender::FEMALE) {
+                    aunts.insert(sibling);
                 }
             }
         }
     }
-    // Check if paternal aunts are requested
-    else if (pmod == PMod::PATERNAL) {
-        if (father_) {
-            auto paternal_siblings = father_->siblings(PMod::PATERNAL, SMod::ANY);
+    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
+        if (father_ != nullptr) {
+            std::set<Person*> paternal_siblings = father_->siblings(pmod, smod);
             for (auto sibling : paternal_siblings) {
-                if (sibling != father_) {
-                    result.insert(sibling);
+                if (sibling->gender() == Gender::FEMALE) {
+                    aunts.insert(sibling);
                 }
             }
         }
     }
-    // Check if full aunts are requested
-    else if (smod == SMod::FULL) {
-        auto full_siblings = siblings(PMod::ANY, SMod::FULL);
-        for (auto sibling : full_siblings) {
-            if (sibling->gender() == Gender::FEMALE) {
-                result.insert(sibling);
-            }
-        }
-    }
-    // Check if half aunts are requested
-    else if (smod == SMod::HALF) {
-        auto half_siblings = siblings(PMod::ANY, SMod::HALF);
-        for (auto sibling : half_siblings) {
-            if (sibling->gender() == Gender::FEMALE) {
-                result.insert(sibling);
-            }
-        }
-    }
-    // Check if any type of aunt is requested
-    else {
-        auto maternal_aunts = aunts(PMod::MATERNAL, SMod::ANY);
-        auto paternal_aunts = aunts(PMod::PATERNAL, SMod::ANY);
-        auto full_aunts = aunts(PMod::ANY, SMod::FULL);
-        auto half_aunts = aunts(PMod::ANY, SMod::HALF);
-        result.insert(maternal_aunts.begin(), maternal_aunts.end());
-        result.insert(paternal_aunts.begin(), paternal_aunts.end());
-        result.insert(full_aunts.begin(), full_aunts.end());
-        result.insert(half_aunts.begin(), half_aunts.end());
-    }
-    
-    return result;
+    return aunts;
 }
-
 
 std::set<Person*> Person::brothers(PMod pmod, SMod smod) {
     std::set<Person*> brothers;
@@ -287,13 +253,29 @@ std::set<Person*> Person::grandmothers(PMod pmod) {
 }
 
 std::set<Person*> Person::grandparents(PMod pmod) {
-    std::set<Person*> grandparents = this->grandfathers(pmod);
-    auto maternal_grandmothers = this->grandmothers(PMod::MATERNAL);
-    grandparents.insert(maternal_grandmothers.begin(), maternal_grandmothers.end());
-    auto paternal_grandmothers = this->grandmothers(PMod::PATERNAL);
-    grandparents.insert(paternal_grandmothers.begin(), paternal_grandmothers.end());
-    return grandparents;
+    std::set<Person*> result;
+
+    // Check if maternal grandparents are requested
+    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
+        auto maternal_parents = parents(PMod::MATERNAL);
+        for (auto parent : maternal_parents) {
+            auto maternal_grandparents = parent->parents(PMod::MATERNAL);
+            result.insert(maternal_grandparents.begin(), maternal_grandparents.end());
+        }
+    }
+
+    // Check if paternal grandparents are requested
+    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
+        auto paternal_parents = parents(PMod::PATERNAL);
+        for (auto parent : paternal_parents) {
+            auto paternal_grandparents = parent->parents(PMod::PATERNAL);
+            result.insert(paternal_grandparents.begin(), paternal_grandparents.end());
+        }
+    }
+
+    return result;
 }
+
 
 std::set<Person*> Person::grandsons() {
   std::set<Person*> grandsons;
