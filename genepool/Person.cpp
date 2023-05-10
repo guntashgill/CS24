@@ -146,14 +146,51 @@ std::set<Person*> Person::children() {
 
 std::set<Person*> Person::cousins(PMod pmod, SMod smod) {
     std::set<Person*> cousins;
-    std::set<Person*> aunts_uncles = aunts(pmod, smod);
-    for (auto aunt_uncle : aunts_uncles) {
-        std::set<Person*> children = aunt_uncle->children();
-        for (auto child : children) {
-            std::set<Person*> child_siblings = child->siblings(pmod, smod);
-            cousins.insert(child_siblings.begin(), child_siblings.end());
+
+    if ((pmod == PMod::MATERNAL || pmod == PMod::ANY) && (smod == SMod::FULL || smod == SMod::ANY)) {
+        if (mother_) {
+            std::set<Person*> maternal_siblings = mother_->siblings(PMod::ANY, SMod::ANY);
+
+            for (auto sibling : maternal_siblings) {
+                std::set<Person*> children = sibling->children();
+                cousins.insert(children.begin(), children.end());
+            }
         }
     }
+
+    if ((pmod == PMod::MATERNAL || pmod == PMod::ANY) && (smod == SMod::HALF || smod == SMod::ANY)) {
+        if (mother_) {
+            std::set<Person*> maternal_half_siblings = mother_->siblings(PMod::ANY, SMod::HALF);
+
+            for (auto sibling : maternal_half_siblings) {
+                std::set<Person*> children = sibling->children();
+                cousins.insert(children.begin(), children.end());
+            }
+        }
+    }
+
+    if ((pmod == PMod::PATERNAL || pmod == PMod::ANY) && (smod == SMod::FULL || smod == SMod::ANY)) {
+        if (father_) {
+            std::set<Person*> paternal_siblings = father_->siblings(PMod::ANY, SMod::ANY);
+
+            for (auto sibling : paternal_siblings) {
+                std::set<Person*> children = sibling->children();
+                cousins.insert(children.begin(), children.end());
+            }
+        }
+    }
+
+    if ((pmod == PMod::PATERNAL || pmod == PMod::ANY) && (smod == SMod::HALF || smod == SMod::ANY)) {
+        if (father_) {
+            std::set<Person*> paternal_half_siblings = father_->siblings(PMod::ANY, SMod::HALF);
+
+            for (auto sibling : paternal_half_siblings) {
+                std::set<Person*> children = sibling->children();
+                cousins.insert(children.begin(), children.end());
+            }
+        }
+    }
+
     cousins.erase(this);
     return cousins;
 }
