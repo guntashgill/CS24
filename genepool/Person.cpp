@@ -412,11 +412,6 @@ std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
             for (auto sibling : father_->brothers(PMod::ANY, smod)) {
                 uncles.insert(sibling);
             }
-            if (smod == SMod::HALF) {
-                for (auto sibling : father_->sisters(PMod::MATERNAL, SMod::HALF)) {
-                    uncles.insert(sibling);
-                }
-            }
         }
     }
     
@@ -424,11 +419,6 @@ std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
         if (mother_) {
             for (auto sibling : mother_->brothers(PMod::ANY, smod)) {
                 uncles.insert(sibling);
-            }
-            if (smod == SMod::HALF) {
-                for (auto sibling : mother_->sisters(PMod::PATERNAL, SMod::HALF)) {
-                    uncles.insert(sibling);
-                }
             }
         }
     }
