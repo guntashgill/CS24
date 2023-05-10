@@ -128,26 +128,11 @@ std::set<Person*> Person::aunts(PMod pmod, SMod smod) {
 
 std::set<Person*> Person::brothers(PMod pmod, SMod smod) {
     std::set<Person*> brothers;
-
-    if (mother_ && (pmod == PMod::ANY || pmod == PMod::MATERNAL)) {
-        for (auto child : mother_->children_) {
-            if (child != this && child->gender_ == Gender::MALE) {
-                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && child->mother_ == mother_ && child->father_ != father_)) {
-                    brothers.insert(child);
-                }
-            }
+    for(auto sibling : siblings(pmod, smod)){
+        if (sibling ->gender_ == Gender::MALE){
+            brothers.insert(sibling);
         }
     }
-    if (father_ && (pmod == PMod::ANY || pmod == PMod::PATERNAL)) {
-        for (auto child : father_->children_) {
-            if (child != this && child->gender_ == Gender::MALE) {
-                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && child->father_ == father_ && child->mother_ != mother_)) {
-                    brothers.insert(child);
-                }
-            }
-        }
-    }
-
     return brothers;
 }
 
