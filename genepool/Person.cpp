@@ -421,29 +421,36 @@ std::set<Person*> Person::sons() {
 
 std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
     std::set<Person*> uncles;
-    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
-        if (mother_ != nullptr) {
-            std::set<Person*> maternal_siblings = mother_->siblings(pmod, smod);
-            for (auto sibling : maternal_siblings) {
-                if (sibling->gender() == Gender::MALE) {
+    
+    if (pmod != PMod::MATERNAL) {
+        if (father_) {
+            for (auto sibling : father_->brothers(PMod::ANY, smod)) {
+                uncles.insert(sibling);
+            }
+            if (smod == SMod::HALF) {
+                for (auto sibling : father_->sisters(PMod::MATERNAL, SMod::HALF)) {
                     uncles.insert(sibling);
                 }
             }
         }
     }
-    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
-        if (father_ != nullptr) {
-            std::set<Person*> paternal_siblings = father_->siblings(pmod, smod);
-            for (auto sibling : paternal_siblings) {
-                if (sibling->gender() == Gender::MALE) {
+    
+    if (pmod != PMod::PATERNAL) {
+        if (mother_) {
+            for (auto sibling : mother_->brothers(PMod::ANY, smod)) {
+                uncles.insert(sibling);
+            }
+            if (smod == SMod::HALF) {
+                for (auto sibling : mother_->sisters(PMod::PATERNAL, SMod::HALF)) {
                     uncles.insert(sibling);
                 }
             }
         }
     }
-
+    
     return uncles;
 }
+
 
 
 
