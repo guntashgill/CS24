@@ -132,35 +132,23 @@ std::set<Person*> Person::aunts(PMod pmod, SMod smod) {
 std::set<Person*> Person::brothers(PMod pmod, SMod smod) {
     std::set<Person*> brothers;
 
-    if (mother_ && father_ && (pmod == PMod::ANY || pmod == PMod::MATERNAL)) {
+    if (mother_ && (pmod == PMod::ANY || pmod == PMod::MATERNAL)) {
         for (auto child : mother_->children_) {
             if (child != this && child->gender_ == Gender::MALE) {
-                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && child->mother_ == mother_ && child->father_ != father_)) {
+                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && (child->mother_ == mother_ || child->father_ == nullptr))) {
                     brothers.insert(child);
                 }
             }
         }
     }
-    if (father_ && mother_ && (pmod == PMod::ANY || pmod == PMod::PATERNAL)) {
+    if (father_ && (pmod == PMod::ANY || pmod == PMod::PATERNAL)) {
         for (auto child : father_->children_) {
             if (child != this && child->gender_ == Gender::MALE) {
-                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && child->father_ == father_ && child->mother_ != mother_)) {
+                if (smod == SMod::ANY || (smod == SMod::FULL && child->mother_ == mother_ && child->father_ == father_) || (smod == SMod::HALF && (child->father_ == father_ || child->mother_ == nullptr))) {
                     brothers.insert(child);
                 }
             }
         }
-    }
-
-    if (smod == SMod::FULL && (pmod == PMod::ANY || pmod == PMod::MATERNAL || pmod == PMod::PATERNAL)) {
-        std::set<Person*> fullBrothers;
-        for (auto sibling : siblings_) {
-            if (sibling != this && sibling->gender_ == Gender::MALE) {
-                if (sibling->mother_ == mother_ && sibling->father_ == father_) {
-                    fullBrothers.insert(sibling);
-                }
-            }
-        }
-        brothers.insert(fullBrothers.begin(), fullBrothers.end());
     }
 
     return brothers;
