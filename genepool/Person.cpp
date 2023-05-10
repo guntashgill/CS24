@@ -23,6 +23,13 @@ bool isSiblingOf(Person* sibling1, Person* sibling2, SMod smod = SMod::ANY) {
 
   return false;
 }
+Person::Person(const std::string& name, Gender gender, Person* mother, Person* father){
+   name_ = name;
+   gender_ = gender;
+   mother_ = mother; 
+   father_ = father;
+};
+
 
 Person::Person(const Person& other) {
   name_ = other.name_;
@@ -73,10 +80,6 @@ Person* Person::mother() {
 
 Person* Person::father() {
   return father_;
-}
-
-int Person::birth_year() const {
-  return birth_year_;
 }
 
 

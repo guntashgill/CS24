@@ -43,49 +43,26 @@ GenePool::GenePool(std::istream& stream) {
       continue;
     }
     std::string name = trim(fields[0]);
+    std::string gender = trim(fields[1]);
     std::string father_name = trim(fields[2]);
     std::string mother_name = trim(fields[3]);
 
-    Person* person = find(name);
-    if (person != nullptr) {
-      if (!father_name.empty()) {
-        Person* father = find(father_name);
-        if (father == nullptr) {
-          father = new Person(father_name);
-          people.insert(father);
-        }
-        person->is_parent(father);
-      }
-      if (!mother_name.empty()) {
-        Person* mother = find(mother_name);
-        if (mother == nullptr) {
-          mother = new Person(mother_name);
-          people.insert(mother);
-        }
-        person->is_parent(mother);
-      }
-    } else {
-      person = new Person(name);
-      people.insert(person);
-      if (!father_name.empty()) {
-        Person* father = find(father_name);
-        if (father == nullptr) {
-          father = new Person(father_name);
-          people.insert(father);
-        }
-        person->is_parent(father);
-      }
-      if (!mother_name.empty()) {
-        Person* mother = find(mother_name);
-        if (mother == nullptr) {
-          mother = new Person(mother_name);
-          people.insert(mother);
-        }
-        person->is_parent(mother);
-      }
+    Gender GenderEnum;
+    if (gender == "female"){
+      GenderEnum = Gender::FEMALE;
     }
+    else {
+      GenderEnum = Gender::MALE;
+    }
+
+    Person* fatherPointer = find(father_name);
+    Person* motherPointer = find(mother_name);
+
+    Person* newPerson = new Person(name, GenderEnum, motherPointer, fatherPointer);
+    peopleByName[name] = newPerson; 
   }
 }
+    
 
 GenePool::~GenePool() {
   for (Person* person : people) {
@@ -94,13 +71,17 @@ GenePool::~GenePool() {
 }
 
 std::set<Person*> GenePool::everyone() const{
-  return people;
+  std::set<Person*> setPerson;
+  for(auto somePerson : peopleByName){
+    setPerson.insert(somePerson.second);
+  }
+  return setPerson; 
 }
 
 Person* GenePool::find(const std::string& name) const{
-  for (Person* person : people) {
-    if (person->name() == name) {
-      return person;
+  for (auto person : peopleByName) {
+    if (person.first == name) {
+      return person.second;
     }
   }
   return nullptr;

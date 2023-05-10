@@ -24,6 +24,7 @@ private:
 public:
   // Constructor
   Person(const std::string& name) : name_(name), mother_(nullptr), father_(nullptr) {}
+  Person(const std::string& name, Gender gender, Person* mother, Person* father);
   
   // Copy Constructor
   Person(const Person& other);
@@ -39,7 +40,6 @@ public:
   Gender gender() const;
   Person* mother();
   Person* father();
-  int birth_year() const;
 
   // Required Relationship Functions
   std::set<Person*> ancestors(PMod pmod = PMod::ANY);
