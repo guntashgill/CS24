@@ -427,7 +427,6 @@ std::set<Person*> Person::sons() {
 
 std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
     std::set<Person*> uncles;
-    
     if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
         if (mother_ != nullptr) {
             std::set<Person*> maternal_siblings = mother_->siblings(pmod, smod);
@@ -435,18 +434,9 @@ std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
                 if (sibling->gender() == Gender::MALE) {
                     uncles.insert(sibling);
                 }
-                if (smod == SMod::HALF) {
-                    std::set<Person*> paternal_half_siblings = sibling->siblings(PMod::PATERNAL, SMod::HALF);
-                    for (auto paternal_half_sibling : paternal_half_siblings) {
-                        if (paternal_half_sibling->gender() == Gender::MALE) {
-                            uncles.insert(paternal_half_sibling);
-                        }
-                    }
-                }
             }
         }
     }
-    
     if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
         if (father_ != nullptr) {
             std::set<Person*> paternal_siblings = father_->siblings(pmod, smod);
@@ -460,7 +450,6 @@ std::set<Person*> Person::uncles(PMod pmod, SMod smod) {
 
     return uncles;
 }
-
 
 
 
