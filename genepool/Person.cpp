@@ -23,6 +23,7 @@ bool isSiblingOf(Person* sibling1, Person* sibling2, SMod smod = SMod::ANY) {
 
     return false;
 }
+
 Person::Person(const std::string& name, Gender gender, Person* mother, Person* father){
     name_ = name;
     gender_ = gender;
@@ -104,34 +105,67 @@ std::set<Person*> Person::ancestors(PMod pmod) {
 
 
 std::set<Person*> Person::aunts(PMod pmod, SMod smod) {
-    std::set<Person*> aunts;
-    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
-        if (mother_ != nullptr) {
-            std::set<Person*> maternal_siblings = mother_->siblings(pmod, smod);
+    std::set<Person*> result;
+    
+    // Check if maternal aunts are requested
+    if (pmod == PMod::MATERNAL) {
+        if (mother_) {
+            auto maternal_siblings = mother_->siblings(PMod::MATERNAL, SMod::ANY);
             for (auto sibling : maternal_siblings) {
-                if (sibling->gender() == Gender::FEMALE) {
-                    aunts.insert(sibling);
+                if (sibling != mother_) {
+                    result.insert(sibling);
                 }
             }
         }
     }
-    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
-        if (father_ != nullptr) {
-            std::set<Person*> paternal_siblings = father_->siblings(pmod, smod);
+    // Check if paternal aunts are requested
+    else if (pmod == PMod::PATERNAL) {
+        if (father_) {
+            auto paternal_siblings = father_->siblings(PMod::PATERNAL, SMod::ANY);
             for (auto sibling : paternal_siblings) {
-                if (sibling->gender() == Gender::FEMALE) {
-                    aunts.insert(sibling);
+                if (sibling != father_) {
+                    result.insert(sibling);
                 }
             }
         }
     }
-    return aunts;
+    // Check if full aunts are requested
+    else if (smod == SMod::FULL) {
+        auto full_siblings = siblings(PMod::ANY, SMod::FULL);
+        for (auto sibling : full_siblings) {
+            if (sibling->gender() == Gender::FEMALE) {
+                result.insert(sibling);
+            }
+        }
+    }
+    // Check if half aunts are requested
+    else if (smod == SMod::HALF) {
+        auto half_siblings = siblings(PMod::ANY, SMod::HALF);
+        for (auto sibling : half_siblings) {
+            if (sibling->gender() == Gender::FEMALE) {
+                result.insert(sibling);
+            }
+        }
+    }
+    // Check if any type of aunt is requested
+    else {
+        auto maternal_aunts = aunts(PMod::MATERNAL, SMod::ANY);
+        auto paternal_aunts = aunts(PMod::PATERNAL, SMod::ANY);
+        auto full_aunts = aunts(PMod::ANY, SMod::FULL);
+        auto half_aunts = aunts(PMod::ANY, SMod::HALF);
+        result.insert(maternal_aunts.begin(), maternal_aunts.end());
+        result.insert(paternal_aunts.begin(), paternal_aunts.end());
+        result.insert(full_aunts.begin(), full_aunts.end());
+        result.insert(half_aunts.begin(), half_aunts.end());
+    }
+    
+    return result;
 }
+
 
 std::set<Person*> Person::brothers(PMod pmod, SMod smod) {
     std::set<Person*> brothers;
 
-    // Check for maternal siblings
     if (mother_ && (pmod == PMod::ANY || pmod == PMod::MATERNAL)) {
         for (auto child : mother_->children_) {
             if (child != this && child->gender_ == Gender::MALE) {
@@ -141,8 +175,6 @@ std::set<Person*> Person::brothers(PMod pmod, SMod smod) {
             }
         }
     }
-
-    // Check for paternal siblings
     if (father_ && (pmod == PMod::ANY || pmod == PMod::PATERNAL)) {
         for (auto child : father_->children_) {
             if (child != this && child->gender_ == Gender::MALE) {
