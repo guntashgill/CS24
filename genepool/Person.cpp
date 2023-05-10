@@ -225,7 +225,6 @@ std::set<Person*> Person::granddaughters() {
 std::set<Person*> Person::grandfathers(PMod pmod) {
     std::set<Person*> result;
 
-    // Check if maternal grandfather is requested
     if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
         auto maternal_parents = parents(PMod::MATERNAL);
         for (auto parent : maternal_parents) {
@@ -238,7 +237,6 @@ std::set<Person*> Person::grandfathers(PMod pmod) {
         }
     }
 
-    // Check if paternal grandfather is requested
     if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
         auto paternal_parents = parents(PMod::PATERNAL);
         for (auto parent : paternal_parents) {
@@ -254,19 +252,35 @@ std::set<Person*> Person::grandfathers(PMod pmod) {
     return result;
 }
 
-
-
-
 std::set<Person*> Person::grandmothers(PMod pmod) {
     std::set<Person*> result;
-    std::set<Person*> grandparents = ancestors(pmod);
-    for (Person* grandparent : grandparents) {
-        if (grandparent->gender() == Gender::FEMALE) {
-            result.insert(grandparent);
+    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
+        auto maternal_parents = parents(PMod::MATERNAL);
+        for (auto parent : maternal_parents) {
+            auto maternal_grandmothers = parent->parents(PMod::MATERNAL);
+            for (auto grandmother : maternal_grandmothers) {
+                if (grandmother && grandmother->gender() == Gender::FEMALE) {
+                    result.insert(grandmother);
+                }
+            }
         }
     }
+
+    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
+        auto paternal_parents = parents(PMod::PATERNAL);
+        for (auto parent : paternal_parents) {
+            auto paternal_grandmothers = parent->parents(PMod::MATERNAL);
+            for (auto grandmother : paternal_grandmothers) {
+                if (grandmother && grandmother->gender() == Gender::FEMALE) {
+                    result.insert(grandmother);
+                }
+            }
+        }
+    }
+
     return result;
 }
+
 
 std::set<Person*> Person::grandparents(PMod pmod) {
     std::set<Person*> result;
