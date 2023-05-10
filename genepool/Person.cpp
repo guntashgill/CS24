@@ -284,23 +284,18 @@ std::set<Person*> Person::grandmothers(PMod pmod) {
 
 std::set<Person*> Person::grandparents(PMod pmod) {
     std::set<Person*> result;
-    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
-        auto maternal_parents = parents(PMod::MATERNAL);
-        for (auto parent : maternal_parents) {
-            auto maternal_grandparents = parent->parents(PMod::MATERNAL);
-            result.insert(maternal_grandparents.begin(), maternal_grandparents.end());
-        }
-    }
-    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
-        auto paternal_parents = parents(PMod::PATERNAL);
-        for (auto parent : paternal_parents) {
-            auto paternal_grandparents = parent->parents(PMod::PATERNAL);
-            result.insert(paternal_grandparents.begin(), paternal_grandparents.end());
-        }
-    }
+
+    // Retrieve grandfathers based on pmod
+    auto grandfathersSet = grandfathers(pmod);
+    result.insert(grandfathersSet.begin(), grandfathersSet.end());
+
+    // Retrieve grandmothers based on pmod
+    auto grandmothersSet = grandmothers(pmod);
+    result.insert(grandmothersSet.begin(), grandmothersSet.end());
 
     return result;
 }
+
 
 
 std::set<Person*> Person::grandsons() {
