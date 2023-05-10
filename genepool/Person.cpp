@@ -223,22 +223,31 @@ std::set<Person*> Person::granddaughters() {
 
 
 std::set<Person*> Person::grandfathers(PMod pmod) {
-    std::set<Person*> grandfathers;
+    std::set<Person*> result;
 
-    std::set<Person*> ancestors_set = ancestors(pmod);
-
-    for (auto it = ancestors_set.begin(); it != ancestors_set.end(); ++it) {
-        Person* ancestor = *it;
-        if (ancestor->gender() == Gender::MALE) {
-            Person* father = ancestor->father();
-            if (father != nullptr && father->gender() == Gender::MALE) {
-                grandfathers.insert(father);
+    // Check if maternal grandfather is requested
+    if (pmod == PMod::MATERNAL || pmod == PMod::ANY) {
+        auto maternal_parents = parents(PMod::MATERNAL);
+        for (auto parent : maternal_parents) {
+            if (parent->gender() == Gender::MALE) {
+                result.insert(parent);
             }
         }
     }
 
-    return grandfathers;
+    // Check if paternal grandfather is requested
+    if (pmod == PMod::PATERNAL || pmod == PMod::ANY) {
+        auto paternal_parents = parents(PMod::PATERNAL);
+        for (auto parent : paternal_parents) {
+            if (parent->gender() == Gender::MALE) {
+                result.insert(parent);
+            }
+        }
+    }
+
+    return result;
 }
+
 
 
 std::set<Person*> Person::grandmothers(PMod pmod) {
