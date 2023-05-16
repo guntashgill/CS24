@@ -1,4 +1,4 @@
-#include "Counter.h"
+#include "counter.h"
 
 Counter::Iterator::Iterator(const Counter* counter, std::size_t index)
     : counter(counter), index(index) {}
@@ -103,6 +103,7 @@ void Counter::dec(const std::string& key, int by) {
         }
     }
 }
+
 void Counter::del(const std::string& key) {
     std::size_t index = findIndex(key);
     if (index != counterSize) {
@@ -175,5 +176,6 @@ const std::string& Counter::getFilename() const {
 void Counter::setFilename(const std::string& filename) {
     this->filename = filename;
 }
+
 
 
