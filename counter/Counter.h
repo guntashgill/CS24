@@ -2,7 +2,10 @@
 #define COUNTER_H
 
 #include <cstddef>
+#include <iostream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 class Counter {
 public:
@@ -24,15 +27,10 @@ public:
 
 private:
   std::string filename;
-  std::size_t counterSize;
-  std::string* keys;
-  int* counts;
-
-  std::size_t findIndex(const std::string& key) const;
+  std::unordered_map<std::string, int> counts;
 
 public:
   Counter();
-  ~Counter();
 
   std::size_t count() const;
   int total() const;
@@ -50,6 +48,7 @@ public:
 };
 
 #endif
+
 
 
 

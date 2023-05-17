@@ -1,144 +1,55 @@
 #include "Counter.h"
 
-Counter::Counter() : counterSize(0), keys(nullptr), counts(nullptr) {}
-
-Counter::~Counter() {
-    delete[] keys;
-    delete[] counts;
-}
+Counter::Counter() {}
 
 std::size_t Counter::count() const {
-    return counterSize;
+  return counts.size();
 }
 
 int Counter::total() const {
-    int sum = 0;
-    for (std::size_t i = 0; i < counterSize; ++i) {
-        sum += counts[i];
-    }
-    return sum;
-}
-
-std::size_t Counter::findIndex(const std::string& key) const {
-    for (std::size_t i = 0; i < counterSize; ++i) {
-        if (keys[i] == key) {
-            return i;
-        }
-    }
-    return counterSize;
+  int sum = 0;
+  for (const auto& pair : counts) {
+    sum += pair.second;
+  }
+  return sum;
 }
 
 void Counter::inc(const std::string& key, int by) {
-    std::size_t index = findIndex(key);
-    if (index == counterSize) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = key;
-        newCounts[counterSize] = by;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
-        counts[index] += by;
-    }
+  counts[key] += by;
 }
 
 void Counter::dec(const std::string& key, int by) {
-    std::size_t index = findIndex(key);
-    if (index == counterSize) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = key;
-        newCounts[counterSize] = -by;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
-        counts[index] -= by;
-    }
+  counts[key] -= by;
 }
-
 
 void Counter::del(const std::string& key) {
-    std::size_t index = findIndex(key);
-    if (index != counterSize) {
-    std::string* newKeys = new std::string[counterSize - 1];
-    int* newCounts = new int[counterSize - 1];
-    for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
-        if (i != index) {
-            newKeys[j] = keys[i];
-            newCounts[j] = counts[i];
-            ++j;
-        }
-    }
-    --counterSize;
-
-    delete[] keys;
-    delete[] counts;
-
-    keys = newKeys;
-    counts = newCounts;
+  counts.erase(key);
 }
-}
+
 int Counter::get(const std::string& key) const {
-    std::size_t index = findIndex(key);
-    if (index != counterSize) {
-        return counts[index];
-    }
-    return 0; 
+  auto it = counts.find(key);
+  if (it != counts.end()) {
+    return it->second;
+  }
+  return 0;
 }
 
 void Counter::set(const std::string& key, int count) {
-    std::size_t index = findIndex(key);
-    if (index == counterSize) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = key;
-        newCounts[counterSize] = count;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
-        counts[index] = count;
-    }
+  counts[key] = count;
 }
 
 Counter::Iterator Counter::begin() const {
-    return Iterator(this, 0);
+  return Iterator(this, 0);
 }
 
 Counter::Iterator Counter::end() const {
-    return Iterator(this, counterSize);
+  return Iterator(this, counts.size());
 }
 
 const std::string& Counter::getFilename() const {
-    return filename;
+  return filename;
 }
 
 void Counter::setFilename(const std::string& filename) {
-    this->filename = filename;
+  this->filename = filename;
 }
