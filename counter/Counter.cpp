@@ -55,11 +55,25 @@ void Counter::inc(const std::string& key, int by) {
 
 void Counter::dec(const std::string& key, int by) {
     std::size_t index = findIndex(key);
-    if (index != counterSize) {
-        // Key found, decrement the count
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
+        }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = -by;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
+    } else {
         counts[index] -= by;
-        if (counts[index] <= 0) {
-            // Count reached zero or negative, remove the key-value pair
+        if (counts[index] < 0) {
             std::string* newKeys = new std::string[counterSize - 1];
             int* newCounts = new int[counterSize - 1];
             for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
@@ -77,25 +91,9 @@ void Counter::dec(const std::string& key, int by) {
             keys = newKeys;
             counts = newCounts;
         }
-    } else {
-        // Key not found, insert a new key-value pair with negative count
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = key;
-        newCounts[counterSize] = -by;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
     }
 }
+
 
 void Counter::del(const std::string& key) {
     std::size_t index = findIndex(key);

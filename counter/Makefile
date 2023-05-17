@@ -10,9 +10,8 @@ CXX      = g++
 #  $+ is a list of all the dependencies
 #  $< is the first dependency
 
-Counter: main.o Counter.o Iterator.o word-count.o
+Counter: main.o Counter.o Iterator.o
 	${CXX} $(CXXFLAGS) -o $@ $+
-
 
 main.o: main.cpp Counter.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
@@ -20,12 +19,9 @@ main.o: main.cpp Counter.h
 Counter.o: Counter.cpp Counter.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
-Iterator.o: Iterator.cpp Counter.cpp
+Iterator.o: Iterator.cpp Counter.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
-
-word-count.o: word-count.cpp Counter.h
-	${CXX} $(CXXFLAGS) -c -o $@ $<
-
 
 clean:
-	rm -f Counter main.o Counter.o Iterator.o word-count.o
+	rm -f Counter main.o Counter.o Iterator.o
+
