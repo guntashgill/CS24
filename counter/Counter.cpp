@@ -1,88 +1,138 @@
 #include "Counter.h"
 
-Counter::Counter() : size(0) {}
+Counter::Counter() : counterSize(0), keys(nullptr), counts(nullptr) {}
+
+Counter::~Counter() {
+    delete[] keys;
+    delete[] counts;
+}
 
 std::size_t Counter::count() const {
-    return size;
+    return counterSize;
 }
 
 int Counter::total() const {
     int sum = 0;
-    for (std::size_t i = 0; i < size; ++i) {
+    for (std::size_t i = 0; i < counterSize; ++i) {
         sum += counts[i];
     }
     return sum;
 }
 
-void Counter::inc(const std::string& key, int by) {
-    for (std::size_t i = 0; i < size; ++i) {
+std::size_t Counter::findIndex(const std::string& key) const {
+    for (std::size_t i = 0; i < counterSize; ++i) {
         if (keys[i] == key) {
-            counts[i] += by;
-            return;
+            return i;
         }
     }
+    return counterSize;
+}
 
-    if (size < MAX_SIZE) {
-        keys[size] = key;
-        counts[size] = by;
-        ++size;
+void Counter::inc(const std::string& key, int by) {
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
+        }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = by;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
+    } else {
+        counts[index] += by;
     }
 }
 
 void Counter::dec(const std::string& key, int by) {
-    for (std::size_t i = 0; i < size; ++i) {
-        if (keys[i] == key) {
-            counts[i] -= by;
-            if (counts[i] <= 0) {
-                --size;
-                keys[i] = keys[size];
-                counts[i] = counts[size];
-            }
-            return;
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
         }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = -by;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
+    } else {
+        counts[index] -= by;
     }
 }
+
 
 void Counter::del(const std::string& key) {
-    for (std::size_t i = 0; i < size; ++i) {
-        if (keys[i] == key) {
-            --size;
-            keys[i] = keys[size];
-            counts[i] = counts[size];
-            return;
+    std::size_t index = findIndex(key);
+    if (index != counterSize) {
+    std::string* newKeys = new std::string[counterSize - 1];
+    int* newCounts = new int[counterSize - 1];
+    for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
+        if (i != index) {
+            newKeys[j] = keys[i];
+            newCounts[j] = counts[i];
+            ++j;
         }
     }
-}
+    --counterSize;
 
+    delete[] keys;
+    delete[] counts;
+
+    keys = newKeys;
+    counts = newCounts;
+}
+}
 int Counter::get(const std::string& key) const {
-    for (std::size_t i = 0; i < size; ++i) {
-        if (keys[i] == key) {
-            return counts[i];
-        }
+    std::size_t index = findIndex(key);
+    if (index != counterSize) {
+        return counts[index];
     }
-    return 0;
+    return 0; 
 }
 
 void Counter::set(const std::string& key, int count) {
-    for (std::size_t i = 0; i < size; ++i) {
-        if (keys[i] == key) {
-        counts[i] = count;
-        return;
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
         }
-    }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = count;
+        ++counterSize;
 
-    if (size < MAX_SIZE) {
-        keys[size] = key;
-        counts[size] = count;
-        ++size;
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
+    } else {
+        counts[index] = count;
     }
 }
+
 Counter::Iterator Counter::begin() const {
     return Iterator(this, 0);
 }
 
 Counter::Iterator Counter::end() const {
-    return Iterator(this, size);
+    return Iterator(this, counterSize);
 }
 
 const std::string& Counter::getFilename() const {

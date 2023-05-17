@@ -2,7 +2,6 @@
 #define COUNTER_H
 
 #include <cstddef>
-#include <iostream>
 #include <string>
 
 class Counter {
@@ -24,15 +23,16 @@ public:
   };
 
 private:
-  static const std::size_t MAX_SIZE = 4096;
-
   std::string filename;
-  std::string keys[MAX_SIZE];
-  int counts[MAX_SIZE];
-  std::size_t size;
+  std::size_t counterSize;
+  std::string* keys;
+  int* counts;
+
+  std::size_t findIndex(const std::string& key) const;
 
 public:
   Counter();
+  ~Counter();
 
   std::size_t count() const;
   int total() const;
@@ -50,8 +50,3 @@ public:
 };
 
 #endif
-
-
-
-
-
