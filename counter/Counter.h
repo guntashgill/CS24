@@ -1,3 +1,4 @@
+
 #ifndef COUNTER_H
 #define COUNTER_H
 
@@ -23,21 +24,12 @@ public:
   };
 
 private:
-  struct Node {
-    std::string key;
-    int count;
-    Node* next;
-
-    Node(const std::string& key, int count, Node* next = nullptr)
-      : key(key), count(count), next(next) {}
-  };
-
+  std::string filename;
   std::size_t counterSize;
-  Node** buckets;
-  std::size_t numBuckets;
-
+  std::string* keys;
+  int* counts;
   std::size_t hash(const std::string& key) const;
-  Node* findNode(const std::string& key) const;
+  std::size_t findIndex(const std::string& key) const;
   void rehash();
 
 public:
@@ -55,6 +47,8 @@ public:
 
   Iterator begin() const;
   Iterator end() const;
+  const std::string& getFilename() const;
+  void setFilename(const std::string& filename);
 };
 
 #endif

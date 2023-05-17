@@ -1,19 +1,11 @@
+
 #include "Counter.h"
 
-Counter::Counter() : counterSize(0), buckets(nullptr), numBuckets(8) {
-  buckets = new Node*[numBuckets]();
-}
+Counter::Counter() : counterSize(0), keys(nullptr), counts(nullptr) {}
 
 Counter::~Counter() {
-    for (std::size_t i = 0; i < numBuckets; ++i) {
-        Node* current = buckets[i];
-        while (current) {
-            Node* next = current->next;
-            delete current;
-            current = next;
-        }
-    }
-    delete[] buckets;
+    delete[] keys;
+    delete[] counts;
 }
 
 std::size_t Counter::count() const {
@@ -22,118 +14,154 @@ std::size_t Counter::count() const {
 
 int Counter::total() const {
     int sum = 0;
-    for (std::size_t i = 0; i < numBuckets; ++i) {
-        Node* current = buckets[i];
-        while (current) {
-            sum += current->count;
-            current = current->next;
-        }
+    for (std::size_t i = 0; i < counterSize; ++i) {
+        sum += counts[i];
     }
     return sum;
 }
 
 std::size_t Counter::hash(const std::string& key) const {
-    std::size_t hash = 0;
-    for (char c :key) {
-        hash = (hash * 31) + c;
+    std::size_t hashValue = 0;
+    for (char c : key) {
+        hashValue = (hashValue * 31) + c;
     }
-    return hash % numBuckets;
+    return hashValue % counterSize;
 }
-Counter::Node* Counter::findNode(const std::string& key) const {
-    std::size_t index = hash(key);
-    Node* current = buckets[index];
-    while (current) {
-        if (current->key == key) {
-            return current;
+std::size_t Counter::findIndex(const std::string& key) const {
+    for (std::size_t i = 0; i < counterSize; ++i) {
+        if (keys[i] == key) {
+            return i;
         }
-        current = current->next;
     }
-    return nullptr;
+    return counterSize;
 }
 void Counter::rehash() {
-  std::size_t newNumBuckets = numBuckets * 2;
-  Node** newBuckets = new Node*[newNumBuckets]();
-  for (std::size_t i = 0; i < numBuckets; ++i) {
-    Node* current = buckets[i];
-    while (current) {
-      Node* next = current->next;
-      std::size_t newIndex = hash(current->key);
-      current->next = newBuckets[newIndex];
-      newBuckets[newIndex] = current;
-      current = next;
+    std::size_t newNumBuckets = counterSize * 2;
+    std::string* newKeys = new std::string[newNumBuckets];
+    int* newCounts = new int[newNumBuckets]();
+
+    for (std::size_t i = 0; i < counterSize; ++i) {
+        newKeys[i] = keys[i];
+        newCounts[i] = counts[i];
     }
-  }
-  delete[] buckets;
-  buckets = newBuckets;
-  numBuckets = newNumBuckets;
+
+    delete[] keys;
+    delete[] counts;
+
+    keys = newKeys;
+    counts = newCounts;
+    counterSize = newNumBuckets;
 }
 
+
 void Counter::inc(const std::string& key, int by) {
-    Node* node = findNode(key);
-    if (node) {
-        node->count += by;
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
+        }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = by;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
     } else {
-        std::size_t index = hash(key);
-        Node* newNode = new Node(key, by, buckets[index]);
-        buckets[index] = newNode;
-        counterSize++;
-        if (counterSize > numBuckets * 2) {
-            rehash();
-        }
+        counts[index] += by;
     }
 }
+
 void Counter::dec(const std::string& key, int by) {
-    Node* node = findNode(key);
-    if (node) {
-        node->count -= by;
-        if (node->count <= 0) {
-            del(key);
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
         }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = -by;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
+    } else {
+        counts[index] -= by;
     }
 }
+
 void Counter::del(const std::string& key) {
-    std::size_t index = hash(key);
-    Node* current = buckets[index];
-    Node* prev = nullptr;
-    while (current) {
-        if (current->key == key) {
-            if (prev) {
-            prev->next = current->next;
-            } else {
-            buckets[index] = current->next;
+    std::size_t index = findIndex(key);
+    if (index != counterSize) {
+        std::string* newKeys = new std::string[counterSize - 1];
+        int* newCounts = new int[counterSize - 1];
+        for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
+            if (i != index) {
+                newKeys[j] = keys[i];
+                newCounts[j] = counts[i];
+                ++j;
             }
-            delete current;
-            counterSize--;
-            return;
         }
-        prev = current;
-        current = current->next;
+        --counterSize;
+        delete[] keys;
+        delete[] counts;
+        keys = newKeys;
+        counts = newCounts;
     }
 }
 int Counter::get(const std::string& key) const {
-    Node* node = findNode(key);
-    if (node) {
-        return node->count;
+    std::size_t index = findIndex(key);
+    if (index != counterSize) {
+        return counts[index];
     }
-    return 0;
+    return 0; 
 }
 
 void Counter::set(const std::string& key, int count) {
-    Node* node = findNode(key);
-    if (node) {
-        node->count = count;
+    std::size_t index = findIndex(key);
+    if (index == counterSize) {
+        std::string* newKeys = new std::string[counterSize + 1];
+        int* newCounts = new int[counterSize + 1];
+        for (std::size_t i = 0; i < counterSize; ++i) {
+            newKeys[i] = keys[i];
+            newCounts[i] = counts[i];
+        }
+        newKeys[counterSize] = key;
+        newCounts[counterSize] = count;
+        ++counterSize;
+
+        delete[] keys;
+        delete[] counts;
+
+        keys = newKeys;
+        counts = newCounts;
     } else {
-        inc(key, count);
+        counts[index] = count;
     }
 }
+
 Counter::Iterator Counter::begin() const {
-    std::size_t index = 0;
-    while (index < numBuckets && !buckets[index]) {
-        index++;
-    }
-    return Iterator(this, index);
+    return Iterator(this, 0);
 }
 
 Counter::Iterator Counter::end() const {
-    return Iterator(this, numBuckets);
+    return Iterator(this, counterSize);
+}
+
+const std::string& Counter::getFilename() const {
+    return filename;
+}
+
+void Counter::setFilename(const std::string& filename) {
+    this->filename = filename;
 }

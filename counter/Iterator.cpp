@@ -1,19 +1,18 @@
-
 #include "Counter.h"
 
 Counter::Iterator::Iterator(const Counter* counter, std::size_t index)
-  : counter(counter), index(index) {}
+    : counter(counter), index(index) {}
 
 const std::string& Counter::Iterator::key() const {
-  return counter->buckets[index]->key;
+  return counter->keys[index];
 }
 
 int Counter::Iterator::value() const {
-  return counter->buckets[index]->count;
+  return counter->counts[index];
 }
 
 Counter::Iterator& Counter::Iterator::operator++() {
-  index++;
+  ++index;
   return *this;
 }
 
