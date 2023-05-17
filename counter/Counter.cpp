@@ -8,7 +8,7 @@ Counter::~Counter() {
 }
 
 std::size_t Counter::count() const {
-    return counterSize + 1;
+    return counterSize;
 }
 
 int Counter::total() const {
@@ -25,13 +25,12 @@ std::size_t Counter::findIndex(const std::string& key) const {
             return i;
         }
     }
-    return counterSize;  // Not found
+    return counterSize;
 }
 
 void Counter::inc(const std::string& key, int by) {
     std::size_t index = findIndex(key);
     if (index == counterSize) {
-        // Key not found, insert a new key-value pair
         std::string* newKeys = new std::string[counterSize + 1];
         int* newCounts = new int[counterSize + 1];
         for (std::size_t i = 0; i < counterSize; ++i) {
@@ -48,7 +47,6 @@ void Counter::inc(const std::string& key, int by) {
         keys = newKeys;
         counts = newCounts;
     } else {
-        // Key found, increment the count
         counts[index] += by;
     }
 }
@@ -73,24 +71,6 @@ void Counter::dec(const std::string& key, int by) {
         counts = newCounts;
     } else {
         counts[index] -= by;
-        if (counts[index] < 0) {
-            std::string* newKeys = new std::string[counterSize - 1];
-            int* newCounts = new int[counterSize - 1];
-            for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
-                if (i != index) {
-                    newKeys[j] = keys[i];
-                    newCounts[j] = counts[i];
-                    ++j;
-                }
-            }
-            --counterSize;
-
-            delete[] keys;
-            delete[] counts;
-
-            keys = newKeys;
-            counts = newCounts;
-        }
     }
 }
 
@@ -98,7 +78,6 @@ void Counter::dec(const std::string& key, int by) {
 void Counter::del(const std::string& key) {
     std::size_t index = findIndex(key);
     if (index != counterSize) {
-    // Key found, remove the key-value pair
     std::string* newKeys = new std::string[counterSize - 1];
     int* newCounts = new int[counterSize - 1];
     for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
@@ -120,16 +99,14 @@ void Counter::del(const std::string& key) {
 int Counter::get(const std::string& key) const {
     std::size_t index = findIndex(key);
     if (index != counterSize) {
-        // Key found, return the count
         return counts[index];
     }
-    return 0;  // Key not found, return 0
+    return 0; 
 }
 
 void Counter::set(const std::string& key, int count) {
     std::size_t index = findIndex(key);
     if (index == counterSize) {
-        // Key not found, insert a new key-value pair
         std::string* newKeys = new std::string[counterSize + 1];
         int* newCounts = new int[counterSize + 1];
         for (std::size_t i = 0; i < counterSize; ++i) {
