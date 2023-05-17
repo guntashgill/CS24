@@ -59,7 +59,7 @@ void Counter::dec(const std::string& key, int by) {
     if (index != counterSize) {
         // Key found, decrement the count
         counts[index] -= by;
-        if (counts[index] <= 0) {
+        if (counts[index] < 0) {
             // Count reached zero or negative, remove the key-value pair
             std::string* newKeys = new std::string[counterSize - 1];
             int* newCounts = new int[counterSize - 1];
