@@ -1,3 +1,4 @@
+
 #include "Counter.h"
 
 Counter::Iterator::Iterator(const Counter* counter, std::size_t index)
@@ -24,10 +25,3 @@ bool Counter::Iterator::operator!=(const Iterator& other) const {
   return !(*this == other);
 }
 
-Counter::Iterator Counter::begin() const {
-  return Iterator(this, 0);
-}
-
-Counter::Iterator Counter::end() const {
-  return Iterator(this, counterSize);
-}
