@@ -8,7 +8,7 @@ Counter::~Counter() {
 }
 
 std::size_t Counter::count() const {
-    return counterSize;
+    return counterSize + 1;
 }
 
 int Counter::total() const {
