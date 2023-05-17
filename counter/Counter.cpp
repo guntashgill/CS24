@@ -21,12 +21,13 @@ int Counter::total() const {
 }
 
 std::size_t Counter::hash(const std::string& key) const {
-    std::size_t hashValue = 0;
+    std::size_t hash = 5381;
     for (char c : key) {
-        hashValue = (hashValue * 31) + c;
+        hash = ((hash << 5) + hash) + c;
     }
-    return hashValue % counterSize;
+    return hash % counterSize;
 }
+
 std::size_t Counter::findIndex(const std::string& key) const {
     for (std::size_t i = 0; i < counterSize; ++i) {
         if (keys[i] == key) {
