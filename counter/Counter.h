@@ -24,8 +24,12 @@ public:
   };
 
 private:
+  static const std::size_t MAX_SIZE = 4096;
+
   std::string filename;
-  std::unordered_map<std::string, int> counts;
+  std::string keys[MAX_SIZE];
+  int counts[MAX_SIZE];
+  std::size_t size;
 
 public:
   Counter();
@@ -46,6 +50,7 @@ public:
 };
 
 #endif
+
 
 
 

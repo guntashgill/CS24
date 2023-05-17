@@ -5,15 +5,11 @@ Counter::Iterator::Iterator(const Counter* counter, std::size_t index)
     : counter(counter), index(index) {}
 
 const std::string& Counter::Iterator::key() const {
-  auto it = counter->counts.begin();
-  std::advance(it, index);
-  return it->first;
+  return counter->keys[index];
 }
 
 int Counter::Iterator::value() const {
-  auto it = counter->counts.begin();
-  std::advance(it, index);
-  return it->second;
+  return counter->counts[index];
 }
 
 Counter::Iterator& Counter::Iterator::operator++() {
