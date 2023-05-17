@@ -1,4 +1,3 @@
-
 #include "Counter.h"
 
 Counter::Counter() : counterSize(0), keys(nullptr), counts(nullptr) {}
@@ -59,7 +58,7 @@ void Counter::dec(const std::string& key, int by) {
     if (index != counterSize) {
         // Key found, decrement the count
         counts[index] -= by;
-        if (counts[index] < 0) {
+        if (counts[index] <= 0) {
             // Count reached zero or negative, remove the key-value pair
             std::string* newKeys = new std::string[counterSize - 1];
             int* newCounts = new int[counterSize - 1];
@@ -98,30 +97,28 @@ void Counter::dec(const std::string& key, int by) {
     }
 }
 
-
 void Counter::del(const std::string& key) {
     std::size_t index = findIndex(key);
     if (index != counterSize) {
-        // Key found, remove the key-value pair
-        std::string* newKeys = new std::string[counterSize - 1];
-        int* newCounts = new int[counterSize - 1];
-        for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
-            if (i != index) {
-                newKeys[j] = keys[i];
-                newCounts[j] = counts[i];
-                ++j;
-            }
+    // Key found, remove the key-value pair
+    std::string* newKeys = new std::string[counterSize - 1];
+    int* newCounts = new int[counterSize - 1];
+    for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
+        if (i != index) {
+            newKeys[j] = keys[i];
+            newCounts[j] = counts[i];
+            ++j;
         }
-        --counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
     }
-}
+    --counterSize;
 
+    delete[] keys;
+    delete[] counts;
+
+    keys = newKeys;
+    counts = newCounts;
+}
+}
 int Counter::get(const std::string& key) const {
     std::size_t index = findIndex(key);
     if (index != counterSize) {
@@ -154,6 +151,7 @@ void Counter::set(const std::string& key, int count) {
         counts[index] = count;
     }
 }
+
 Counter::Iterator Counter::begin() const {
     return Iterator(this, 0);
 }
@@ -169,6 +167,3 @@ const std::string& Counter::getFilename() const {
 void Counter::setFilename(const std::string& filename) {
     this->filename = filename;
 }
-
-
-
