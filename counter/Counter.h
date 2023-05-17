@@ -1,4 +1,3 @@
-
 #ifndef COUNTER_H
 #define COUNTER_H
 
@@ -28,9 +27,10 @@ private:
   std::size_t counterSize;
   std::string* keys;
   int* counts;
-  std::size_t hash(const std::string& key) const;
+  std::size_t* hashTable;
+
+  std::size_t calculateHash(const std::string& key) const;
   std::size_t findIndex(const std::string& key) const;
-  void rehash();
 
 public:
   Counter();
@@ -52,5 +52,7 @@ public:
 };
 
 #endif
+
+
 
 
