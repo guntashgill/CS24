@@ -1,3 +1,4 @@
+
 #include "Counter.h"
 
 Counter::Iterator::Iterator(const Counter* counter, std::size_t index)

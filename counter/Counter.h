@@ -32,7 +32,7 @@ private:
     std::string key;
     int count;
     HashNode* next;
-    std::size_t findIndex(const std::string& key) const;
+
     HashNode(const std::string& key, int count) : key(key), count(count), next(nullptr) {}
   };
   HashNode** hashTable;
@@ -61,5 +61,3 @@ public:
 };
 
 #endif
-
-

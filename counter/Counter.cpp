@@ -1,7 +1,7 @@
 #include "Counter.h"
 #include <iostream>
 
-Counter::Counter() : counterSize(0), hashTable(new HashNode*[100]()) {}
+Counter::Counter() : counterSize(0), hashTable(new HashNode*[100]()), keys(nullptr), counts(nullptr) {}
 
 Counter::~Counter() {
     for (std::size_t i = 0; i < 100; ++i) {
@@ -13,6 +13,8 @@ Counter::~Counter() {
         }
     }
     delete[] hashTable;
+    delete[] keys;  // Free the dynamically allocated memory
+    delete[] counts;  // Free the dynamically allocated memory
 }
 
 std::size_t Counter::count() const {
@@ -21,8 +23,12 @@ std::size_t Counter::count() const {
 
 int Counter::total() const {
     int sum = 0;
-    for (std::size_t i = 0; i < counterSize; ++i) {
-        sum += counts[i];
+    for (std::size_t i = 0; i < 100; ++i) {
+        HashNode* node = hashTable[i];
+        while (node) {
+            sum += node->count;
+            node = node->next;
+        }
     }
     return sum;
 }
@@ -49,14 +55,14 @@ Counter::HashNode* Counter::findNode(const std::string& key) const {
 
 void Counter::insertNode(const std::string& key, int count) {
     std::size_t index = hash(key);
-    HashNode* newNode = new
-    HashNode(key, count);
+    HashNode* newNode = new HashNode(key, count);
     if (hashTable[index]) {
         newNode->next = hashTable[index];
     }
     hashTable[index] = newNode;
     ++counterSize;
 }
+
 void Counter::deleteNode(const std::string& key) {
     std::size_t index = hash(key);
     HashNode* node = hashTable[index];
@@ -76,6 +82,7 @@ void Counter::deleteNode(const std::string& key) {
         node = node->next;
     }
 }
+
 void Counter::inc(const std::string& key, int by) {
     HashNode* node = findNode(key);
     if (node) {
@@ -84,6 +91,7 @@ void Counter::inc(const std::string& key, int by) {
         insertNode(key, by);
     }
 }
+
 void Counter::dec(const std::string& key, int by) {
     HashNode* node = findNode(key);
     if (node) {
@@ -95,22 +103,6 @@ void Counter::dec(const std::string& key, int by) {
 
 void Counter::del(const std::string& key) {
     deleteNode(key);
-
-    std::string* newKeys = new std::string[counterSize];
-    int* newCounts = new int[counterSize];
-    for (std::size_t i = 0, j = 0; i < counterSize; ++i) {
-        if (keys[i] != key) {
-            newKeys[j] = keys[i];
-            newCounts[j] = counts[i];
-            ++j;
-        }
-    }
-
-    delete[] keys;
-    delete[] counts;
-
-    keys = newKeys;
-    counts = newCounts;
 }
 
 int Counter::get(const std::string& key) const {
@@ -124,24 +116,10 @@ int Counter::get(const std::string& key) const {
 
 void Counter::set(const std::string& key, int count) {
     HashNode* node = findNode(key);
-    if (node == nullptr) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = key;
-        newCounts[counterSize] = count;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
+    if (node) {
         node->count = count;
+    } else {
+        insertNode(key, count);
     }
 }
 Counter::Iterator Counter::begin() const {
