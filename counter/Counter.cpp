@@ -21,12 +21,8 @@ std::size_t Counter::count() const {
 
 int Counter::total() const {
     int sum = 0;
-    for (std::size_t i = 0; i < 100; ++i) {
-        HashNode* node = hashTable[i];
-        while (node) {
-            sum += node->count;
-            node = node->next;
-        }
+    for (std::size_t i = 0; i < counterSize; ++i) {
+        sum += counts[i];
     }
     return sum;
 }
@@ -38,7 +34,6 @@ std::size_t Counter::hash(const std::string& key) const {
     }
     return hashValue % 100;
 }
-
 
 Counter::HashNode* Counter::findNode(const std::string& key) const {
     std::size_t index = hash(key);
@@ -83,48 +78,21 @@ void Counter::deleteNode(const std::string& key) {
 }
 void Counter::inc(const std::string& key, int by) {
     HashNode* node = findNode(key);
-    if (node == nullptr) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = node->key;
-        newCounts[counterSize] = node->count + by;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
+    if (node) {
         node->count += by;
+    } else {
+        insertNode(key, by);
     }
 }
 void Counter::dec(const std::string& key, int by) {
     HashNode* node = findNode(key);
-    if (node == nullptr) {
-        std::string* newKeys = new std::string[counterSize + 1];
-        int* newCounts = new int[counterSize + 1];
-        for (std::size_t i = 0; i < counterSize; ++i) {
-            newKeys[i] = keys[i];
-            newCounts[i] = counts[i];
-        }
-        newKeys[counterSize] = node->key;
-        newCounts[counterSize] = -node->count - by;
-        ++counterSize;
-
-        delete[] keys;
-        delete[] counts;
-
-        keys = newKeys;
-        counts = newCounts;
-    } else {
+    if (node) {
         node->count -= by;
+    } else {
+        insertNode(key, -by);
     }
 }
+
 void Counter::del(const std::string& key) {
     deleteNode(key);
 
@@ -176,7 +144,6 @@ void Counter::set(const std::string& key, int count) {
         node->count = count;
     }
 }
-
 Counter::Iterator Counter::begin() const {
     return Iterator(this, 0);
 }
