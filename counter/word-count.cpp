@@ -70,16 +70,16 @@ int main(int argc, char** argv) {
       // These lines are uncommented in the autograder to stress-test iteration.
       // Every 4095 words, this prints all words occurring one hundred times or more.
       // If you uncomment this, run with 2> /dev/null to de-clutter the output.
-      int ntokens = counter.get("[tokens]");
-      if((ntokens & 0x0fff) == 0) {
-        std::cerr << "tokens: " << ntokens << "; count: " << counter.count() << "; total: " << counter.total() << '\n';
-        for(auto itr = counter.begin(); itr != counter.end(); ++itr) {
-          if(itr.value() >= 100) {
-            std::cerr << itr.key() << ':' << itr.value() << ' ';
-          }
-        }
-        std::cerr << '\n';
-      }
+      // int ntokens = counter.get("[tokens]");
+      // if((ntokens & 0x0fff) == 0) {
+      //   std::cerr << "tokens: " << ntokens << "; count: " << counter.count() << "; total: " << counter.total() << '\n';
+      //   for(auto itr = counter.begin(); itr != counter.end(); ++itr) {
+      //     if(itr.value() >= 100) {
+      //       std::cerr << itr.key() << ':' << itr.value() << ' ';
+      //     }
+      //   }
+      //   std::cerr << '\n';
+      // }
     }
 
     print_results(argv[argi], counter);
@@ -87,6 +87,10 @@ int main(int argc, char** argv) {
       totals.inc(itr.key(), itr.value());
     }
   }
+
+  print_results("TOTAL", totals);
+  return 0;
+}
 
   print_results("TOTAL", totals);
   return 0;
