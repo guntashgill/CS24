@@ -147,9 +147,10 @@ void Counter::del(const std::string& key) {
 
 int Counter::get(const std::string& key) const {
     HashNode* node = findNode(key);
-    if (node != nullptr) {
+    if (node) {
         return node->count;
     }
+    return 0;
 }
 
 
