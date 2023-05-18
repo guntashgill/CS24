@@ -1,10 +1,17 @@
 #include "Counter.h"
+#include <iostream>
 
-Counter::Counter() : counterSize(0), keys(nullptr), counts(nullptr), hashTable(nullptr) {}
+Counter::Counter() : counterSize(0), hashTable(new HashNode*[100]()) {}
 
 Counter::~Counter() {
-    delete[] keys;
-    delete[] counts;
+    for (std::size_t i = 0; i < 100; ++i) {
+        HashNode* node = hashTable[i];
+        while (node) {
+            HashNode* next = node->next;
+            delete node;
+            node = next;
+        }
+    }
     delete[] hashTable;
 }
 
@@ -14,129 +21,103 @@ std::size_t Counter::count() const {
 
 int Counter::total() const {
     int sum = 0;
-    for (std::size_t i = 0; i < counterSize; ++i) {
-        sum += counts[i];
+    for (std::size_t i = 0; i < 100; ++i) {
+        HashNode* node = hashTable[i];
+        while (node) {
+            sum += node->count;
+            node = node->next;
+        }
     }
     return sum;
 }
 
-std::size_t Counter::calculateHash(const std::string& key) const {
-    std::size_t hash = 0;
+std::size_t Counter::hash(const std::string& key) const {
+    std::size_t hashValue = 0;
     for (char c : key) {
-        hash = hash * 31 + c;
+        hashValue += c;
     }
-    return hash;
+    return hashValue % 100;
 }
 
-std::size_t Counter::findIndex(const std::string& key) const {
-    std::size_t hash = calculateHash(key);
-    std::size_t index = hash % counterSize;
-    while (index != counterSize && keys[index] != key) {
-        index = (index + 1) % counterSize;
+Counter::HashNode* Counter::findNode(const std::string& key) const {
+    std::size_t index = hash(key);
+    HashNode* node = hashTable[index];
+    while (node) {
+        if (node->key == key) {
+            return node;
+        }
+        node = node->next;
     }
-    return index;
+    return nullptr;
 }
 
+void Counter::insertNode(const std::string& key, int count) {
+    std::size_t index = hash(key);
+    HashNode* newNode = new
+    HashNode(key, count);
+    if (hashTable[index]) {
+        newNode->next = hashTable[index];
+    }
+    hashTable[index] = newNode;
+    ++counterSize;
+}
+void Counter::deleteNode(const std::string& key) {
+    std::size_t index = hash(key);
+    HashNode* node = hashTable[index];
+    HashNode* prevNode = nullptr;
+    while (node) {
+        if (node->key == key) {
+            if (prevNode) {
+                prevNode->next = node->next;
+            } else {
+                hashTable[index] = node->next;
+            }
+            delete node;
+            --counterSize;
+            return;
+        }
+        prevNode = node;
+        node = node->next;
+    }
+}
 void Counter::inc(const std::string& key, int by) {
-    std::size_t index = findIndex(key);
-    if (index == counterSize) {
-        std::size_t hash = calculateHash(key);
-        index = hash % counterSize;
-        while (index != counterSize && !keys[index].empty()) {
-            index = (index + 1) % counterSize;
-        }
-
-        if (index == counterSize) {
-            std::size_t newSize = counterSize == 0 ? 1 : counterSize * 2;
-            std::string* newKeys = new std::string[newSize];
-            int* newCounts = new int[newSize];
-            std::size_t* newHashTable = new std::size_t[newSize];
-
-            for (std::size_t i = 0; i < newSize; ++i) {
-                newKeys[i] = "";
-                newCounts[i] = 0;
-                newHashTable[i] = counterSize;
-            }
-            for (std::size_t i = 0; i < counterSize; ++i) {
-                std::size_t newIndex = calculateHash(keys[i]) % newSize;
-                while (newKeys[newIndex] != "") {
-                    newIndex = (newIndex + 1) % newSize;
-                }
-                newKeys[newIndex] = keys[i];
-                newCounts[newIndex] = counts[i];
-                newHashTable[newIndex] = newIndex;
-            }
-            delete[] keys;
-            delete[] counts;
-            delete[] hashTable;
-
-            keys = newKeys;
-            counts = newCounts;
-            hashTable = newHashTable;
-
-            counterSize = newSize;
-
-            index = hash % counterSize;
-            while (index != counterSize && !keys[index].empty()) {
-                index = (index + 1) % counterSize;
-            }
-        }
-        keys[index] = key;
-        counts[index] = by;
-        hashTable[index] = index;
+    HashNode* node = findNode(key);
+    if (node) {
+        node->count += by;
     } else {
-        counts[index] += by;
+        insertNode(key, by);
     }
 }
 void Counter::dec(const std::string& key, int by) {
-    std::size_t index = findIndex(key);
-    if (index != counterSize) {
-        counts[index] -= by;
+    HashNode* node = findNode(key);
+    if (node) {
+        node->count -= by;
+    } else {
+        insertNode(key, -by);
     }
 }
 void Counter::del(const std::string& key) {
-    std::size_t index = findIndex(key);
-    if (index != counterSize) {
-        std::size_t emptyIndex = index;
-        std::size_t nextIndex = (index + 1) % counterSize;
-        while (!keys[nextIndex].empty()) {
-            std::size_t newIndex = calculateHash(keys[nextIndex]) % counterSize;
-            if (newIndex != nextIndex) {
-                keys[emptyIndex] = keys[nextIndex];
-                counts[emptyIndex] = counts[nextIndex];
-                hashTable[emptyIndex] = emptyIndex;
-                keys[nextIndex] = "";
-                counts[nextIndex] = 0;
-                emptyIndex = nextIndex;
-            }
-            nextIndex = (nextIndex + 1) % counterSize;
-        }
-        keys[emptyIndex] = "";
-        counts[emptyIndex] = 0;
-        hashTable[emptyIndex] = counterSize;
-    }
+    deleteNode(key);
 }
+
 int Counter::get(const std::string& key) const {
-    std::size_t index = findIndex(key);
-    if (index != counterSize) {
-        return counts[index];
+    HashNode* node = findNode(key);
+    if (node) {
+        return node->count;
     }
     return 0;
 }
+
 void Counter::set(const std::string& key, int count) {
-    std::size_t index = findIndex(key);
-    if (index == counterSize) {
-        inc(key, count);
+    HashNode* node = findNode(key);
+    if (node) {
+        node->count = count;
     } else {
-        counts[index] = count;
+        insertNode(key, count);
     }
 }
 Counter::Iterator Counter::begin() const {
-    std::size_t index = 0;
-    while (index < counterSize && keys[index].empty()) {
-        ++index;
-    }
-    return Iterator(this, index);
+    return Iterator(this, 0);
 }
 
 Counter::Iterator Counter::end() const {
@@ -146,6 +127,7 @@ Counter::Iterator Counter::end() const {
 const std::string& Counter::getFilename() const {
     return filename;
 }
+
 void Counter::setFilename(const std::string& filename) {
     this->filename = filename;
 }
