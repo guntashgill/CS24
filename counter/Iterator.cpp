@@ -23,3 +23,4 @@ bool Counter::Iterator::operator==(const Iterator& other) const {
 bool Counter::Iterator::operator!=(const Iterator& other) const {
   return !(*this == other);
 }
+
