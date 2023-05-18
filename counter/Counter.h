@@ -1,3 +1,4 @@
+
 #ifndef COUNTER_H
 #define COUNTER_H
 
@@ -27,8 +28,18 @@ private:
   std::size_t counterSize;
   std::string* keys;
   int* counts;
-
-  std::size_t findIndex(const std::string& key) const;
+  struct HashNode {
+    std::string key;
+    int count;
+    HashNode* next;
+    std::size_t findIndex(const std::string& key) const;
+    HashNode(const std::string& key, int count) : key(key), count(count), next(nullptr) {}
+  };
+  HashNode** hashTable;
+  std::size_t hash(const std::string& key) const;
+  HashNode* findNode(const std::string& key) const;
+  void insertNode(const std::string& key, int count);
+  void deleteNode(const std::string& key);
 
 public:
   Counter();
