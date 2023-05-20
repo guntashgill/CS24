@@ -1,40 +1,67 @@
 #include "WordList.h"
-#include <fstream>
+
+// Helper function to calculate the square of a number
+float square(float num) {
+    return num * num;
+}
 
 WordList::WordList(std::istream& stream) {
     std::string word;
-    while (std::getline(stream, word)) {
-        bool isLowercaseASCII = true;
-        for (char ch : word) {
-            if (!(ch >= 'a' && ch <= 'z')) {
-                isLowercaseASCII = false;
+    char c;
+    while (getline(stream, word)) {
+        bool valid = true;
+        for (size_t i = 0; i < word.size(); ++i) {
+            c = word[i];
+            if (!(c >= 'a' && c <= 'z')) {
+                valid = false;
                 break;
             }
         }
-        if (isLowercaseASCII)
+        if (valid) {
             mWords.push_back(word);
+        }
     }
 }
 
 Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float cutoff) const {
-    Heap heap(maxcount);
+    struct ScoredWord {
+        std::string word;
+        float score;
+    };
 
-    for (const std::string& word : mWords) {
-        if (word.length() == points.size()) {
-            float score = 0.0f;
-            for (size_t i = 0; i < points.size(); ++i) {
-                float dx = points[i].x - QWERTY[word[i] - 'a'].x;
-                float dy = points[i].y - QWERTY[word[i] - 'a'].y;
-                float distance = std::sqrt(dx * dx + dy * dy);
-                score += 1.0f / (10.0f * distance * distance + 1.0f);
+    std::vector<ScoredWord> scoredWords;
+    for (size_t i = 0; i < mWords.size(); ++i) {
+        const std::string& word = mWords[i];
+        if (word.size() != points.size()) {
+            continue;
+        }
+
+        float wordScore = 0.0f;
+        for (size_t j = 0; j < word.size(); ++j) {
+            const Point& point = QWERTY[word[j] - 'a'];
+            float dx = points[j].x - point.x;
+            float dy = points[j].y - point.y;
+            float distance = square(dx) + square(dy);
+            float letterScore = 1.0f / (10 * distance + 1);
+            wordScore += letterScore;
+        }
+        wordScore /= word.size();
+
+        if (wordScore >= cutoff) {
+            scoredWords.push_back({word, wordScore});
+            if (scoredWords.size() > maxcount) {
+                std::sort(scoredWords.begin(), scoredWords.end(), [](const ScoredWord& a, const ScoredWord& b) {
+                    return a.score > b.score;
+                });
+                scoredWords.pop_back();
             }
-            score /= static_cast<float>(points.size());
-
-            if (score >= cutoff)
-                heap.push(word, score);
         }
     }
 
-    return heap;
-}
+    Heap result(scoredWords.size());
+    for (const ScoredWord& scoredWord : scoredWords) {
+        result.push(scoredWord.word, scoredWord.score);
+    }
 
+    return result;
+}
