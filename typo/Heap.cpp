@@ -1,4 +1,4 @@
-#include "heap.h"
+#include "Heap.h"
 #include <stdexcept>
 
 Heap::Heap(size_t capacity)
