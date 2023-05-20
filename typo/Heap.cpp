@@ -90,29 +90,29 @@ Heap::Entry Heap::pushpop(const std::string& value, float score) {
     }
 
     Entry entry = mData[0];
-    if (score > entry.score) {
-        mData[0].value = value;
-        mData[0].score = score;
-        size_t parent = 0;
-        size_t child = 1;
+    mData[0].value = value;
+    mData[0].score = score;
 
-        while (child < mCount) {
-            if (child + 1 < mCount && mData[child + 1].score < mData[child].score) {
-                child++;
-            }
+    size_t parent = 0;
+    size_t child = 1;
 
-            if (mData[parent].score <= mData[child].score) {
-                break;
-            }
-
-            std::swap(mData[parent], mData[child]);
-            parent = child;
-            child = parent * 2 + 1;
+    while (child < mCount) {
+        if (child + 1 < mCount && mData[child + 1].score < mData[child].score) {
+            child++;
         }
+
+        if (mData[parent].score <= mData[child].score) {
+            break;
+        }
+
+        std::swap(mData[parent], mData[child]);
+        parent = child;
+        child = parent * 2 + 1;
     }
 
     return entry;
 }
+
 
 const Heap::Entry& Heap::top() const {
     if (mCount == 0) {
