@@ -1,60 +1,46 @@
 #include "WordList.h"
+#include "Heap.h"
 #include "Point.h"
-
-float mySqrt(float x) {
-    // Using Newton's method for square root approximation
-    float guess = x;
-    while (std::abs(guess * guess - x) > 0.001) {
-        guess = (guess + x / guess) / 2;
-    }
-    return guess;
-}
-
+#include <vector>
+#include <fstream>
+#include <cmath>
 
 WordList::WordList(std::istream& stream) {
     std::string word;
-    char line[256];
-    while (stream.getline(line, sizeof(line))) {
-        size_t i = 0;
-        while (line[i] != '\0') {
-            if (line[i] < 'a' || line[i] > 'z')
+    while (std::getline(stream, word)) {
+        bool isLowercase = true;
+        for (char c : word) {
+            if (c < 'a' || c > 'z') {
+                isLowercase = false;
                 break;
-            i++;
+            }
         }
-        if (line[i] == '\0')
-            mWords.push_back(line);
+        if (isLowercase)
+            mWords.push_back(word);
     }
 }
-
 
 Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float cutoff) const {
     Heap heap(maxcount);
     for (const std::string& word : mWords) {
         if (word.length() == points.size()) {
-            // Calculate the score for the word using the provided scoring algorithm
             float totalScore = 0.0;
             for (size_t i = 0; i < points.size(); ++i) {
-                float dx = points[i].x - QWERTY[word[i] - 'a'].x;
-                float dy = points[i].y - QWERTY[word[i] - 'a'].y;
-                float distance = mySqrt(dx * dx + dy * dy);
-                float score = 1.0 / (10.0 * distance * distance + 1.0);
+                const Point& touchPoint = points[i];
+                const Point& keyLocation = QWERTY[word[i] - 'a'];
+                float distance = std::sqrt(std::pow(touchPoint.x - keyLocation.x, 2) +
+                                           std::pow(touchPoint.y - keyLocation.y, 2));
+                float score = 1.0 / (10.0 * std::pow(distance, 2) + 1.0);
                 totalScore += score;
             }
             float wordScore = totalScore / static_cast<float>(points.size());
-
-            // Check if the word score is above the cutoff and update the heap if necessary
-            if (wordScore > cutoff) { // Adjusted the condition here
-                if (heap.count() < maxcount) {
-                    heap.push(word, wordScore);
-                } else if (wordScore > heap.top().score) {
-                    heap.pop();
-                    heap.push(word, wordScore);
-                }
-            }
+            if (wordScore >= cutoff)
+                heap.insert(wordScore, word);
         }
     }
     return heap;
 }
+
 
 
 
