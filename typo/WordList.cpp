@@ -1,22 +1,28 @@
 #include "WordList.h"
-#include "Heap.h"
 #include "Point.h"
-#include <vector>
-#include <fstream>
 #include <cmath>
+
+float mySqrt(float x) {
+    float guess = x;
+    while (std::abs(guess * guess - x) > 0.001) {
+        guess = (guess + x / guess) / 2;
+    }
+    return guess;
+}
 
 WordList::WordList(std::istream& stream) {
     std::string word;
-    while (std::getline(stream, word)) {
-        bool isLowercase = true;
-        for (char c : word) {
+    std::string line;
+    while (std::getline(stream, line)) {
+        bool isLowerCase = true;
+        for (char c : line) {
             if (c < 'a' || c > 'z') {
-                isLowercase = false;
+                isLowerCase = false;
                 break;
             }
         }
-        if (isLowercase)
-            mWords.push_back(word);
+        if (isLowerCase)
+            mWords.push_back(line);
     }
 }
 
@@ -26,30 +32,23 @@ Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float 
         if (word.length() == points.size()) {
             float totalScore = 0.0;
             for (size_t i = 0; i < points.size(); ++i) {
-                const Point& touchPoint = points[i];
-                const Point& keyLocation = QWERTY[word[i] - 'a'];
-                float distance = std::sqrt(std::pow(touchPoint.x - keyLocation.x, 2) +
-                                           std::pow(touchPoint.y - keyLocation.y, 2));
-                float score = 1.0 / (10.0 * std::pow(distance, 2) + 1.0);
+                float dx = points[i].x - QWERTY[word[i] - 'a'].x;
+                float dy = points[i].y - QWERTY[word[i] - 'a'].y;
+                float distance = mySqrt(dx * dx + dy * dy);
+                float score = 1.0 / (10.0 * distance * distance + 1.0);
                 totalScore += score;
             }
             float wordScore = totalScore / static_cast<float>(points.size());
-            if (wordScore >= cutoff) {
+
+            if (wordScore > cutoff) {
                 if (heap.count() < maxcount) {
-                    heap.push(Heap::Entry{ word, wordScore });
+                    heap.push(word, wordScore);
                 } else if (wordScore > heap.top().score) {
                     heap.pop();
-                    heap.push(Heap::Entry{ word, wordScore });
+                    heap.push(word, wordScore);
                 }
             }
         }
     }
     return heap;
 }
-
-
-
-
-
-
-
