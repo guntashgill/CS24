@@ -40,7 +40,7 @@ Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float 
             }
             float wordScore = totalScore / static_cast<float>(points.size());
 
-            if (wordScore > cutoff) {
+            if (wordScore >= cutoff) {
                 if (heap.count() < maxcount) {
                     heap.push(word, wordScore);
                 } else if (wordScore > heap.top().score) {
