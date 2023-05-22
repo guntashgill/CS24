@@ -4,7 +4,7 @@
 
 float mySqrt(float x) {
     float guess = x;
-    while (std::abs(guess * guess - x) > 0.00001) {
+    while (std::abs(guess * guess - x) >= 0.00001) {
         guess = (guess + x / guess) / 2;
     }
     return guess;
