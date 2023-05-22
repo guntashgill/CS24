@@ -1,15 +1,15 @@
 #include "WordList.h"
 #include "Point.h"
 
-// Square root function implementation
 float mySqrt(float x) {
     // Using Newton's method for square root approximation
     float guess = x;
-    while (guess * guess - x > 0.001 || x - guess * guess > 0.001) {
+    while (std::abs(guess * guess - x) > 0.001) {
         guess = (guess + x / guess) / 2;
     }
     return guess;
 }
+
 
 WordList::WordList(std::istream& stream) {
     std::string word;
@@ -25,6 +25,7 @@ WordList::WordList(std::istream& stream) {
             mWords.push_back(line);
     }
 }
+
 
 Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float cutoff) const {
     Heap heap(maxcount);
