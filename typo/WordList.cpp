@@ -4,11 +4,15 @@
 
 float mySqrt(float x) {
     float guess = x;
-    while (std::abs(guess * guess - x) >= 0.0001) {
+    float prevGuess = 0.0;
+    while (std::abs(guess - prevGuess) >= 0.00001) {
+        prevGuess = guess;
         guess = (guess + x / guess) / 2;
     }
     return guess;
 }
+
+
 
 WordList::WordList(std::istream& stream) {
     std::string word;
