@@ -23,8 +23,12 @@ WordList::WordList(std::istream& stream) {
         }
         if (isLowerCase)
             mWords.push_back(line);
+
+        if (stream.eof())  // Check for end of stream
+            break;
     }
 }
+
 
 Heap WordList::correct(const std::vector<Point>& points, size_t maxcount, float cutoff) const {
     Heap heap(maxcount);
