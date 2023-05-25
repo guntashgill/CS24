@@ -6,9 +6,12 @@
 #include <vector>
 
 class Dictionary {
+private:
   // Member Variables
+  std::vector<std::string> wordList;
 
   // Helper Functions
+  bool isValidWord(const std::string& word) const;
 
 public:
   // The create function used by the autograder:
@@ -16,7 +19,8 @@ public:
 
 public:
   // The function that does all the work:
-  std::vector<std::string> hop(const std::string& from, const std::string& to);
+  std::vector<std::string> hop(const std::string& from, const std::string& to) const;
 };
 
 #endif
+
