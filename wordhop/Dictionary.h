@@ -3,12 +3,14 @@
 
 #include <istream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 class Dictionary {
 private:
   // Member Variables
-  std::vector<std::string> wordList;
+  std::unordered_set<std::string> wordSet;
+  std::unordered_set<size_t> wordLengths;
 
   // Helper Functions
   bool isValidWord(const std::string& word) const;

@@ -8,7 +8,8 @@ Dictionary* Dictionary::create(std::istream& stream) {
   std::string word;
   while (stream >> word) {
     if (dictionary->isValidWord(word)) {
-      dictionary->wordList.push_back(word);
+      dictionary->wordSet.insert(word);
+      dictionary->wordLengths.insert(word.length());
     }
   }
   return dictionary;
@@ -31,15 +32,20 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   if (from == to) {
     return {from};
   }
+
   std::vector<std::string> wordChain;
+  wordChain.reserve(wordSet.size());
+  std::unordered_set<std::string> visitedWords;
+  visitedWords.reserve(wordSet.size());
   wordChain.push_back(from);
-  std::vector<std::string> visitedWords;
-  visitedWords.push_back(from);
+  visitedWords.insert(from);
+
   while (!wordChain.empty()) {
-    std::string currentWord = wordChain.front();
-    wordChain.erase(wordChain.begin());
-    for (const std::string& word : wordList) {
-      if (word.length() != currentWord.length()) {
+    std::string currentWord = std::move(wordChain.back());
+    wordChain.pop_back();
+
+    for (const std::string& word : wordSet) {
+      if (word.length() != currentWord.length() || visitedWords.count(word) > 0) {
         continue;
       }
 
@@ -50,9 +56,9 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         }
       }
 
-      if (diffCount == 1 && std::find(visitedWords.begin(), visitedWords.end(), word) == visitedWords.end()) {
+      if (diffCount == 1) {
         wordChain.push_back(word);
-        visitedWords.push_back(word);
+        visitedWords.insert(word);
 
         if (word == to) {
           wordChain.push_back(to);
