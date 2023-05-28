@@ -48,7 +48,7 @@ Dictionary* Dictionary::create(std::istream& stream) {
 }
 
 // Member function to find a valid chain of words
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) const {
+std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
     throw InvalidWord("The words must have the same length.");
   }
@@ -65,9 +65,9 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     wordChains.pop();
 
     std::string currWord = currChain.back();
-      if (currWord == to) {
-        return currChain;
-      }
+    if (currWord == to) {
+      return currChain;
+    }
 
     std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
     for (const std::string& neighbor : neighbors) {
@@ -81,5 +81,3 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   throw NoChain();
 }
-
-
