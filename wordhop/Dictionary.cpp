@@ -29,8 +29,6 @@ int getDistance(const std::string& word1, const std::string& word2) {
   return distance[m][n];
 }
 
-
-
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   if (word1.length() != word2.length()) {
     return false;
@@ -49,21 +47,23 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   return diffCount == 1;
 }
 
-
-// Helper function to retrieve all valid neighboring words of a given word
 std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
   std::vector<std::string> neighbors;
   for (size_t i = 0; i < word.length(); ++i) {
     std::string temp = word;
     for (char c = 'a'; c <= 'z'; ++c) {
+      if (c == word[i]) {
+        continue;  // Skip the same character
+      }
       temp[i] = c;
-      if (temp != word && wordSet.count(temp) > 0) {
+      if (wordSet.count(temp) > 0) {
         neighbors.push_back(temp);
       }
     }
   }
   return neighbors;
 }
+
 
 // Constructor implementation
 Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
@@ -142,4 +142,6 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   throw NoChain();  // No chain found
 }
+
+
 
