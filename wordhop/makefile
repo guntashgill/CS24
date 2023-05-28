@@ -18,7 +18,7 @@ test: main.o Dictionary.o
 main.o: main.cpp Dictionary.h Errors.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
-Dictionary.o: Dictionary.cpp Dictionary.h
+Dictionary.o: Dictionary.cpp Dictionary.h Errors.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
 clean:

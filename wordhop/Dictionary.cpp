@@ -1,77 +1,85 @@
 #include "Dictionary.h"
 #include "Errors.h"
-#include "Helpers.h"
+#include <unordered_set>
+#include <queue>
+#include <algorithm>
 
-#include <fstream>
+// Helper function to check if two words differ by exactly one letter
+bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
+    int diffCount = 0;
+    for (size_t i = 0; i < word1.length(); ++i) {
+        if (word1[i] != word2[i]) {
+            ++diffCount;
+            if (diffCount > 1) {
+                return false;
+            }
+        }
+    }
+    return diffCount == 1;
+}
 
+// Helper function to retrieve all valid neighboring words of a given word
+std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
+    std::vector<std::string> neighbors;
+    for (size_t i = 0; i < word.length(); ++i) {
+        std::string temp = word;
+        for (char c = 'a'; c <= 'z'; ++c) {
+            temp[i] = c;
+            if (temp != word && wordSet.count(temp) > 0) {
+                neighbors.push_back(temp);
+            }
+        }
+    }
+    return neighbors;
+}
+
+// Constructor implementation
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
+
+// Create function implementation
 Dictionary* Dictionary::create(std::istream& stream) {
-  Dictionary* dictionary = new Dictionary();
-  std::string word;
-  
-  while (stream >> word) {
-    if (isLowercaseAlpha(word)) {
-      dictionary->words.insert(word);
+    std::unordered_set<std::string> wordSet;
+    std::string word;
+    while (stream >> word) {
+        wordSet.insert(word);
     }
-  }
-  
-  return dictionary;
+    Dictionary* dictionary = new Dictionary(wordSet);
+    return dictionary;
 }
 
+// Member function to find a valid chain of words
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) const {
-  if (!isLowercaseAlpha(from) || !isLowercaseAlpha(to)) {
-    throw InvalidWord("Invalid word");
-  }
-
-  if (from.length() != to.length()) {
-    throw NoChain();
-  }
-  
-  std::vector<std::string> chain;
-  chain.push_back(from);
-  
-  if (from == to) {
-    return chain;
-  }
-  
-  std::unordered_set<std::string> visited;
-  visited.insert(from);
-  
-  std::unordered_map<std::string, std::string> parent;
-  parent[from] = "";
-
-  while (!chain.empty()) {
-    std::string current = chain.front();
-    chain.erase(chain.begin());
-    
-    for (std::size_t i = 0; i < current.length(); i++) {
-      std::string word = current;
-      
-      for (char c = 'a'; c <= 'z'; c++) {
-        if (c == current[i]) {
-          continue;
-        }
-        
-        word[i] = c;
-        
-        if (word == to) {
-          chain.push_back(word);
-          
-          while (!parent[word].empty()) {
-            chain.insert(chain.begin(), parent[word]);
-            word = parent[word];
-          }
-          
-          return chain;
-        }
-        
-        if (words.find(word) != words.end() && visited.find(word) == visited.end()) {
-          visited.insert(word);
-          chain.push_back(word);
-          parent[word] = current;
-        }
-      }
+    if (from.length() != to.length()) {
+        throw InvalidWord("The words must have the same length.");
     }
-  }
-  
-  throw NoChain();
+
+    if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
+        throw InvalidWord("Invalid source or destination word.");
+    }
+
+    std::queue<std::vector<std::string>> wordChains;
+    wordChains.push({ from });
+
+    while (!wordChains.empty()) {
+        std::vector<std::string> currChain = wordChains.front();
+        wordChains.pop();
+
+        std::string currWord = currChain.back();
+        if (currWord == to) {
+            return currChain;
+        }
+
+        std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
+        for (const std::string& neighbor : neighbors) {
+            if (std::find(currChain.begin(), currChain.end(), neighbor) == currChain.end()) {
+                std::vector<std::string> newChain = currChain;
+                newChain.push_back(neighbor);
+                wordChains.push(newChain);
+            }
+        }
+    }
+
+    throw NoChain();
 }
+
+
