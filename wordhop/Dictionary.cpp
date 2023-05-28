@@ -84,96 +84,58 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid source or destination word.");
   }
 
-  std::unordered_set<std::string> visitedFrom;   // Track visited words from 'from' side
-  std::unordered_set<std::string> visitedTo;     // Track visited words from 'to' side
-  std::unordered_map<std::string, std::string> fromParents;  // Track word parents from 'from' side
-  std::unordered_map<std::string, std::string> toParents;    // Track word parents from 'to' side
+  if (from == to) {
+    return { from };  // Already at the destination
+  }
 
-  std::queue<std::string> fromQueue;   // Queue for 'from' side exploration
-  std::queue<std::string> toQueue;     // Queue for 'to' side exploration
+  std::queue<std::vector<std::string>> wordChainsFrom;
+  std::queue<std::vector<std::string>> wordChainsTo;
+  wordChainsFrom.push({ from });
+  wordChainsTo.push({ to });
 
+  std::unordered_set<std::string> visitedFrom;
+  std::unordered_set<std::string> visitedTo;
   visitedFrom.insert(from);
   visitedTo.insert(to);
-  fromQueue.push(from);
-  toQueue.push(to);
 
-  std::string intersectWord;  // Common word where the two searches meet
+  while (!wordChainsFrom.empty() && !wordChainsTo.empty()) {
+    std::vector<std::string> currChainFrom = wordChainsFrom.front();
+    std::vector<std::string> currChainTo = wordChainsTo.front();
+    wordChainsFrom.pop();
+    wordChainsTo.pop();
 
-  while (!fromQueue.empty() && !toQueue.empty()) {
-    // Explore from 'from' side
-    if (!fromQueue.empty()) {
-      std::string currWord = fromQueue.front();
-      fromQueue.pop();
+    std::string currWordFrom = currChainFrom.back();
+    std::string currWordTo = currChainTo.back();
 
-      std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
-      for (const std::string& neighbor : neighbors) {
-        if (visitedFrom.count(neighbor) == 0) {
-          visitedFrom.insert(neighbor);
-          fromParents[neighbor] = currWord;
-          fromQueue.push(neighbor);
+    // Check for intersection
+    if (visitedTo.count(currWordFrom) > 0) {
+      currChainFrom.insert(currChainFrom.end(), currChainTo.rbegin(), currChainTo.rend());
+      return currChainFrom;  // Found a chain from "from" to "to"
+    }
 
-          if (visitedTo.count(neighbor) > 0) {
-            intersectWord = neighbor;
-            break;
-          }
-        }
-      }
-
-      if (!intersectWord.empty()) {
-        break;
+    // Expand from "from" side
+    std::vector<std::string> neighborsFrom = getNeighbors(currWordFrom, wordSet);
+    for (const std::string& neighbor : neighborsFrom) {
+      if (visitedFrom.count(neighbor) == 0) {
+        std::vector<std::string> newChainFrom = currChainFrom;
+        newChainFrom.push_back(neighbor);
+        wordChainsFrom.push(newChainFrom);
+        visitedFrom.insert(neighbor);
       }
     }
 
-    // Explore from 'to' side
-    if (!toQueue.empty()) {
-      std::string currWord = toQueue.front();
-      toQueue.pop();
-
-      std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
-      for (const std::string& neighbor : neighbors) {
-        if (visitedTo.count(neighbor) == 0) {
-          visitedTo.insert(neighbor);
-          toParents[neighbor] = currWord;
-          toQueue.push(neighbor);
-
-          if (visitedFrom.count(neighbor) > 0) {
-            intersectWord = neighbor;
-            break;
-          }
-        }
-      }
-
-      if (!intersectWord.empty()) {
-        break;
+    // Expand from "to" side
+    std::vector<std::string> neighborsTo = getNeighbors(currWordTo, wordSet);
+    for (const std::string& neighbor : neighborsTo) {
+      if (visitedTo.count(neighbor) == 0) {
+        std::vector<std::string> newChainTo = currChainTo;
+        newChainTo.push_back(neighbor);
+        wordChainsTo.push(newChainTo);
+        visitedTo.insert(neighbor);
       }
     }
   }
 
-  if (intersectWord.empty()) {
-    throw NoChain();
-  }
-
-  // Construct the word chain from 'from' side to the intersect word
-  std::vector<std::string> chainFrom;
-  std::string currWord = intersectWord;
-  while (currWord != from) {
-    chainFrom.push_back(currWord);
-    currWord = fromParents[currWord];
-  }
-  chainFrom.push_back(from);
-  std::reverse(chainFrom.begin(), chainFrom.end());
-
-  // Construct the word chain from 'to' side to the intersect word
-  std::vector<std::string> chainTo;
-  currWord = intersectWord;
-  while (currWord != to) {
-    chainTo.push_back(currWord);
-    currWord = toParents[currWord];
-  }
-  chainTo.push_back(to);
-
-  // Concatenate the 'from' and 'to' chains to form the complete word chain
-  chainFrom.insert(chainFrom.end(), chainTo.begin(), chainTo.end());
-
-  return chainFrom;
+  throw NoChain();  // No chain found
 }
+
