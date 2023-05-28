@@ -1,9 +1,9 @@
-
 #include "Dictionary.h"
 #include "Errors.h"
 
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 int main(int argc, char** argv) {
   if (argc != 2) {
@@ -11,15 +11,14 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  std::ifstream file(argv[1]);
+  if (file.fail()) {
+    std::cerr << "Could not open file: " << argv[1] << '\n';
+    return 1;
+  }
+
   Dictionary* dictionary = nullptr;
-
   try {
-    std::ifstream file(argv[1]);
-    if (file.fail()) {
-      std::cerr << "Could not open file: " << argv[1] << '\n';
-      return 1;
-    }
-
     dictionary = Dictionary::create(file);
   }
   catch (const std::exception& e) {
@@ -47,14 +46,15 @@ int main(int argc, char** argv) {
         std::cout << " - " << word << '\n';
       }
     }
-    catch (const std::runtime_error& e) {
-      std::cout << e.what() << '\n';
-    }
     catch (const InvalidWord& e) {
       std::cout << "Invalid word: " << e.what() << '\n';
     }
+    catch (const NoChain&) {
+      std::cout << "No chain found.\n";
+    }
     catch (const std::exception& e) {
       std::cerr << "ERROR: " << e.what() << '\n';
+      break;
     }
   }
 

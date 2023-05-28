@@ -124,6 +124,12 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         newChainFrom.push_back(neighbor);
         wordChainsFrom.push(newChainFrom);
         visitedFrom.insert(neighbor);
+
+        // Check for intersection after adding a new word to the "from" side
+        if (visitedTo.count(neighbor) > 0) {
+          currChainTo.insert(currChainTo.end(), newChainFrom.rbegin(), newChainFrom.rend());
+          return currChainTo;  // Found a chain from "from" to "to"
+        }
       }
     }
 
@@ -135,10 +141,15 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         newChainTo.push_back(neighbor);
         wordChainsTo.push(newChainTo);
         visitedTo.insert(neighbor);
+
+        // Check for intersection after adding a new word to the "to" side
+        if (visitedFrom.count(neighbor) > 0) {
+          currChainFrom.insert(currChainFrom.end(), newChainTo.rbegin(), newChainTo.rend());
+          return currChainFrom;  // Found a chain from "from" to "to"
+        }
       }
     }
   }
 
   throw NoChain();  // No chain found
 }
-
