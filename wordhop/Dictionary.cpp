@@ -4,12 +4,10 @@
 #include <queue>
 #include <algorithm>
 
-// Helper function to calculate the Levenshtein distance between two words
 int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
   int n = word2.length();
 
-  // Create a 2D distance matrix
   std::vector<std::vector<int>> distance(m + 1, std::vector<int>(n + 1));
 
   // Initialize the first row and column of the matrix
@@ -34,6 +32,10 @@ int getDistance(const std::string& word1, const std::string& word2) {
 
 
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
+  if (word1.length() != word2.length()) {
+    return false;
+  }
+
   int diffCount = 0;
   for (size_t i = 0; i < word1.length(); ++i) {
     if (word1[i] != word2[i]) {
@@ -43,8 +45,10 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
       }
     }
   }
+
   return diffCount == 1;
 }
+
 
 // Helper function to retrieve all valid neighboring words of a given word
 std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
