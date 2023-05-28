@@ -12,18 +12,14 @@ CXX      = g++
 
 all: test
 
-
-
 test: main.o Dictionary.o
 	${CXX} $(CXXFLAGS) -o $@ $+
 
-
-main.o: main.cpp Dictionary.h
+main.o: main.cpp Dictionary.h Errors.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
 Dictionary.o: Dictionary.cpp Dictionary.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
-
 
 clean:
 	rm -f test main.o Dictionary.o
