@@ -38,14 +38,12 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   for (size_t i = 0; i < word1.length(); ++i) {
     if (word1[i] != word2[i]) {
       ++diffCount;
-      if (diffCount > 1) {
-        return false;
-      }
     }
   }
 
   return diffCount == 1;
 }
+
 
 std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
   std::vector<std::string> neighbors;
