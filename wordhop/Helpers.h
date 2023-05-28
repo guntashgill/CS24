@@ -1,8 +1,6 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include <string>
-
-bool isLowercaseAlpha(const std::string& word);
+// Space to add some helper classes, if you need them.
 
 #endif
