@@ -84,30 +84,96 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid source or destination word.");
   }
 
-  std::queue<std::vector<std::string>> wordChains;
-  std::unordered_set<std::string> visited;  // Track visited words
-  wordChains.push({from});
-  visited.insert(from);
+  std::unordered_set<std::string> visitedFrom;   // Track visited words from 'from' side
+  std::unordered_set<std::string> visitedTo;     // Track visited words from 'to' side
+  std::unordered_map<std::string, std::string> fromParents;  // Track word parents from 'from' side
+  std::unordered_map<std::string, std::string> toParents;    // Track word parents from 'to' side
 
-  while (!wordChains.empty()) {
-    std::vector<std::string> currChain = wordChains.front();
-    wordChains.pop();
+  std::queue<std::string> fromQueue;   // Queue for 'from' side exploration
+  std::queue<std::string> toQueue;     // Queue for 'to' side exploration
 
-    std::string currWord = currChain.back();
-    if (currWord == to) {
-      return currChain;
+  visitedFrom.insert(from);
+  visitedTo.insert(to);
+  fromQueue.push(from);
+  toQueue.push(to);
+
+  std::string intersectWord;  // Common word where the two searches meet
+
+  while (!fromQueue.empty() && !toQueue.empty()) {
+    // Explore from 'from' side
+    if (!fromQueue.empty()) {
+      std::string currWord = fromQueue.front();
+      fromQueue.pop();
+
+      std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
+      for (const std::string& neighbor : neighbors) {
+        if (visitedFrom.count(neighbor) == 0) {
+          visitedFrom.insert(neighbor);
+          fromParents[neighbor] = currWord;
+          fromQueue.push(neighbor);
+
+          if (visitedTo.count(neighbor) > 0) {
+            intersectWord = neighbor;
+            break;
+          }
+        }
+      }
+
+      if (!intersectWord.empty()) {
+        break;
+      }
     }
 
-    std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
-    for (const std::string& neighbor : neighbors) {
-      if (visited.count(neighbor) == 0) {  // Check if word has not been visited
-        visited.insert(neighbor);  // Mark word as visited
-        std::vector<std::string> newChain = currChain;
-        newChain.push_back(neighbor);
-        wordChains.push(newChain);
+    // Explore from 'to' side
+    if (!toQueue.empty()) {
+      std::string currWord = toQueue.front();
+      toQueue.pop();
+
+      std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
+      for (const std::string& neighbor : neighbors) {
+        if (visitedTo.count(neighbor) == 0) {
+          visitedTo.insert(neighbor);
+          toParents[neighbor] = currWord;
+          toQueue.push(neighbor);
+
+          if (visitedFrom.count(neighbor) > 0) {
+            intersectWord = neighbor;
+            break;
+          }
+        }
+      }
+
+      if (!intersectWord.empty()) {
+        break;
       }
     }
   }
 
-  throw NoChain();
+  if (intersectWord.empty()) {
+    throw NoChain();
+  }
+
+  // Construct the word chain from 'from' side to the intersect word
+  std::vector<std::string> chainFrom;
+  std::string currWord = intersectWord;
+  while (currWord != from) {
+    chainFrom.push_back(currWord);
+    currWord = fromParents[currWord];
+  }
+  chainFrom.push_back(from);
+  std::reverse(chainFrom.begin(), chainFrom.end());
+
+  // Construct the word chain from 'to' side to the intersect word
+  std::vector<std::string> chainTo;
+  currWord = intersectWord;
+  while (currWord != to) {
+    chainTo.push_back(currWord);
+    currWord = toParents[currWord];
+  }
+  chainTo.push_back(to);
+
+  // Concatenate the 'from' and 'to' chains to form the complete word chain
+  chainFrom.insert(chainFrom.end(), chainTo.begin(), chainTo.end());
+
+  return chainFrom;
 }
