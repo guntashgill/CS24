@@ -56,13 +56,14 @@ std::vector<std::string> getNeighbors(const std::string& word, const std::unorde
         continue;  // Skip the same character
       }
       temp[i] = c;
-      if (wordSet.count(temp) > 0) {
+      if (wordSet.count(temp) > 0 && isOneLetterDifference(word, temp)) {
         neighbors.push_back(temp);
       }
     }
   }
   return neighbors;
 }
+
 
 
 // Constructor implementation
@@ -92,33 +93,59 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     return { from };  // Already at the destination
   }
 
-  std::queue<std::vector<std::string>> wordChains;
-  wordChains.push({ from });
+  std::queue<std::vector<std::string>> wordChainsFrom;
+  std::queue<std::vector<std::string>> wordChainsTo;
+  wordChainsFrom.push({ from });
+  wordChainsTo.push({ to });
 
-  std::unordered_set<std::string> visited;
-  visited.insert(from);
+  std::unordered_set<std::string> visitedFrom;
+  std::unordered_set<std::string> visitedTo;
+  visitedFrom.insert(from);
+  visitedTo.insert(to);
 
-  while (!wordChains.empty()) {
-    std::vector<std::string> currChain = wordChains.front();
-    wordChains.pop();
+  while (!wordChainsFrom.empty() && !wordChainsTo.empty()) {
+    std::vector<std::string> currChainFrom = wordChainsFrom.front();
+    std::vector<std::string> currChainTo = wordChainsTo.front();
+    wordChainsFrom.pop();
+    wordChainsTo.pop();
 
-    std::string currWord = currChain.back();
+    std::string currWordFrom = currChainFrom.back();
+    std::string currWordTo = currChainTo.back();
 
-    if (currWord == to) {
-      return currChain;  // Found a chain from "from" to "to"
+    // Check for intersection
+    if (visitedTo.count(currWordFrom) > 0) {
+      currChainFrom.insert(currChainFrom.end(), currChainTo.rbegin(), currChainTo.rend());
+      return currChainFrom;  // Found a chain from "from" to "to"
     }
 
-    std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
-    for (const std::string& neighbor : neighbors) {
-      if (visited.count(neighbor) == 0) {
-        std::vector<std::string> newChain = currChain;
-        newChain.push_back(neighbor);
-        wordChains.push(newChain);
-        visited.insert(neighbor);
+    // Expand from "from" side
+    std::vector<std::string> neighborsFrom = getNeighbors(currWordFrom, wordSet);
+    for (const std::string& neighbor : neighborsFrom) {
+      if (visitedFrom.count(neighbor) == 0) {
+        std::vector<std::string> newChainFrom = currChainFrom;
+        newChainFrom.push_back(neighbor);
+        wordChainsFrom.push(newChainFrom);
+        visitedFrom.insert(neighbor);
+      }
+    }
+
+    // Expand from "to" side
+    std::vector<std::string> neighborsTo = getNeighbors(currWordTo, wordSet);
+    for (const std::string& neighbor : neighborsTo) {
+      if (visitedTo.count(neighbor) == 0) {
+        std::vector<std::string> newChainTo = currChainTo;
+        newChainTo.push_back(neighbor);
+        wordChainsTo.push(newChainTo);
+        visitedTo.insert(neighbor);
+
+        // Check for intersection after adding a new word to the "to" side
+        if (visitedFrom.count(neighbor) > 0) {
+          currChainFrom.insert(currChainFrom.end(), newChainTo.rbegin(), newChainTo.rend());
+          return currChainFrom;  // Found a chain from "from" to "to"
+        }
       }
     }
   }
 
   throw NoChain();  // No chain found
 }
-
