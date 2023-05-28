@@ -4,14 +4,14 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
 
 class Dictionary {
 private:
   // Member Variables
-  std::vector<std::string> wordList;
+  std::unordered_set<std::string> words;
 
-  // Helper Functions
-  bool isValidWord(const std::string& word) const;
 
 public:
   // The create function used by the autograder:
