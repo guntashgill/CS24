@@ -5,6 +5,33 @@
 #include <algorithm>
 
 // Helper function to check if two words differ by exactly one letter
+// Helper function to calculate the Levenshtein distance between two words
+int getDistance(const std::string& word1, const std::string& word2) {
+  int m = word1.length();
+  int n = word2.length();
+
+  // Create a 2D distance matrix
+  std::vector<std::vector<int>> distance(m + 1, std::vector<int>(n + 1));
+
+  // Initialize the first row and column of the matrix
+  for (int i = 0; i <= m; ++i) {
+    distance[i][0] = i;
+  }
+  for (int j = 0; j <= n; ++j) {
+    distance[0][j] = j;
+  }
+
+  // Calculate the minimum edit distance
+  for (int i = 1; i <= m; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      int cost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
+      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + cost});
+    }
+  }
+
+  return distance[m][n];
+}
+
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   int diffCount = 0;
   for (size_t i = 0; i < word1.length(); ++i) {
@@ -47,7 +74,6 @@ Dictionary* Dictionary::create(std::istream& stream) {
   return dictionary;
 }
 
-// Member function to find a valid chain of words
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
     throw InvalidWord("The words must have the same length.");
@@ -57,29 +83,49 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid source or destination word.");
   }
 
-  std::queue<std::vector<std::string>> wordChains;
-  wordChains.push({ from });
+  std::queue<std::pair<int, std::string>> wordChains;
+  wordChains.push({0, from});
 
   while (!wordChains.empty()) {
-    std::vector<std::string> currChain = wordChains.front();
+    std::pair<int, std::string> currChain = wordChains.front();
     wordChains.pop();
 
-    std::string currWord = currChain.back();
+    int currLength = currChain.first;
+    std::string currWord = currChain.second;
+
     if (currWord == to) {
-      return currChain;
+      std::vector<std::string> chain;
+      std::string word = currWord;
+
+      while (currLength > 0) {
+        chain.push_back(word);
+
+        // Find a neighbor with length one less than the current length
+        std::vector<std::string> neighbors = getNeighbors(word, wordSet);
+        for (const std::string& neighbor : neighbors) {
+          if (getDistance(neighbor, to) == currLength - 1) {
+            word = neighbor;
+            currLength--;
+            break;
+          }
+        }
+      }
+
+      chain.push_back(from);
+      std::reverse(chain.begin(), chain.end());
+      return chain;
     }
 
     std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
     for (const std::string& neighbor : neighbors) {
-      if (std::find(currChain.begin(), currChain.end(), neighbor) == currChain.end()) {
-        std::vector<std::string> newChain = currChain;
-        newChain.push_back(neighbor);
-        wordChains.push(newChain);
+      if (std::find(wordSet.begin(), wordSet.end(), neighbor) != wordSet.end()) {
+        wordChains.push({currLength + 1, neighbor});
       }
     }
   }
 
   throw std::runtime_error("No chain.");
 }
+
 
 
