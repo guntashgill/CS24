@@ -84,49 +84,30 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid source or destination word.");
   }
 
-  std::queue<std::pair<int, std::string>> wordChains;
-  wordChains.push({0, from});
+  std::queue<std::vector<std::string>> wordChains;
+  std::unordered_set<std::string> visited;  // Track visited words
+  wordChains.push({from});
+  visited.insert(from);
 
   while (!wordChains.empty()) {
-    std::pair<int, std::string> currChain = wordChains.front();
+    std::vector<std::string> currChain = wordChains.front();
     wordChains.pop();
 
-    int currLength = currChain.first;
-    std::string currWord = currChain.second;
-
+    std::string currWord = currChain.back();
     if (currWord == to) {
-      std::vector<std::string> chain;
-      std::string word = currWord;
-
-      while (currLength > 0) {
-        chain.push_back(word);
-
-        // Find a neighbor with length one less than the current length
-        std::vector<std::string> neighbors = getNeighbors(word, wordSet);
-        for (const std::string& neighbor : neighbors) {
-          if (getDistance(neighbor, to) == currLength - 1) {
-            word = neighbor;
-            currLength--;
-            break;
-          }
-        }
-      }
-
-      chain.push_back(from);
-      std::reverse(chain.begin(), chain.end());
-      return chain;
+      return currChain;
     }
 
     std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
     for (const std::string& neighbor : neighbors) {
-      if (std::find(wordSet.begin(), wordSet.end(), neighbor) != wordSet.end()) {
-        wordChains.push({currLength + 1, neighbor});
+      if (visited.count(neighbor) == 0) {  // Check if word has not been visited
+        visited.insert(neighbor);  // Mark word as visited
+        std::vector<std::string> newChain = currChain;
+        newChain.push_back(neighbor);
+        wordChains.push(newChain);
       }
     }
   }
 
-  throw std::runtime_error("No chain.");
+  throw NoChain();
 }
-
-
-
