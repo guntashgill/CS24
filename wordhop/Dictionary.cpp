@@ -48,7 +48,7 @@ Dictionary* Dictionary::create(std::istream& stream) {
 }
 
 // Member function to find a valid chain of words
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
+std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) const {
   if (from.length() != to.length()) {
     throw InvalidWord("The words must have the same length.");
   }

@@ -20,7 +20,7 @@ public:
 
 public:
   // The function that does all the work:
-  std::vector<std::string> hop(const std::string& from, const std::string& to);
+  std::vector<std::string> hop(const std::string& from, const std::string& to) const;
 };
 
 #endif
