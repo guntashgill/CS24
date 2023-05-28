@@ -4,7 +4,6 @@
 #include <queue>
 #include <algorithm>
 
-// Helper function to check if two words differ by exactly one letter
 // Helper function to calculate the Levenshtein distance between two words
 int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
@@ -24,13 +23,15 @@ int getDistance(const std::string& word1, const std::string& word2) {
   // Calculate the minimum edit distance
   for (int i = 1; i <= m; ++i) {
     for (int j = 1; j <= n; ++j) {
-      int cost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
-      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + cost});
+      int substitutionCost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
+      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost});
     }
   }
 
   return distance[m][n];
 }
+
+
 
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   int diffCount = 0;
