@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
+#include <unordered_map>
 
 int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
@@ -44,27 +45,40 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   return diffCount == 1;
 }
 
-std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
-  std::vector<std::string> neighbors;
-  for (size_t i = 0; i < word.length(); ++i) {
-    std::string temp = word;
-    for (char c = 'a'; c <= 'z'; ++c) {
-      if (c == word[i]) {
-        continue;  // Skip the same character
+std::size_t Dictionary::hashFunc(Node* node) {
+  std::hash<std::string> hasher;
+  return hasher(node->word);
+}
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
+  // Create massive hash table
+  int maxSize = words.size() * 2;
+  hashTable.reserve(maxSize);
+
+  // Initialize unordered map of maps
+  maps.resize(32);  // Assuming you have 32 different lengths of words
+
+  for (const auto& word : words) {
+    int wordLength = word.length();
+    maps[wordLength - 1][word] = new Node(word);
+  }
+
+  // Hashing all the values
+  for (auto& map : maps) {
+    for (auto& [word, node] : map) {
+      // Compare with other elements in the same map
+      for (auto it = std::next(map.find(word)); it != map.end(); ++it) {
+        if (isOneLetterDifference(word, it->first)) {
+          node->related.insert(it->second);
+          it->second->related.insert(node);
+        }
       }
-      temp[i] = c;
-      if (wordSet.count(temp) > 0 && isOneLetterDifference(word, temp)) {
-        neighbors.push_back(temp);
-      }
+
+      // Hash the Node* and remove it from the map
+      hashTable[hashFunc(node)] = node;
+      map.erase(word);
     }
   }
-  return neighbors;
 }
-
-// Constructor implementation
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
-
-// Create function implementation
 Dictionary* Dictionary::create(std::istream& stream) {
   std::unordered_set<std::string> wordSet;
   std::string word;
@@ -106,46 +120,39 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     std::string currWordFrom = currChainFrom.back();
     std::string currWordTo = currChainTo.back();
 
-    // Check for intersection
-    if (visitedFrom.count(currWordTo) > 0) {
-      currChainTo.insert(currChainTo.end(), currChainFrom.rbegin(), currChainFrom.rend());
-      return currChainTo;  // Found a chain from "from" to "to"
+    if (visitedTo.count(currWordFrom) > 0) {
+      std::reverse(currChainFrom.begin(), currChainFrom.end());
+      currChainFrom.insert(currChainFrom.end(), currChainTo.begin(), currChainTo.end());
+      return currChainFrom;
     }
 
-    // Expand from "from" side
-    std::vector<std::string> neighborsFrom = getNeighbors(currWordFrom, wordSet);
-    for (const std::string& neighbor : neighborsFrom) {
-      if (visitedFrom.count(neighbor) == 0) {
-        std::vector<std::string> newChainFrom = currChainFrom;
-        newChainFrom.push_back(neighbor);
-        wordChainsFrom.push(newChainFrom);
-        visitedFrom.insert(neighbor);
+    if (visitedFrom.count(currWordTo) > 0) {
+      std::reverse(currChainTo.begin(), currChainTo.end());
+      currChainTo.insert(currChainTo.end(), currChainFrom.begin(), currChainFrom.end());
+      return currChainTo;
+    }
 
-        // Check for intersection after adding a new word to the "from" side
-        if (visitedTo.count(neighbor) > 0) {
-          currChainTo.insert(currChainTo.end(), newChainFrom.rbegin(), newChainFrom.rend());
-          return currChainTo;  // Found a chain from "from" to "to"
-        }
+    std::unordered_set<Node*>& relatedFrom = hashTable[hashFunc(maps[currWordFrom.length() - 1][currWordFrom])]->related;
+    std::unordered_set<Node*>& relatedTo = hashTable[hashFunc(maps[currWordTo.length() - 1][currWordTo])]->related;
+
+    for (Node* relatedNode : relatedFrom) {
+      if (visitedFrom.count(relatedNode->word) == 0) {
+        visitedFrom.insert(relatedNode->word);
+        std::vector<std::string> newChainFrom = currChainFrom;
+        newChainFrom.push_back(relatedNode->word);
+        wordChainsFrom.push(newChainFrom);
       }
     }
 
-    // Expand from "to" side
-    std::vector<std::string> neighborsTo = getNeighbors(currWordTo, wordSet);
-    for (const std::string& neighbor : neighborsTo) {
-      if (visitedTo.count(neighbor) == 0) {
+    for (Node* relatedNode : relatedTo) {
+      if (visitedTo.count(relatedNode->word) == 0) {
+        visitedTo.insert(relatedNode->word);
         std::vector<std::string> newChainTo = currChainTo;
-        newChainTo.push_back(neighbor);
+        newChainTo.push_back(relatedNode->word);
         wordChainsTo.push(newChainTo);
-        visitedTo.insert(neighbor);
-
-        // Check for intersection after adding a new word to the "to" side
-        if (visitedFrom.count(neighbor) > 0) {
-          currChainFrom.insert(currChainFrom.end(), newChainTo.rbegin(), newChainTo.rend());
-          return currChainFrom;  // Found a chain from "from" to "to"
-        }
       }
     }
   }
 
-  throw NoChain();  // No chain found
+  throw NoChain();
 }

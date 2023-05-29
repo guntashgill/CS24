@@ -7,10 +7,23 @@
 #include <unordered_set>
 #include <unordered_map>
 
+class Node {
+public:
+  std::string word;
+  std::unordered_set<Node*> related;
+
+  explicit Node(const std::string& str) : word(str) {}
+};
 class Dictionary {
 private:
   // Member Variables
-  std::unordered_set<std::string> wordSet; 
+  int getDistance(const std::string& word1, const std::string& word2);
+  bool isOneLetterDifference(const std::string& word1, const std::string& word2);
+  std::size_t hashFunc(Node* node);
+
+  std::unordered_set<std::string> wordSet;
+  std::vector<std::unordered_map<std::string, Node*>> maps;
+  std::unordered_map<std::size_t, Node*> hashTable;
 
 
 public:
