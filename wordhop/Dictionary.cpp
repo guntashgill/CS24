@@ -75,7 +75,7 @@ Dictionary* Dictionary::create(std::istream& stream) {
   return dictionary;
 }
 
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
+std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to, int maxDepth) {
   if (from.length() != to.length()) {
     throw NoChain();
   }
@@ -93,7 +93,13 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   visited.insert(from);
   wordChains.push({ from });
 
+  int depth = 0;
+
   while (!wordChains.empty()) {
+    if (depth > maxDepth) {
+      throw NoChain();  // Maximum depth exceeded, no chain found
+    }
+
     std::vector<std::string> currChain = wordChains.front();
     wordChains.pop();
 
@@ -113,14 +119,9 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         wordChains.push(newChain);
       }
     }
+
+    depth++;
   }
 
-  throw NoChain();  // No chain found
+  throw NoChain();  // No chain found within the specified depth
 }
-
-
-
-
-
-
-
