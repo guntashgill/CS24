@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    std::cerr << "USAGE: " << argv[0] << " [words-file]\n";
+    std::cerr << "USAGE: " << argv[0] << " [data-file]\n";
     return 1;
   }
 
