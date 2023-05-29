@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
+#include <algorithm>
 
 int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
@@ -22,12 +23,16 @@ int getDistance(const std::string& word1, const std::string& word2) {
   for (int i = 1; i <= m; ++i) {
     for (int j = 1; j <= n; ++j) {
       int substitutionCost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
-      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost});
+      distance[i][j] = *std::min_element(
+        std::begin({ distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost }),
+        std::end({ distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost })
+      );
     }
   }
 
   return distance[m][n];
 }
+
 
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   if (word1.length() != word2.length()) {
