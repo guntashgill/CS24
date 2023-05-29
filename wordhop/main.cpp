@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    std::cerr << "USAGE: " << argv[0] << " [data-file]\n";
+    std::cerr << "USAGE: " << argv[0] << " [words-file]\n";
     return 1;
   }
 
@@ -41,19 +41,20 @@ int main(int argc, char** argv) {
     }
 
     try {
+      if (from.length() != to.length()) {
+        throw NoChain();  // Throw NoChain exception directly
+      }
+
       std::vector<std::string> chain = dictionary->hop(from, to);
       for (const std::string& word : chain) {
         std::cout << " - " << word << '\n';
       }
     }
-    catch (const std::runtime_error& e) {
-      std::cout << e.what() << '\n';
-    }
     catch (const InvalidWord& e) {
-      std::cout << "Invalid word: " << e.what() << '\n';
+      std::cout << "Invalid word.\n";  // Print "Invalid word." instead of e.what()
     }
     catch (const NoChain& e) {
-      std::cout << e.what() << '\n';
+      std::cout << "No chain.\n";  // Print "No chain." instead of e.what()
     }
     catch (const std::exception& e) {
       std::cerr << "ERROR: " << e.what() << '\n';
@@ -63,4 +64,3 @@ int main(int argc, char** argv) {
   delete dictionary;
   return 0;
 }
-

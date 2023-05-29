@@ -6,12 +6,11 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
-#include <queue>
 
 class Dictionary {
 private:
   // Member Variables
-  std::unordered_set<std::string> wordSet;
+  std::unordered_set<std::string> wordSet; 
 
 
 public:

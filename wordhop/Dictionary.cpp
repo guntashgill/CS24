@@ -80,12 +80,8 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw NoChain();
   }
 
-  if (wordSet.count(from) == 0) {
-    throw InvalidWord("Invalid source word.");
-  }
-
-  if (wordSet.count(to) == 0) {
-    throw InvalidWord("Invalid destination word.");
+  if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
+    throw InvalidWord("Invalid source or destination word.");
   }
 
   if (from == to) {
