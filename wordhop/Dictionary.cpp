@@ -91,35 +91,31 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   }
 
   std::unordered_map<std::string, std::string> parentMap;
-  std::unordered_map<std::string, int> distanceMap;
-  std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
+  std::unordered_set<std::string> visited;
+  std::queue<std::string> wordQueue;
 
-  parentMap[from] = "";
-  distanceMap[from] = 0;
-  pq.push({ 0, from });
+  visited.insert(from);
+  wordQueue.push(from);
 
-  while (!pq.empty()) {
-    std::string currWord = pq.top().second;
-    int currDistance = pq.top().first;
-    pq.pop();
+  while (!wordQueue.empty()) {
+    std::string currWord = wordQueue.front();
+    wordQueue.pop();
 
     if (currWord == to) {
-      break;
+      break;  // Found a valid chain
     }
 
-    // Generate neighbors of the current word
     std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
     for (const std::string& neighbor : neighbors) {
-      int newDistance = currDistance + 1;
-      if (!distanceMap.count(neighbor) || newDistance < distanceMap[neighbor]) {
-        distanceMap[neighbor] = newDistance;
+      if (visited.count(neighbor) == 0) {
+        visited.insert(neighbor);
         parentMap[neighbor] = currWord;
-        pq.push({ newDistance, neighbor });
+        wordQueue.push(neighbor);
       }
     }
   }
 
-  if (!parentMap.count(to)) {
+  if (parentMap.count(to) == 0) {
     throw NoChain();  // No chain found
   }
 
