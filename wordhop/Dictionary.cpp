@@ -60,7 +60,8 @@ Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(w
 
   for (const auto& word : words) {
     int wordLength = word.length();
-    maps[wordLength - 1][word] = new Node(word);
+    maps[wordLength].reserve(maxSize);
+    maps[wordLength][word] = new Node(word);
   }
 
   // Hashing all the values
