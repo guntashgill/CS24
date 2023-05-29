@@ -41,6 +41,11 @@ int main(int argc, char** argv) {
     }
 
     try {
+      if (from.length() != to.length()) {
+        std::cout << "No chain.\n";
+        continue;
+      }
+
       std::vector<std::string> chain = dictionary->hop(from, to);
       for (const std::string& word : chain) {
         std::cout << " - " << word << '\n';
