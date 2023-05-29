@@ -3,6 +3,8 @@
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
+#include <unordered_map>
+#include <limits>
 
 int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
@@ -75,7 +77,7 @@ Dictionary* Dictionary::create(std::istream& stream) {
   return dictionary;
 }
 
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to, int maxDepth) {
+std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
     throw NoChain();
   }
@@ -88,40 +90,46 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     return { from };  // Already at the destination
   }
 
-  std::queue<std::vector<std::string>> wordChains;
-  std::unordered_set<std::string> visited;
-  visited.insert(from);
-  wordChains.push({ from });
+  std::unordered_map<std::string, std::string> parentMap;
+  std::unordered_map<std::string, int> distanceMap;
+  std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
 
-  int depth = 0;
+  parentMap[from] = "";
+  distanceMap[from] = 0;
+  pq.push({ 0, from });
 
-  while (!wordChains.empty()) {
-    if (depth > maxDepth) {
-      throw NoChain();  // Maximum depth exceeded, no chain found
-    }
+  while (!pq.empty()) {
+    std::string currWord = pq.top().second;
+    int currDistance = pq.top().first;
+    pq.pop();
 
-    std::vector<std::string> currChain = wordChains.front();
-    wordChains.pop();
-
-    std::string currWord = currChain.back();
-
-    // Check if the current word is equal to the destination
     if (currWord == to) {
-      return currChain;
+      break;
     }
 
+    // Generate neighbors of the current word
     std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
     for (const std::string& neighbor : neighbors) {
-      if (visited.count(neighbor) == 0) {
-        std::vector<std::string> newChain = currChain;
-        newChain.push_back(neighbor);
-        visited.insert(neighbor);
-        wordChains.push(newChain);
+      int newDistance = currDistance + 1;
+      if (!distanceMap.count(neighbor) || newDistance < distanceMap[neighbor]) {
+        distanceMap[neighbor] = newDistance;
+        parentMap[neighbor] = currWord;
+        pq.push({ newDistance, neighbor });
       }
     }
-
-    depth++;
   }
 
-  throw NoChain();  // No chain found within the specified depth
+  if (!parentMap.count(to)) {
+    throw NoChain();  // No chain found
+  }
+
+  std::vector<std::string> chain;
+  std::string currWord = to;
+  while (currWord != "") {
+    chain.push_back(currWord);
+    currWord = parentMap[currWord];
+  }
+  std::reverse(chain.begin(), chain.end());
+
+  return chain;
 }

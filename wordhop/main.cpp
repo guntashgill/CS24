@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-      std::vector<std::string> chain = dictionary->hop(from, to, 10);
+      std::vector<std::string> chain = dictionary->hop(from, to);
       for (const std::string& word : chain) {
         std::cout << " - " << word << '\n';
       }
@@ -63,5 +63,4 @@ int main(int argc, char** argv) {
   delete dictionary;
   return 0;
 }
-
 
