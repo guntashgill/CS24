@@ -30,7 +30,7 @@ int getDistance(const std::string& word1, const std::string& word2) {
   return distance[m][n];
 }
 
-bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
+bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) {
   if (word1.length() != word2.length()) {
     return false;
   }
@@ -44,6 +44,7 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
 
   return diffCount == 1;
 }
+
 
 std::size_t Dictionary::hashFunc(Node* node) {
   std::hash<std::string> hasher;
