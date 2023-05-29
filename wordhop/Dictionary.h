@@ -10,7 +10,10 @@
 class Dictionary {
 private:
   // Member Variables
-  std::unordered_set<std::string> wordSet; 
+  std::unordered_set<std::string> wordSet;
+  std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet);
+  std::string expandForward(std::queue<std::string>& forwardQueue,std::unordered_set<std::string>& visited,std::unordered_map<std::string, std::string>& forwardParentMap,std::unordered_map<std::string, std::string>& backwardParentMap);
+  std::string expandBackward(std::queue<std::string>& backwardQueue, std::unordered_set<std::string>& visited, std::unordered_map<std::string, std::string>& forwardParentMap,std::unordered_map<std::string, std::string>& backwardParentMap);
 
 
 public:

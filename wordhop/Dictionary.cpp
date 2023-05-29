@@ -90,42 +90,93 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     return { from };  // Already at the destination
   }
 
-  std::unordered_map<std::string, std::string> parentMap;
+  std::unordered_map<std::string, std::string> forwardParentMap;
+  std::unordered_map<std::string, std::string> backwardParentMap;
   std::unordered_set<std::string> visited;
-  std::queue<std::string> wordQueue;
+  std::queue<std::string> forwardQueue;
+  std::queue<std::string> backwardQueue;
 
   visited.insert(from);
-  wordQueue.push(from);
+  forwardQueue.push(from);
+  forwardParentMap[from] = "";
 
-  while (!wordQueue.empty()) {
-    std::string currWord = wordQueue.front();
-    wordQueue.pop();
+  visited.insert(to);
+  backwardQueue.push(to);
+  backwardParentMap[to] = "";
 
-    if (currWord == to) {
-      break;  // Found a valid chain
+  std::string meetingWord = "";
+
+  while (!forwardQueue.empty() && !backwardQueue.empty()) {
+    if (forwardQueue.size() <= backwardQueue.size()) {
+      meetingWord = expandForward(forwardQueue, visited, forwardParentMap, backwardParentMap);
+    } else {
+      meetingWord = expandBackward(backwardQueue, visited, forwardParentMap, backwardParentMap);
     }
 
-    std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
-    for (const std::string& neighbor : neighbors) {
-      if (visited.count(neighbor) == 0) {
-        visited.insert(neighbor);
-        parentMap[neighbor] = currWord;
-        wordQueue.push(neighbor);
-      }
+    if (!meetingWord.empty()) {
+      break;  // Found a meeting word, the chains can be connected
     }
   }
 
-  if (parentMap.count(to) == 0) {
+  if (meetingWord.empty()) {
     throw NoChain();  // No chain found
   }
 
   std::vector<std::string> chain;
-  std::string currWord = to;
+  std::string currWord = meetingWord;
+
   while (currWord != "") {
     chain.push_back(currWord);
-    currWord = parentMap[currWord];
+    currWord = forwardParentMap[currWord];
   }
+
   std::reverse(chain.begin(), chain.end());
 
+  currWord = backwardParentMap[meetingWord];
+  while (currWord != "") {
+    chain.push_back(currWord);
+    currWord = backwardParentMap[currWord];
+  }
+
   return chain;
+}
+
+std::string Dictionary::expandForward(std::queue<std::string>& forwardQueue, std::unordered_set<std::string>& visited, std::unordered_map<std::string, std::string>& forwardParentMap, std::unordered_map<std::string, std::string>& backwardParentMap) {
+  std::string currWord = forwardQueue.front();
+  forwardQueue.pop();
+
+  std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
+  for (const std::string& neighbor : neighbors) {
+    if (visited.count(neighbor) == 0) {
+      visited.insert(neighbor);
+      forwardQueue.push(neighbor);
+      forwardParentMap[neighbor] = currWord;
+
+      if (backwardParentMap.count(neighbor) > 0) {
+        return neighbor;  // Found a meeting word
+      }
+    }
+  }
+
+  return "";
+}
+
+std::string Dictionary::expandBackward(std::queue<std::string>& backwardQueue, std::unordered_set<std::string>& visited, std::unordered_map<std::string, std::string>& forwardParentMap, std::unordered_map<std::string, std::string>& backwardParentMap) {
+  std::string currWord = backwardQueue.front();
+  backwardQueue.pop();
+
+  std::vector<std::string> neighbors = getNeighbors(currWord, wordSet);
+  for (const std::string& neighbor : neighbors) {
+    if (visited.count(neighbor) == 0) {
+      visited.insert(neighbor);
+      backwardQueue.push(neighbor);
+      backwardParentMap[neighbor] = currWord;
+
+      if (forwardParentMap.count(neighbor) > 0) {
+        return neighbor;  // Found a meeting word
+      }
+    }
+  }
+
+  return "";
 }
