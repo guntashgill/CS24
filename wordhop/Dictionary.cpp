@@ -97,16 +97,8 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   std::unordered_set<std::string> visitedTo;
   visitedFrom.insert(from);
   visitedTo.insert(to);
-
   wordChainsFrom.push({ from });
   wordChainsTo.push({ to });
-
-
-
-  std::unordered_set<std::string> visitedFrom;
-  std::unordered_set<std::string> visitedTo;
-  visitedFrom.insert(from);
-  visitedTo.insert(to);
 
   while (!wordChainsFrom.empty() && !wordChainsTo.empty()) {
     std::vector<std::string> currChainFrom = wordChainsFrom.front();
