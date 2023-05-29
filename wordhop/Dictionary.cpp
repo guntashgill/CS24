@@ -1,5 +1,5 @@
-#include "dictionary.h"
-#include "errors.h"
+#include "Dictionary.h"
+#include "Errors.h"
 #include <fstream>
 #include <unordered_map>
 #include <vector>
