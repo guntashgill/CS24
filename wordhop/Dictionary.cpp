@@ -3,10 +3,8 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
-#include <algorithm>
-#include <deque>
 
-int getDistance(const std::string& word1, const std::string& word2, std::unordered_map<std::string, int>& distanceMap) {
+int getDistance(const std::string& word1, const std::string& word2) {
   int m = word1.length();
   int n = word2.length();
 
@@ -28,7 +26,6 @@ int getDistance(const std::string& word1, const std::string& word2, std::unorder
     }
   }
 
-  distanceMap[word2] = distance[m][n];
   return distance[m][n];
 }
 
@@ -50,12 +47,12 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   return diffCount == 1;
 }
 
-const std::vector<std::string>& getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet, std::unordered_map<std::string, std::vector<std::string>>& neighborsMap) {
-  if (neighborsMap.find(word) != neighborsMap.end()) {
-    return neighborsMap[word];
+std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet, std::unordered_map<std::string, std::vector<std::string>>& neighborsCache) {
+  if (neighborsCache.find(word) != neighborsCache.end()) {
+    return neighborsCache[word];
   }
 
-  std::vector<std::string>& neighbors = neighborsMap[word];
+  std::vector<std::string> neighbors;
   for (size_t i = 0; i < word.length(); ++i) {
     std::string temp = word;
     for (char c = 'a'; c <= 'z'; ++c) {
@@ -69,6 +66,7 @@ const std::vector<std::string>& getNeighbors(const std::string& word, const std:
     }
   }
 
+  neighborsCache[word] = neighbors;
   return neighbors;
 }
 
@@ -99,15 +97,17 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     return { from };  // Already at the destination
   }
 
-  std::unordered_map<std::string, int> distanceMap;
-  std::unordered_map<std::string, std::vector<std::string>> neighborsMap;
-  std::deque<std::vector<std::string>> wordChains;
-  wordChains.push_back({ from });
-  distanceMap[from] = 0;
+  std::unordered_map<std::string, std::vector<std::string>> neighborsCache;
+
+  std::queue<std::vector<std::string>> wordChains;
+  wordChains.push({ from });
+
+  std::unordered_set<std::string> visited;
+  visited.insert(from);
 
   while (!wordChains.empty()) {
-    std::vector<std::string> currChain = std::move(wordChains.front());
-    wordChains.pop_front();
+    std::vector<std::string> currChain = wordChains.front();
+    wordChains.pop();
 
     std::string currWord = currChain.back();
 
@@ -115,18 +115,18 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
       return currChain;  // Found a chain from "from" to "to"
     }
 
-    const std::vector<std::string>& neighbors = getNeighbors(currWord, wordSet, neighborsMap);
+    std::vector<std::string> neighbors = getNeighbors(currWord, wordSet, neighborsCache);
     for (const std::string& neighbor : neighbors) {
-      int distance = distanceMap[currWord] + 1;
-      if (distanceMap.find(neighbor) == distanceMap.end() || distance < distanceMap[neighbor]) {
-        distanceMap[neighbor] = distance;
+      if (visited.count(neighbor) == 0) {
         std::vector<std::string> newChain = currChain;
         newChain.push_back(neighbor);
-        wordChains.push_back(std::move(newChain));
+        wordChains.push(newChain);
+        visited.insert(neighbor);
       }
     }
   }
 
   throw NoChain();  // No chain found
 }
+
 
