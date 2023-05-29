@@ -67,13 +67,12 @@ Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(w
   for (auto& map : maps) {
     for (auto& [word, node] : map) {
       // Compare with other elements in the same map
-      for (auto it = std::next(map.find(word)); it != map.end(); ++it) {
+      for (auto it = std::next(map.begin()); it != map.end(); ++it) {
         if (isOneLetterDifference(word, it->first)) {
           node->related.insert(it->second);
           it->second->related.insert(node);
         }
       }
-
       // Hash the Node* and remove it from the map
       hashTable[hashFunc(node)] = node;
       map.erase(word);
