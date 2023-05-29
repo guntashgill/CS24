@@ -1,11 +1,14 @@
 #include "Dictionary.h"
 #include "Errors.h"
 #include <unordered_set>
-#include <unordered_map>
 #include <queue>
 #include <algorithm>
+#include <unordered_map>
 
-int getDistance(const std::string& word1, const std::string& word2) {
+int getDistance(const std::string& word1, const std::string& word2, std::unordered_map<std::string, int>& distanceCache) {
+  if (distanceCache.count(word1 + word2))
+    return distanceCache[word1 + word2];
+
   int m = word1.length();
   int n = word2.length();
 
@@ -23,16 +26,14 @@ int getDistance(const std::string& word1, const std::string& word2) {
   for (int i = 1; i <= m; ++i) {
     for (int j = 1; j <= n; ++j) {
       int substitutionCost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
-      distance[i][j] = *std::min_element(
-        std::begin({ distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost }),
-        std::end({ distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost })
-      );
+      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost});
     }
   }
 
-  return distance[m][n];
+  int result = distance[m][n];
+  distanceCache[word1 + word2] = result;
+  return result;
 }
-
 
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   if (word1.length() != word2.length()) {
@@ -52,11 +53,7 @@ bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   return diffCount == 1;
 }
 
-std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet, std::unordered_map<std::string, std::vector<std::string>>& neighborsCache) {
-  if (neighborsCache.find(word) != neighborsCache.end()) {
-    return neighborsCache[word];
-  }
-
+std::vector<std::string> getNeighbors(const std::string& word, const std::unordered_set<std::string>& wordSet) {
   std::vector<std::string> neighbors;
   for (size_t i = 0; i < word.length(); ++i) {
     std::string temp = word;
@@ -70,8 +67,6 @@ std::vector<std::string> getNeighbors(const std::string& word, const std::unorde
       }
     }
   }
-
-  neighborsCache[word] = neighbors;
   return neighbors;
 }
 
@@ -80,58 +75,47 @@ Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(w
 
 // Create function implementation
 Dictionary* Dictionary::create(std::istream& stream) {
-  std::unordered_set<std::string> wordSet;
+  std::unordered_set<std::string> words;
   std::string word;
   while (stream >> word) {
-    wordSet.insert(word);
+    words.insert(word);
   }
-  Dictionary* dictionary = new Dictionary(wordSet);
-  return dictionary;
+  return new Dictionary(words);
 }
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
-    throw InvalidWord("The words must have the same length.");
+    throw InvalidWord("No chain.");
   }
 
-  if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw InvalidWord("Invalid source or destination word.");
-  }
+  std::unordered_map<std::string, int> distanceCache;
 
-  if (from == to) {
-    return { from };  // Already at the destination
-  }
+  std::queue<std::vector<std::string>> wordPaths;
+  wordPaths.push({from});
 
-  std::unordered_map<std::string, std::vector<std::string>> neighborsCache;
+  while (!wordPaths.empty()) {
+    std::vector<std::string> currentPath = wordPaths.front();
+    wordPaths.pop();
+    std::string currentWord = currentPath.back();
 
-  std::queue<std::vector<std::string>> wordChains;
-  wordChains.push({ from });
-
-  std::unordered_set<std::string> visited;
-  visited.insert(from);
-
-  while (!wordChains.empty()) {
-    std::vector<std::string> currChain = wordChains.front();
-    wordChains.pop();
-
-    std::string currWord = currChain.back();
-
-    if (currWord == to) {
-      return currChain;  // Found a chain from "from" to "to"
+    if (currentWord == to) {
+      return currentPath;
     }
 
-    std::vector<std::string> neighbors = getNeighbors(currWord, wordSet, neighborsCache);
+    std::vector<std::string> neighbors = getNeighbors(currentWord, wordSet);
     for (const std::string& neighbor : neighbors) {
-      if (visited.count(neighbor) == 0) {
-        std::vector<std::string> newChain = currChain;
-        newChain.push_back(neighbor);
-        wordChains.push(newChain);
-        visited.insert(neighbor);
+      if (std::find(currentPath.begin(), currentPath.end(), neighbor) == currentPath.end()) {
+        std::vector<std::string> newPath = currentPath;
+        newPath.push_back(neighbor);
+        wordPaths.push(newPath);
       }
     }
   }
 
-  throw NoChain();  // No chain found
+  throw InvalidWord("No chain.");
 }
+
+
+
 
 
