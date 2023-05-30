@@ -7,7 +7,6 @@
 #include <limits>
 #include <bitset>
 
-
 Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
 
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
@@ -31,7 +30,10 @@ Dictionary* Dictionary::create(std::istream& stream) {
   while (stream >> word) {
     wordSet.insert(word);
   }
+
   Dictionary* dictionary = new Dictionary(wordSet);
+  dictionary->generateConnections(); // Generate connections
+
   return dictionary;
 }
 
@@ -123,4 +125,3 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   return chain;
 }
-
