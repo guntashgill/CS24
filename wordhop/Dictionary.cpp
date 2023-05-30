@@ -8,6 +8,10 @@
 #include <limits>
 #include <bitset>
 
+
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
+  generateConnections();
+}
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
   if (word1.length() != word2.length()) {
     return false;
@@ -23,13 +27,8 @@ bool Dictionary::isOneLetterDifference(const std::string& word1, const std::stri
   return diffCount == 1;
 }
 
+//asdf
 
-
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
-  generateConnections();
-}
-
-// Create function implementation
 Dictionary* Dictionary::create(std::istream& stream) {
   std::unordered_set<std::string> wordSet;
   std::string word;
@@ -48,14 +47,10 @@ void Dictionary::generateConnections() {
     for (size_t i = 0; i < word.length(); ++i) {
       char originalChar = originalWord[i];
 
-      // Generate a bitset with all bits set to 1
       std::bitset<26> mask;
       mask.set();
-
-      // Set the bit corresponding to the original character to 0
       mask.reset(originalChar - 'a');
 
-      // Iterate over the positions where the bit is set to 1
       for (size_t j = 0; j < 26; ++j) {
         if (mask.test(j)) {
           std::string currentWord = originalWord;
