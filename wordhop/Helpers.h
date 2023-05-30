@@ -1,6 +1,12 @@
-#ifndef HELPERS_H
-#define HELPERS_H
+#ifndef HELPERs_H
+#define HELPERs_H
 
-// Space to add some helper classes, if you need them.
+#include <string>
+#include <vector>
+
+// Helper Functions
+
+bool isValidWord(const std::string& word);
 
 #endif
+
