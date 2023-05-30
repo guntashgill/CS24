@@ -42,18 +42,21 @@ Dictionary* Dictionary::create(std::istream& stream) {
 void Dictionary::generateConnections() {
   for (const std::string& word : wordSet) {
     std::vector<std::string> neighbors;
-    std::string originalWord = word;
+    std::string currentWord = word;
 
     for (size_t i = 0; i < word.length(); ++i) {
-      char originalChar = originalWord[i];
+      char originalChar = currentWord[i];
 
+      // Generate a bitset with all bits set to 1
       std::bitset<26> mask;
       mask.set();
+
+      // Set the bit corresponding to the original character to 0
       mask.reset(originalChar - 'a');
 
+      // Iterate over the positions where the bit is set to 1
       for (size_t j = 0; j < 26; ++j) {
         if (mask.test(j)) {
-          std::string currentWord = originalWord;
           currentWord[i] = static_cast<char>('a' + j);
 
           if (wordSet.count(currentWord) > 0 && isOneLetterDifference(word, currentWord)) {
@@ -61,11 +64,14 @@ void Dictionary::generateConnections() {
           }
         }
       }
+
+      currentWord[i] = originalChar; // Restore the original character
     }
 
     connections[word] = neighbors;
   }
 }
+
 
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
