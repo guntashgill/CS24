@@ -1,9 +1,12 @@
-#ifndef HELPERS_H
-#define HELPERS_H
+#include "Helpers.h"
 
-#include <string>
+bool isLowercaseAlpha(const std::string& word) {
+  for (char c : word) {
+    if (!islower(c)) {
+      return false;
+    }
+  }
+  return true;
+}
 
-bool isLowercaseAlpha(const std::string& word);
-
-#endif
 
