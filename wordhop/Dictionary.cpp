@@ -8,9 +8,7 @@
 #include <bitset>
 
 
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
-  generateConnections();
-}
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
 
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
   if (word1.length() != word2.length()) {
