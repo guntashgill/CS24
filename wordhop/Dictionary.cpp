@@ -79,7 +79,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   }
 
   if (connections.empty()) {
-    throw NoChain();
+    generateConnections();  // Generate connections if not already done
   }
 
   if (from == to) {
@@ -88,44 +88,38 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   std::unordered_map<std::string, std::string> parentMap;
   std::unordered_map<std::string, int> distanceMap;
-  std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
+  std::queue<std::string> queue;
 
   parentMap[from] = "";
   distanceMap[from] = 0;
-  pq.push({0, from});
+  queue.push(from);
 
-  while (!pq.empty()) {
-    std::string currWord = pq.top().second;
-    int currDistance = pq.top().first;
-    pq.pop();
-
-    if (currWord == to) {
-      break;
-    }
+  while (!queue.empty()) {
+    std::string currWord = queue.front();
+    queue.pop();
 
     const std::vector<std::string>& neighbors = connections[currWord];
     for (const std::string& neighbor : neighbors) {
-      int newDistance = currDistance + 1;
-      if (!distanceMap.count(neighbor) || newDistance < distanceMap[neighbor]) {
-        distanceMap[neighbor] = newDistance;
+      if (distanceMap.count(neighbor) == 0) {
+        distanceMap[neighbor] = distanceMap[currWord] + 1;
         parentMap[neighbor] = currWord;
-        pq.push({newDistance, neighbor});
+        if (neighbor == to) {
+          // Found the destination word, construct the chain and return it
+          std::vector<std::string> chain;
+          std::string word = to;
+          while (word != "") {
+            chain.push_back(word);
+            word = parentMap[word];
+          }
+          std::reverse(chain.begin(), chain.end());
+          return chain;
+        }
+        queue.push(neighbor);
       }
     }
   }
 
-  if (!parentMap.count(to)) {
-    throw NoChain();  // No chain found
-  }
-
-  std::vector<std::string> chain;
-  std::string currWord = to;
-  while (currWord != "") {
-    chain.push_back(currWord);
-    currWord = parentMap[currWord];
-  }
-  std::reverse(chain.begin(), chain.end());
-
-  return chain;
+  throw NoChain();  // No chain found
 }
+
 
