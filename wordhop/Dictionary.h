@@ -1,19 +1,21 @@
+
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
 #include <istream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 
 class Dictionary {
 private:
   // Member Variables
- std::unordered_map<int, std::vector<std::string>> words;
+  std::unordered_set<std::string> wordSet; 
 
 
 public:
-  Dictionary(std::istream& stream);
+  Dictionary(const std::unordered_set<std::string>& words);
   // The create function used by the autograder:
   static Dictionary* create(std::istream& stream);
 
