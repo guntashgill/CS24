@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
+#include <algorithm>
 
 // Helper function to check if two words differ by exactly one letter
 bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
