@@ -1,147 +1,68 @@
-#include "Dictionary.h"
-#include "Errors.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
-#include <unordered_map>
-#include <limits>
-#include <bitset>
+#include "Dictionary.h"
 
-
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
-
-bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
-  if (word1.length() != word2.length()) {
-    return false;
-  }
-
-  int diffCount = 0;
-  for (size_t i = 0; i < word1.length(); ++i) {
-    if (word1[i] != word2[i]) {
-      ++diffCount;
+// Constructor for the Dictionary class
+Dictionary::Dictionary(std::istream &stream) {
+    std::string word;
+    // Read words from the input stream and insert them into an unordered_set
+    while (stream >> word) {
+        words.insert(word);
     }
-  }
-
-  return diffCount == 1;
 }
 
-//asdf
-
-Dictionary* Dictionary::create(std::istream& stream) {
-  std::unordered_set<std::string> wordSet;
-  std::string word;
-  while (stream >> word) {
-    wordSet.insert(word);
-  }
-  Dictionary* dictionary = new Dictionary(wordSet);
-
-  // Generate connections
-  dictionary->generateConnections();
-
-  return dictionary;
+// Static function to create a new Dictionary object from an input stream
+Dictionary *Dictionary::create(std::istream &stream) {
+    return new Dictionary(stream);
 }
 
+// Function to find a valid chain of words from "from" to "to"
+std::vector<std::string> Dictionary::hop(const std::string &from, const std::string &to) {
+    // Check if "from" and "to" are valid words
+    if (words.find(from) == words.end() || words.find(to) == words.end()) {
+        throw InvalidWord();
+    }
 
-void Dictionary::generateConnections() {
-  for (const std::string& word : wordSet) {
-    std::vector<std::string> neighbors;
-    std::string currentWord = word;
+    // Initialize a set of visited words and a queue of partial paths
+    std::unordered_set<std::string> visited;
+    std::queue<std::vector<std::string>> q;
+    q.push({from});
+    visited.insert(from);
 
-    for (size_t i = 0; i < word.length(); ++i) {
-      char originalChar = currentWord[i];
+    // Perform a BFS algorithm to find the shortest path from "from" to "to"
+    while (!q.empty()) {
+        std::vector<std::string> path = q.front();
+        q.pop();
 
-      // Generate a bitset with all bits set to 1
-      std::bitset<26> mask;
-      mask.set();
-
-      // Set the bit corresponding to the original character to 0
-      mask.reset(originalChar - 'a');
-
-      // Iterate over the positions where the bit is set to 1
-      for (size_t j = 0; j < 26; ++j) {
-        if (mask.test(j)) {
-          currentWord[i] = static_cast<char>('a' + j);
-
-          if (wordSet.count(currentWord) > 0 && isOneLetterDifference(word, currentWord)) {
-            neighbors.push_back(currentWord);
-          }
+        // If the last word in the path is "to", return the path
+        if (path.back() == to) {
+            return path;
         }
-      }
 
-      currentWord[i] = originalChar; // Restore the original character
+        // Generate all possible neighbors of the last word in the path
+        std::string current = path.back();
+        for (size_t i = 0; i < current.size(); ++i) {
+            for (char c = 'a'; c <= 'z'; ++c) {
+                std::string next = current;
+                next[i] = c;
+
+                // If the neighbor is a valid word and has not been visited, add it to the path and the queue
+                if (words.find(next) != words.end() && visited.find(next) == visited.end()) {
+                    std::vector<std::string> newPath(path);
+                    newPath.push_back(next);
+                    q.push(newPath);
+                    visited.insert(next);
+                }
+            }
+        }
     }
 
-    connections[word] = neighbors;
-  }
-}
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
-  if (from.length() != to.length()) {
+    // If no valid chain exists, throw a NoChain exception
     throw NoChain();
-  }
-
-  if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw InvalidWord("Invalid word.");
-  }
-
-  if (connections.empty()) {
-    generateConnections();  // Generate connections if not already done
-  }
-
-  if (from == to) {
-    return {from};  // Already at the destination
-  }
-
-  // Priority queue to store nodes with the shortest distance
-  std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
-
-  // Map to store the shortest distance from the start node
-  std::unordered_map<std::string, int> distanceMap;
-  distanceMap[from] = 0;
-
-  // Map to store the parent node for each visited node
-  std::unordered_map<std::string, std::string> parentMap;
-  parentMap[from] = "";
-
-  // Set to keep track of visited nodes
-  std::unordered_set<std::string> visited;
-
-  pq.push({0, from});
-
-  while (!pq.empty()) {
-    std::string currWord = pq.top().second;
-    int currDistance = pq.top().first;
-    pq.pop();
-
-    if (currWord == to) {
-      // Found the destination word, construct the chain and return it
-      std::vector<std::string> chain;
-      std::string word = to;
-      while (word != "") {
-        chain.push_back(word);
-        word = parentMap[word];
-      }
-      std::reverse(chain.begin(), chain.end());
-      return chain;
-    }
-
-    if (visited.count(currWord) > 0) {
-      continue;  // Already visited, skip
-    }
-
-    visited.insert(currWord);
-
-    const std::vector<std::string>& neighbors = connections[currWord];
-    for (const std::string& neighbor : neighbors) {
-      int newDistance = currDistance + 1;
-      if (distanceMap.count(neighbor) == 0 || newDistance < distanceMap[neighbor]) {
-        distanceMap[neighbor] = newDistance;
-        parentMap[neighbor] = currWord;
-        pq.push({newDistance, neighbor});
-      }
-    }
-  }
-
-  throw NoChain();  // No chain found
 }
 
 
