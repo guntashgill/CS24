@@ -75,11 +75,11 @@ void Dictionary::generateConnections() {
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
-    throw NoChain();
+    throw std::runtime_error("No chain.");
   }
 
   if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw InvalidWord("Invalid word.");
+    throw std::runtime_error("Invalid word.");
   }
 
   if (from == to) {
@@ -115,7 +115,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   }
 
   if (!parentMap.count(to)) {
-    throw NoChain();  // No chain found
+    throw std::runtime_error("No chain.");  // No chain found
   }
 
   std::vector<std::string> chain;
