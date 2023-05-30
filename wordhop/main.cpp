@@ -4,64 +4,20 @@
 #include <fstream>
 #include <iostream>
 
-int main(int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "USAGE: " << argv[0] << " [words-file]\n";
-    return 1;
-  }
-
-  Dictionary* dictionary = nullptr;
-
+int main() {
   try {
-    std::ifstream file(argv[1]);
-    if (file.fail()) {
-      std::cerr << "Could not open file: " << argv[1] << '\n';
-      return 1;
+    // Your test code goes here
+    // Example:
+    std::unordered_set<std::string> words = {"abc", "abd", "acd", "bcc", "bcd", "bdc", "cdd"};
+    Dictionary dict(words);
+    std::vector<std::string> chain = dict.hop("abc", "cdd");
+    for (const std::string& word : chain) {
+      std::cout << word << " ";
     }
-
-    dictionary = Dictionary::create(file);
-  }
-  catch (const std::exception& e) {
-    std::cerr << "Error reading words file: " << e.what() << '\n';
-    return 1;
-  }
-
-  while (true) {
-    std::string from;
-    std::string to;
-
-    std::cout << "From: ";
-    if (!std::getline(std::cin, from)) {
-      break;
-    }
-
-    std::cout << "To:   ";
-    if (!std::getline(std::cin, to)) {
-      break;
-    }
-
-    try {
-      std::vector<std::string> chain = dictionary->hop(from, to);
-      for (const std::string& word : chain) {
-        std::cout << " - " << word << '\n';
-      }
-    }
-    catch (const std::runtime_error& e) {
-      std::cout << e.what() << '\n';
-    }
-    catch (const InvalidWord& e) {
-      std::cout << "Invalid word: " << e.what() << '\n';
-    }
-    catch (const NoChain& e) {
-      std::cout << e.what() << '\n';
-    }
-    catch (const std::exception& e) {
-      std::cerr << "ERROR: " << e.what() << '\n';
-    }
+    std::cout << std::endl;
+  } catch (const std::exception& e) {
+    std::cout << "Exception: " << e.what() << std::endl;
   }
 
-  delete dictionary;
   return 0;
 }
-
-
