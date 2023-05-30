@@ -7,7 +7,7 @@
 #include <limits>
 #include <bitset>
 
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words), connections() {}
 
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
   if (word1.length() != word2.length()) {
@@ -32,7 +32,6 @@ Dictionary* Dictionary::create(std::istream& stream) {
   }
 
   Dictionary* dictionary = new Dictionary(wordSet);
-  dictionary->generateConnections(); // Generate connections
 
   return dictionary;
 }
@@ -77,6 +76,10 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
     throw InvalidWord("Invalid word.");
+  }
+
+  if (connections.empty()) {
+    throw NoChain();
   }
 
   if (from == to) {
@@ -125,3 +128,4 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   return chain;
 }
+
