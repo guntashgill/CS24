@@ -10,7 +10,8 @@
 class Dictionary {
 private:
   // Member Variables
-  std::unordered_set<std::string> wordSet; 
+  std::unordered_set<std::string> wordSet;
+  std::unordered_map<std::string, std::vector<std::string>> connections;
 
 
 public:
@@ -21,6 +22,9 @@ public:
 public:
   // The function that does all the work:
   std::vector<std::string> hop(const std::string& from, const std::string& to);
+private:
+  void generateConnections();
+  bool isOneLetterDifference(const std::string& word1, const std::string& word2) const;
 };
 
 #endif
