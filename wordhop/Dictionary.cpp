@@ -76,23 +76,35 @@ void Dictionary::generateConnections() {
 }
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
-    throw std::runtime_error("No chain.");
+    throw NoChain();
   }
 
   if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw std::runtime_error("Invalid word.");
+    throw InvalidWord("Invalid word.");
+  }
+
+  if (connections.empty()) {
+    generateConnections();  // Generate connections if not already done
   }
 
   if (from == to) {
     return {from};  // Already at the destination
   }
 
-  std::unordered_map<std::string, std::string> parentMap;
-  std::unordered_map<std::string, int> distanceMap;
+  // Priority queue to store nodes with the shortest distance
   std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
 
-  parentMap[from] = "";
+  // Map to store the shortest distance from the start node
+  std::unordered_map<std::string, int> distanceMap;
   distanceMap[from] = 0;
+
+  // Map to store the parent node for each visited node
+  std::unordered_map<std::string, std::string> parentMap;
+  parentMap[from] = "";
+
+  // Set to keep track of visited nodes
+  std::unordered_set<std::string> visited;
+
   pq.push({0, from});
 
   while (!pq.empty()) {
@@ -101,13 +113,27 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     pq.pop();
 
     if (currWord == to) {
-      break;
+      // Found the destination word, construct the chain and return it
+      std::vector<std::string> chain;
+      std::string word = to;
+      while (word != "") {
+        chain.push_back(word);
+        word = parentMap[word];
+      }
+      std::reverse(chain.begin(), chain.end());
+      return chain;
     }
+
+    if (visited.count(currWord) > 0) {
+      continue;  // Already visited, skip
+    }
+
+    visited.insert(currWord);
 
     const std::vector<std::string>& neighbors = connections[currWord];
     for (const std::string& neighbor : neighbors) {
       int newDistance = currDistance + 1;
-      if (!distanceMap.count(neighbor) || newDistance < distanceMap[neighbor]) {
+      if (distanceMap.count(neighbor) == 0 || newDistance < distanceMap[neighbor]) {
         distanceMap[neighbor] = newDistance;
         parentMap[neighbor] = currWord;
         pq.push({newDistance, neighbor});
@@ -115,19 +141,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     }
   }
 
-  if (!parentMap.count(to)) {
-    throw std::runtime_error("No chain.");  // No chain found
-  }
-
-  std::vector<std::string> chain;
-  std::string currWord = to;
-  while (currWord != "") {
-    chain.push_back(currWord);
-    currWord = parentMap[currWord];
-  }
-  std::reverse(chain.begin(), chain.end());
-
-  return chain;
+  throw NoChain();  // No chain found
 }
 
 
