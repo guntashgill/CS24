@@ -1,112 +1,77 @@
 #include "Dictionary.h"
 #include "Errors.h"
-#include <algorithm>
-#include <fstream>
-#include <unordered_set>
-#include <vector>
-#include <queue>
 #include "Helpers.h"
 
-// Trie Node
-class TrieNode {
-public:
-  bool isWord;
-  std::vector<TrieNode*> children;
+#include <fstream>
 
-  TrieNode() : isWord(false), children(26, nullptr) {}
-
-  ~TrieNode() {
-    for (TrieNode* child : children) {
-      delete child;
-    }
-  }
-};
-
-// Dictionary Implementation
 Dictionary* Dictionary::create(std::istream& stream) {
-  TrieNode* root = new TrieNode();
+  Dictionary* dictionary = new Dictionary();
   std::string word;
-
-  while (std::getline(stream, word)) {
-    if (isValidWord(word)) {
-      TrieNode* node = root;
-      for (char c : word) {
-        int index = c - 'a';
-        if (!node->children[index]) {
-          node->children[index] = new TrieNode();
-        }
-        node = node->children[index];
-      }
-      node->isWord = true;
+  
+  while (stream >> word) {
+    if (isLowercaseAlpha(word)) {
+      dictionary->words.insert(word);
     }
   }
-
-  return new Dictionary(root);
+  
+  return dictionary;
 }
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
-  if (!isValidWord(from)) {
-    throw InvalidWord(from);
-  }
-
-  if (!isValidWord(to)) {
-    throw InvalidWord(to);
+  if (!isLowercaseAlpha(from) || !isLowercaseAlpha(to)) {
+    throw InvalidWord("Invalid word");
   }
 
   if (from.length() != to.length()) {
     throw NoChain();
   }
-
+  
+  std::vector<std::string> chain;
+  chain.push_back(from);
+  
   if (from == to) {
-    return {from};
+    return chain;
   }
-
+  
   std::unordered_set<std::string> visited;
-  std::queue<std::vector<std::string>> wordChains;
-  wordChains.push({from});
+  visited.insert(from);
+  
+  std::unordered_map<std::string, std::string> parent;
+  parent[from] = "";
 
-  while (!wordChains.empty()) {
-    std::vector<std::string> chain = wordChains.front();
-    wordChains.pop();
-
-    const std::string& lastWord = chain.back();
-
-    for (size_t i = 0; i < lastWord.length(); ++i) {
-      std::string word = lastWord;
-      for (char c = 'a'; c <= 'z'; ++c) {
+  while (!chain.empty()) {
+    std::string current = chain.front();
+    chain.erase(chain.begin());
+    
+    for (std::size_t i = 0; i < current.length(); i++) {
+      std::string word = current;
+      
+      for (char c = 'a'; c <= 'z'; c++) {
+        if (c == current[i]) {
+          continue;
+        }
+        
         word[i] = c;
-
+        
         if (word == to) {
-          chain.push_back(to);
+          chain.push_back(word);
+          
+          while (!parent[word].empty()) {
+            chain.insert(chain.begin(), parent[word]);
+            word = parent[word];
+          }
+          
           return chain;
         }
-
-        if (visited.find(word) == visited.end() && isWordValid(word)) {
+        
+        if (words.find(word) != words.end() && visited.find(word) == visited.end()) {
           visited.insert(word);
-          std::vector<std::string> newChain = chain;
-          newChain.push_back(word);
-          wordChains.push(std::move(newChain));
+          chain.push_back(word);
+          parent[word] = current;
         }
       }
     }
   }
-
+  
   throw NoChain();
-}
-
-bool Dictionary::isWordValid(const std::string& word) const {
-  TrieNode* node = root;
-  for (char c : word) {
-    int index = c - 'a';
-    if (!node->children[index]) {
-      return false;
-    }
-    node = node->children[index];
-  }
-  return node->isWord;
-}
-Dictionary::Dictionary(TrieNode* rootNode) : root(rootNode) {}
-
-Dictionary::~Dictionary() {
-  delete root;
 }

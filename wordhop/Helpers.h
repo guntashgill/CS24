@@ -1,12 +1,9 @@
-#ifndef HELPERs_H
-#define HELPERs_H
+#ifndef HELPERS_H
+#define HELPERS_H
 
 #include <string>
-#include <vector>
 
-// Helper Functions
-
-bool isValidWord(const std::string& word);
+bool isLowercaseAlpha(const std::string& word);
 
 #endif
 
