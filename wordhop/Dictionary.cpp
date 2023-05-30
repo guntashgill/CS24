@@ -1,4 +1,3 @@
-
 #include "Dictionary.h"
 #include "Errors.h"
 #include <unordered_set>
@@ -27,8 +26,6 @@ bool Dictionary::isOneLetterDifference(const std::string& word1, const std::stri
 
   return diffCount == 1;
 }
-
-//asdf
 
 Dictionary* Dictionary::create(std::istream& stream) {
   std::unordered_set<std::string> wordSet;
@@ -73,15 +70,13 @@ void Dictionary::generateConnections() {
   }
 }
 
-
-
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
-    throw std::runtime_error("No chain.");
+    throw NoChain();
   }
 
   if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw std::runtime_error("Invalid word.");
+    throw InvalidWord("Invalid word.");
   }
 
   if (from == to) {
@@ -117,7 +112,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   }
 
   if (!parentMap.count(to)) {
-    throw std::runtime_error("No chain.");  // No chain found
+    throw NoChain();  // No chain found
   }
 
   std::vector<std::string> chain;
@@ -130,3 +125,4 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   return chain;
 }
+
