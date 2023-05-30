@@ -1,3 +1,4 @@
+
 #include "Dictionary.h"
 #include "Errors.h"
 
@@ -41,6 +42,11 @@ int main(int argc, char** argv) {
     }
 
     try {
+      if (from.length() != to.length()) {
+        std::cout << "No chain.\n";
+        continue;
+      }
+
       std::vector<std::string> chain = dictionary->hop(from, to);
       for (const std::string& word : chain) {
         std::cout << " - " << word << '\n';
@@ -51,9 +57,6 @@ int main(int argc, char** argv) {
     }
     catch (const InvalidWord& e) {
       std::cout << "Invalid word: " << e.what() << '\n';
-    }
-    catch (const NoChain& e) {
-      std::cout << e.what() << '\n';
     }
     catch (const std::exception& e) {
       std::cerr << "ERROR: " << e.what() << '\n';
