@@ -10,8 +10,12 @@
 
 
 Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
+  if (wordSet.empty()) {
+    throw std::invalid_argument("Empty word set provided.");
+  }
   generateConnections();
 }
+
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
   if (word1.length() != word2.length()) {
     return false;
