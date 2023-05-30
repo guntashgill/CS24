@@ -14,15 +14,16 @@ int main(int argc, char** argv) {
 
   try {
     std::ifstream file(argv[1]);
-    if (file.fail()) {
-      std::cerr << "Could not open file: " << argv[1] << '\n';
-      return 1;
+    if (!file.is_open()) {
+      throw std::runtime_error("Could not open file: " + std::string(argv[1]));
     }
 
     dictionary = Dictionary::create(file);
+    file.close();
   }
   catch (const std::exception& e) {
     std::cerr << "Error reading words file: " << e.what() << '\n';
+    delete dictionary; // Clean up dictionary if it was created
     return 1;
   }
 
@@ -63,5 +64,3 @@ int main(int argc, char** argv) {
   delete dictionary;
   return 0;
 }
-
-
