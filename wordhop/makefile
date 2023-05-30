@@ -1,4 +1,4 @@
-CXXFLAGS = -g -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter
+CXXFLAGS = -g -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter -O3
 CXX      = g++
 
 # These targets don't create any files:
@@ -12,18 +12,15 @@ CXX      = g++
 
 all: test
 
-test: main.o Dictionary.o Helpers.o
+test: main.o Dictionary.o
 	${CXX} $(CXXFLAGS) -o $@ $+
 
 main.o: main.cpp Dictionary.h Errors.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
-Dictionary.o: Dictionary.cpp Dictionary.h Errors.h Helpers.h
-	${CXX} $(CXXFLAGS) -c -o $@ $<
-
-Helpers.o: Helpers.cpp Helpers.h
+Dictionary.o: Dictionary.cpp Dictionary.h Errors.h
 	${CXX} $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -f test main.o Dictionary.o Helpers.o
+	rm -f test main.o Dictionary.o
 

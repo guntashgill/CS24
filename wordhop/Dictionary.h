@@ -10,10 +10,11 @@
 class Dictionary {
 private:
   // Member Variables
-  std::unordered_set<std::string> words;
+  std::unordered_set<std::string> wordSet; 
 
 
 public:
+  Dictionary(const std::unordered_set<std::string>& words);
   // The create function used by the autograder:
   static Dictionary* create(std::istream& stream);
 

@@ -46,11 +46,14 @@ int main(int argc, char** argv) {
         std::cout << " - " << word << '\n';
       }
     }
-    catch (const NoChain& e) {
-      std::cout << "No chain.\n";
+    catch (const std::runtime_error& e) {
+      std::cout << e.what() << '\n';
     }
     catch (const InvalidWord& e) {
       std::cout << "Invalid word: " << e.what() << '\n';
+    }
+    catch (const NoChain& e) {
+      std::cout << e.what() << '\n';
     }
     catch (const std::exception& e) {
       std::cerr << "ERROR: " << e.what() << '\n';
