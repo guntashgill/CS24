@@ -5,11 +5,33 @@
 #include <algorithm>
 #include <unordered_map>
 #include <limits>
-#include <bitset>
 
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words), connections() {}
+int getDistance(const std::string& word1, const std::string& word2) {
+  int m = word1.length();
+  int n = word2.length();
 
-bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
+  std::vector<std::vector<int>> distance(m + 1, std::vector<int>(n + 1));
+
+  // Initialize the first row and column of the matrix
+  for (int i = 0; i <= m; ++i) {
+    distance[i][0] = i;
+  }
+  for (int j = 0; j <= n; ++j) {
+    distance[0][j] = j;
+  }
+
+  // Calculate the minimum edit distance
+  for (int i = 1; i <= m; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      int substitutionCost = (word1[i - 1] != word2[j - 1]) ? 1 : 0;
+      distance[i][j] = std::min({distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + substitutionCost});
+    }
+  }
+
+  return distance[m][n];
+}
+
+bool isOneLetterDifference(const std::string& word1, const std::string& word2) {
   if (word1.length() != word2.length()) {
     return false;
   }
@@ -24,49 +46,40 @@ bool Dictionary::isOneLetterDifference(const std::string& word1, const std::stri
   return diffCount == 1;
 }
 
+// Constructor implementation
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {
+  // Create connections between neighboring words
+  std::unordered_map<std::string, std::vector<std::string>> connections;
+
+  // Iterate over each word in the wordSet
+  for (const std::string& word : wordSet) {
+    // Generate neighboring words
+    for (size_t i = 0; i < word.length(); ++i) {
+      std::string temp = word;
+      
+      // Replace the current character with a wildcard character
+      temp[i] = '*';
+      
+      // Add the modified word to the connections map
+      connections[temp].push_back(word);
+    }
+  }
+
+  // Store the connections in the wordSet
+  for (const auto& entry : connections) {
+    wordSet.insert(entry.second.begin(), entry.second.end());
+  }
+}
+
+// Create function implementation
 Dictionary* Dictionary::create(std::istream& stream) {
   std::unordered_set<std::string> wordSet;
   std::string word;
   while (stream >> word) {
     wordSet.insert(word);
   }
-
   Dictionary* dictionary = new Dictionary(wordSet);
-
   return dictionary;
-}
-
-void Dictionary::generateConnections() {
-  for (const std::string& word : wordSet) {
-    std::vector<std::string> neighbors;
-    std::string currentWord = word;
-
-    for (size_t i = 0; i < word.length(); ++i) {
-      char originalChar = currentWord[i];
-
-      // Generate a bitset with all bits set to 1
-      std::bitset<26> mask;
-      mask.set();
-
-      // Set the bit corresponding to the original character to 0
-      mask.reset(originalChar - 'a');
-
-      // Iterate over the positions where the bit is set to 1
-      for (size_t j = 0; j < 26; ++j) {
-        if (mask.test(j)) {
-          currentWord[i] = static_cast<char>('a' + j);
-
-          if (wordSet.count(currentWord) > 0 && isOneLetterDifference(word, currentWord)) {
-            neighbors.push_back(currentWord);
-          }
-        }
-      }
-
-      currentWord[i] = originalChar; // Restore the original character
-    }
-
-    connections[word] = neighbors;
-  }
 }
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
@@ -78,53 +91,52 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid word.");
   }
 
-  if (connections.empty()) {
-    generateConnections();
-  }
-
   if (from == to) {
-    return {from};  // Already at the destination
+    return { from };  // Already at the destination
   }
 
-  std::unordered_map<std::string, std::string> parentMap;
-  std::unordered_map<std::string, int> distanceMap;
-  std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>, std::greater<>> pq;
+  std::unordered_map<std::string, std::string> predecessor;
+  std::queue<std::string> bfsQueue;
+  std::unordered_map<std::string, int> distance;
+  distance[from] = 0;
+  bfsQueue.push(from);
 
-  parentMap[from] = "";
-  distanceMap[from] = 0;
-  pq.push({0, from});
+  while (!bfsQueue.empty()) {
+    std::string currentWord = bfsQueue.front();
+    bfsQueue.pop();
 
-  while (!pq.empty()) {
-    std::string currWord = pq.top().second;
-    int currDistance = pq.top().first;
-    pq.pop();
+    // Generate neighboring words
+    for (size_t i = 0; i < currentWord.length(); ++i) {
+      std::string temp = currentWord;
+      temp[i] = '*';  // Replace the current character with a wildcard character
 
-    if (currWord == to) {
-      break;
-    }
+      // Find all words in the wordSet that have the same wildcard pattern
+      auto iter = wordSet.find(temp);
+      while (iter != wordSet.end()) {
+        if (distance.count(*iter) == 0) {
+          distance[*iter] = distance[currentWord] + 1;
+          predecessor[*iter] = currentWord;
+          bfsQueue.push(*iter);
 
-    const std::vector<std::string>& neighbors = connections[currWord];
-    for (const std::string& neighbor : neighbors) {
-      int newDistance = currDistance + 1;
-      if (!distanceMap.count(neighbor) || newDistance < distanceMap[neighbor]) {
-        distanceMap[neighbor] = newDistance;
-        parentMap[neighbor] = currWord;
-        pq.push({newDistance, neighbor});
+          if (*iter == to) {
+            // Found the destination word, construct the chain
+            std::vector<std::string> chain;
+            std::string word = to;
+            while (word != from) {
+              chain.push_back(word);
+              word = predecessor[word];
+            }
+            chain.push_back(from);
+            std::reverse(chain.begin(), chain.end());
+            return chain;
+          }
+        }
+        ++iter;
       }
     }
   }
 
-  if (!parentMap.count(to)) {
-    throw NoChain();  // No chain found
-  }
-
-  std::vector<std::string> chain;
-  std::string currWord = to;
-  while (currWord != "") {
-    chain.push_back(currWord);
-    currWord = parentMap[currWord];
-  }
-  std::reverse(chain.begin(), chain.end());
-
-  return chain;
+  // No chain found
+  throw NoChain();
 }
+
