@@ -97,9 +97,9 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
 
   std::unordered_map<std::string, std::string> predecessor;
   std::queue<std::string> bfsQueue;
-  std::unordered_map<std::string, int> distance;
-  distance[from] = 0;
+  std::unordered_map<std::string, bool> visited;
   bfsQueue.push(from);
+  visited[from] = true;
 
   while (!bfsQueue.empty()) {
     std::string currentWord = bfsQueue.front();
@@ -113,8 +113,8 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
       // Find all words in the wordSet that have the same wildcard pattern
       auto iter = wordSet.find(temp);
       while (iter != wordSet.end()) {
-        if (distance.count(*iter) == 0) {
-          distance[*iter] = distance[currentWord] + 1;
+        if (!visited[*iter]) {
+          visited[*iter] = true;
           predecessor[*iter] = currentWord;
           bfsQueue.push(*iter);
 
@@ -139,4 +139,5 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   // No chain found
   throw NoChain();
 }
+
 
