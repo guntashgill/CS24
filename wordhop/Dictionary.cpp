@@ -3,6 +3,7 @@
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 Dictionary::Dictionary(std::istream& stream) {
   std::string entry;
