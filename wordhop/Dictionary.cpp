@@ -1,4 +1,4 @@
-#include "dictionary.h"
+#include "Dictionary.h"
 
 #include <istream>
 #include <unordered_map>
