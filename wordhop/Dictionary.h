@@ -4,28 +4,22 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <unordered_set>
-#include <queue>
 
 class Dictionary {
+private:
   std::unordered_set<std::string> words;
-
-  // Helper Functions
-  void insertWord(const std::string& word);
+  std::unordered_map<std::string, std::vector<std::string>> wordConnections;
 
 public:
-  // Constructor for the Dictionary class
   Dictionary(std::istream& stream);
 
-  // Static function to create a new Dictionary object from an input stream
+  // The create function used by the autograder:
   static Dictionary* create(std::istream& stream);
 
-  // Function to find a valid chain of words from "from" to "to"
+  // The function that does all the work:
   std::vector<std::string> hop(const std::string& from, const std::string& to);
-
-  // Custom exceptions
-  class InvalidWord {};
-  class NoChain {};
 };
 
 #endif
