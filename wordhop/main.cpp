@@ -1,4 +1,3 @@
-
 #include "Dictionary.h"
 #include "Errors.h"
 

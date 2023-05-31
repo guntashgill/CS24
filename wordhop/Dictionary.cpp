@@ -7,8 +7,7 @@
 #include <limits>
 #include <bitset>
 
-
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
+Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words), connections() {}
 
 bool Dictionary::isOneLetterDifference(const std::string& word1, const std::string& word2) const {
   if (word1.length() != word2.length()) {
@@ -25,15 +24,15 @@ bool Dictionary::isOneLetterDifference(const std::string& word1, const std::stri
   return diffCount == 1;
 }
 
-//asdf
-
 Dictionary* Dictionary::create(std::istream& stream) {
   std::unordered_set<std::string> wordSet;
   std::string word;
   while (stream >> word) {
     wordSet.insert(word);
   }
+
   Dictionary* dictionary = new Dictionary(wordSet);
+
   return dictionary;
 }
 
@@ -70,15 +69,17 @@ void Dictionary::generateConnections() {
   }
 }
 
-
-
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
   if (from.length() != to.length()) {
-    throw InvalidWord("Invalid word.");
+    throw NoChain();
   }
 
   if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
     throw InvalidWord("Invalid word.");
+  }
+
+  if (connections.empty()) {
+    generateConnections();
   }
 
   if (from == to) {
@@ -114,7 +115,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   }
 
   if (!parentMap.count(to)) {
-    throw NoChain();  // Throw the NoChain exception instead
+    throw NoChain();  // No chain found
   }
 
   std::vector<std::string> chain;
