@@ -45,37 +45,44 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     throw InvalidWord("Invalid word.");
   }
   
-  std::unordered_map<std::string, bool> visited;
+  std::unordered_map<std::string, std::string> predecessor;
+  std::queue<std::string> bfsQueue;
+  bfsQueue.push(from);
+  predecessor[from] = "";
   
-  dfs(from, to, visited, path);
-  
-  if (path.empty()) {
-    throw NoChain();
-  }
-  
-  return path;
-}
-
-
-void Dictionary::dfs(const std::string& current, const std::string& target, std::unordered_map<std::string, bool>& visited, std::vector<std::string>& path) {
-  visited[current] = true;
-  path.push_back(current);
-
-  if (current == target) {
-    return;  // Reached the target word, stop the recursion
-  }
-
-  for (const auto& neighbor : dictionary[current.size()][current]) {
-    if (!visited[neighbor]) {
-      dfs(neighbor, target, visited, path);
-
-      if (path.back() == target) {
-        return;  // Found a path to the target, stop the recursion
+  while (!bfsQueue.empty()) {
+    std::string currentWord = bfsQueue.front();
+    bfsQueue.pop();
+    
+    // Generate neighboring words
+    for (size_t i = 0; i < currentWord.length(); ++i) {
+      std::string temp = currentWord;
+      
+      // Replace each character with all possible letters
+      for (char c = 'a'; c <= 'z'; ++c) {
+        temp[i] = c;
+        
+        // Check if the modified word exists in the dictionary
+        if (dictionary[length].count(temp) > 0 && predecessor.count(temp) == 0) {
+          bfsQueue.push(temp);
+          predecessor[temp] = currentWord;
+          
+          if (temp == to) {
+            // Found the destination word, construct the chain
+            std::vector<std::string> chain;
+            std::string word = to;
+            while (word != from) {
+              chain.push_back(word);
+              word = predecessor[word];
+            }
+            chain.push_back(from);
+            std::reverse(chain.begin(), chain.end());
+            return chain;
+          }
+        }
       }
-
-      path.pop_back();
     }
   }
-
-  visited[current] = false;  // Reset the visited flag for backtracking
+  
+  throw NoChain();
 }

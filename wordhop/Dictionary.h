@@ -10,7 +10,6 @@
 class Dictionary {
 private:
   std::unordered_map<int, std::unordered_map<std::string, std::vector<std::string>>> dictionary;
-  void dfs(const std::string& current, const std::string& target, std::unordered_map<std::string, bool>& visited, std::vector<std::string>& path);
 
 public:
   Dictionary(std::istream& stream);
