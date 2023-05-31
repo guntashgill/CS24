@@ -95,49 +95,52 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     return { from };  // Already at the destination
   }
 
-  std::unordered_map<std::string, std::string> predecessor;
+  std::unordered_map<std::string, std::string> parentMap;
+  std::unordered_map<std::string, int> distanceMap;
   std::queue<std::string> bfsQueue;
-  std::unordered_map<std::string, bool> visited;
+
+  parentMap[from] = "";
+  distanceMap[from] = 0;
   bfsQueue.push(from);
-  visited[from] = true;
 
   while (!bfsQueue.empty()) {
-    std::string currentWord = bfsQueue.front();
+    std::string currWord = bfsQueue.front();
     bfsQueue.pop();
 
-    // Generate neighboring words
-    for (size_t i = 0; i < currentWord.length(); ++i) {
-      std::string temp = currentWord;
-      temp[i] = '*';  // Replace the current character with a wildcard character
+    if (currWord == to) {
+      break;  // Found a valid chain
+    }
 
-      // Find all words in the wordSet that have the same wildcard pattern
-      auto iter = wordSet.find(temp);
-      while (iter != wordSet.end()) {
-        if (!visited[*iter]) {
-          visited[*iter] = true;
-          predecessor[*iter] = currentWord;
-          bfsQueue.push(*iter);
-
-          if (*iter == to) {
-            // Found the destination word, construct the chain
-            std::vector<std::string> chain;
-            std::string word = to;
-            while (word != from) {
-              chain.push_back(word);
-              word = predecessor[word];
-            }
-            chain.push_back(from);
-            std::reverse(chain.begin(), chain.end());
-            return chain;
+    // Generate neighbors of the current word
+    for (size_t i = 0; i < currWord.length(); ++i) {
+      std::string temp = currWord;
+      for (char c = 'a'; c <= 'z'; ++c) {
+        if (c == currWord[i]) {
+          continue;  // Skip the same character
+        }
+        temp[i] = c;
+        if (wordSet.count(temp) > 0) {
+          if (distanceMap.count(temp) == 0) {
+            distanceMap[temp] = distanceMap[currWord] + 1;
+            parentMap[temp] = currWord;
+            bfsQueue.push(temp);
           }
         }
-        ++iter;
       }
     }
   }
 
-  // No chain found
-  throw NoChain();
+  if (!parentMap.count(to)) {
+    throw NoChain();  // No chain found
+  }
+
+  std::vector<std::string> chain;
+  std::string currWord = to;
+  while (currWord != "") {
+    chain.push_back(currWord);
+    currWord = parentMap[currWord];
+  }
+  std::reverse(chain.begin(), chain.end());
+
+  return chain;
 }
-
-
