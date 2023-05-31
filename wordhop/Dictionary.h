@@ -9,6 +9,7 @@
 class Dictionary {
 private:
   std::unordered_map<int, std::unordered_map<std::string, std::vector<std::string>>> dictionary;
+  bool isNeighbor(const std::string& word1, const std::string& word2);
 
 public:
   Dictionary(std::istream& stream);
