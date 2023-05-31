@@ -1,76 +1,80 @@
 #include "Dictionary.h"
-#include "Errors.h"
-#include <unordered_set>
+#include <istream>
 #include <queue>
-#include <algorithm>
 #include <unordered_map>
-#include <limits>
+#include <unordered_set>
+#include <algorithm>
 
-// Constructor implementation
-Dictionary::Dictionary(const std::unordered_set<std::string>& words) : wordSet(words) {}
+Dictionary::Dictionary(std::istream& stream) {
+  std::string entry;
 
-// Create function implementation
-Dictionary* Dictionary::create(std::istream& stream) {
-  std::unordered_set<std::string> wordSet;
-  std::string word;
-  while (stream >> word) {
-    wordSet.insert(word);
-  }
-  Dictionary* dictionary = new Dictionary(wordSet);
-  return dictionary;
-}
+  while (stream >> entry) {
+    int length = entry.size();
+    dictionary[length][entry] = std::vector<std::string>();
 
-std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
-  if (from.length() != to.length()) {
-    throw NoChain();
-  }
-
-  if (wordSet.count(from) == 0 || wordSet.count(to) == 0) {
-    throw InvalidWord("Invalid word.");
-  }
-
-  if (from == to) {
-    return { from };  // Already at the destination
-  }
-
-  std::unordered_map<std::string, std::string> predecessor;
-  std::queue<std::string> bfsQueue;
-  bfsQueue.push(from);
-
-  while (!bfsQueue.empty()) {
-    std::string currentWord = bfsQueue.front();
-    bfsQueue.pop();
-
-    // Generate neighboring words
-    for (size_t i = 0; i < currentWord.length(); ++i) {
-      std::string temp = currentWord;
-      for (char c = 'a'; c <= 'z'; ++c) {
-        temp[i] = c;
-        if (temp == currentWord) {
-          continue;
-        }
-        if (temp == to) {
-          // Found the destination word, construct the chain
-          std::vector<std::string> chain;
-          std::string word = currentWord;
-          while (word != from) {
-            chain.push_back(word);
-            word = predecessor[word];
-          }
-          chain.push_back(from);
-          std::reverse(chain.begin(), chain.end());
-          chain.push_back(to);
-          return chain;
-        }
-        if (wordSet.count(temp) != 0 && predecessor.count(temp) == 0) {
-          predecessor[temp] = currentWord;
-          bfsQueue.push(temp);
+    for (int i = 0; i < length; i++) {
+      std::string modifiedWord = entry;
+      for (char c = 'a'; c <= 'z'; c++) {
+        modifiedWord[i] = c;
+        if (modifiedWord != entry && dictionary[length].count(modifiedWord) > 0) {
+          dictionary[length][entry].push_back(modifiedWord);
         }
       }
     }
   }
-
-  // No chain found
-  throw NoChain();
 }
+
+Dictionary* Dictionary::create(std::istream& stream) {
+  return new Dictionary(stream);
+}
+
+Dictionary::~Dictionary() {}
+
+std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
+  std::vector<std::string> path;
+
+  if (from.size() != to.size()) {
+    return path;
+  }
+  int length = from.size();
+
+  if (dictionary[length].find(from) == dictionary[length].end() ||
+      dictionary[length].find(to) == dictionary[length].end()) {
+    return path;
+  }
+
+  std::unordered_map<std::string, std::string> visited;
+  std::queue<std::string> queue;
+  queue.push(from);
+  visited[from] = "";
+
+  while (!queue.empty()) {
+    std::string current = queue.front();
+    queue.pop();
+
+    if (current == to) {
+      std::string word = current;
+      while (!word.empty()) {
+        path.push_back(word);
+        word = visited[word];
+      }
+      std::reverse(path.begin(), path.end());
+      break;
+    }
+
+    for (const auto& neighbor : dictionary[length][current]) {
+      if (visited.find(neighbor) == visited.end()) {
+        visited[neighbor] = current;
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  if (path.size() <= 1) {
+    path.clear();  // No valid path found, clear the result
+  }
+
+  return path;
+}
+
 
