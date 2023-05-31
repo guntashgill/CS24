@@ -32,45 +32,50 @@ Dictionary* Dictionary::create(std::istream& stream) {
 Dictionary::~Dictionary() {}
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
-    std::vector<std::string> path;
-    
-    if (from.size() != to.size()) {
-        throw InvalidWord("Invalid word.");
-    }
-    
-    int length = from.size();
-    
-    if (dictionary[length].find(from) == dictionary[length].end() ||
-        dictionary[length].find(to) == dictionary[length].end()) {
-        throw InvalidWord("Invalid word.");
-    }
-    
-    std::unordered_map<std::string, std::string> visited;
-    std::queue<std::string> queue;
-    queue.push(from);
-    visited[from] = "";
-    
-    while (!queue.empty()) {
-        std::string current = queue.front();
-        queue.pop();
-        
-        if (current == to) {
-            std::string word = current;
-            while (!word.empty()) {
-                path.push_back(word);
-                word = visited[word];
-            }
-            std::reverse(path.begin(), path.end());  // Reverse the path to get the correct order
-            return path;
-        }
-        
-        for (const auto& neighbor : dictionary[length][current]) {
-            if (visited.find(neighbor) == visited.end()) {
-                visited[neighbor] = current;
-                queue.push(neighbor);
-            }
-        }
-    }
-    
+  std::vector<std::string> path;
+  
+  if (from.size() != to.size()) {
+    throw InvalidWord("Invalid word.");
+  }
+  
+  int length = from.size();
+  
+  if (dictionary[length].find(from) == dictionary[length].end() ||
+      dictionary[length].find(to) == dictionary[length].end()) {
+    throw InvalidWord("Invalid word.");
+  }
+  
+  std::unordered_map<std::string, bool> visited;
+  
+  dfs(from, to, visited, path);
+  
+  if (path.empty()) {
     throw NoChain();
+  }
+  
+  return path;
+}
+
+
+void Dictionary::dfs(const std::string& current, const std::string& target, std::unordered_map<std::string, bool>& visited, std::vector<std::string>& path) {
+  visited[current] = true;
+  path.push_back(current);
+
+  if (current == target) {
+    return;  // Reached the target word, stop the recursion
+  }
+
+  for (const auto& neighbor : dictionary[current.size()][current]) {
+    if (!visited[neighbor]) {
+      dfs(neighbor, target, visited, path);
+
+      if (path.back() == target) {
+        return;  // Found a path to the target, stop the recursion
+      }
+
+      path.pop_back();
+    }
+  }
+
+  visited[current] = false;  // Reset the visited flag for backtracking
 }
