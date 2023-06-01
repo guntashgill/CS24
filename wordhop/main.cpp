@@ -42,12 +42,8 @@ int main(int argc, char** argv) {
 
     try {
       std::vector<std::string> chain = dictionary->hop(from, to);
-      if (chain.empty()) {
-        std::cout << "No chain.\n";
-      } else {
-        for (const std::string& word : chain) {
-          std::cout << " - " << word << '\n';
-        }
+      for (const std::string& word : chain) {
+        std::cout << " - " << word << '\n';
       }
     }
     catch (const std::runtime_error& e) {
