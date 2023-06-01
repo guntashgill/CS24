@@ -43,7 +43,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   std::vector<std::string> path;
 
   if (from.size() != to.size()) {
-    throw InvalidWord("Invalid word.");
+    throw NoChain(); // Words are not the same length, throw NoChain exception
   }
 
   int length = from.size();
@@ -58,8 +58,6 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   queue.push(from);
   visited[from] = "";
 
-  bool chainFound = false;  // Track whether a valid chain is found
-
   while (!queue.empty()) {
     std::string current = queue.front();
     queue.pop();
@@ -71,8 +69,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         word = visited[word];
       }
       std::reverse(path.begin(), path.end());  // Reverse the path to get the correct order
-      chainFound = true;  // Valid chain is found
-      break;
+      return path;
     }
 
     for (const auto& neighbor : dictionary[length][current]) {
@@ -83,9 +80,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     }
   }
 
-  if (!chainFound) {
-    throw NoChain();  // No valid chain found
-  }
-
-  return path;
+  throw NoChain(); // No valid chain found
 }
+
+
