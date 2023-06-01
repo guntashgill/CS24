@@ -1,3 +1,4 @@
+
 #include "Dictionary.h"
 #include <istream>
 #include <queue>
@@ -57,8 +58,6 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   queue.push(from);
   visited[from] = "";
 
-  bool chainFound = false;  // Track whether a valid chain is found
-
   while (!queue.empty()) {
     std::string current = queue.front();
     queue.pop();
@@ -70,8 +69,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         word = visited[word];
       }
       std::reverse(path.begin(), path.end());  // Reverse the path to get the correct order
-      chainFound = true;  // Valid chain is found
-      break;
+      return path;
     }
 
     for (const auto& neighbor : dictionary[length][current]) {
@@ -82,10 +80,5 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     }
   }
 
-  if (!chainFound || path.empty() || path.front() != from || path.back() != to) {
-    throw NoChain();  // No valid chain found
-  }
-
-  return path;
+  throw NoChain();  // No valid chain found
 }
-
