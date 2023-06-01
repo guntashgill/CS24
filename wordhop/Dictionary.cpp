@@ -12,18 +12,25 @@ Dictionary::Dictionary(std::istream& stream) {
   while (stream >> entry) {
     int length = entry.size();
     dictionary[length][entry] = std::vector<std::string>();
-
-    for (int i = 0; i < length; i++) {
-      std::string modifiedWord = entry;
-      for (char c = 'a'; c <= 'z'; c++) {
-        modifiedWord[i] = c;
-        if (modifiedWord != entry && dictionary[length].count(modifiedWord) > 0) {
-          dictionary[length][entry].push_back(modifiedWord);
+  }
+  for (auto& entry : dictionary) {
+    int length = entry.first;
+    for (const auto& word : entry.second) {
+      const std::string& currentWord = word.first;
+      for (int i = 0; i < length; i++) {
+        std::string modifiedWord = currentWord;
+        for (char c = 'a'; c <= 'z'; c++) {
+          modifiedWord[i] = c;
+          if (modifiedWord != currentWord && dictionary[length].count(modifiedWord) > 0) {
+            dictionary[length][currentWord].push_back(modifiedWord);
+          }
         }
       }
     }
   }
 }
+
+
 
 Dictionary* Dictionary::create(std::istream& stream) {
   return new Dictionary(stream);
@@ -32,57 +39,45 @@ Dictionary* Dictionary::create(std::istream& stream) {
 Dictionary::~Dictionary() {}
 
 std::vector<std::string> Dictionary::hop(const std::string& from, const std::string& to) {
-  std::vector<std::string> path;
-  
-  if (from.size() != to.size()) {
-    throw InvalidWord("Invalid word.");
-  }
-  
-  int length = from.size();
-  
-  if (dictionary[length].find(from) == dictionary[length].end() ||
-      dictionary[length].find(to) == dictionary[length].end()) {
-    throw InvalidWord("Invalid word.");
-  }
-  
-  std::unordered_map<std::string, std::string> predecessor;
-  std::queue<std::string> bfsQueue;
-  bfsQueue.push(from);
-  predecessor[from] = "";
-  
-  while (!bfsQueue.empty()) {
-    std::string currentWord = bfsQueue.front();
-    bfsQueue.pop();
+    std::vector<std::string> path;
     
-    // Generate neighboring words
-    for (size_t i = 0; i < currentWord.length(); ++i) {
-      std::string temp = currentWord;
-      
-      // Replace each character with all possible letters
-      for (char c = 'a'; c <= 'z'; ++c) {
-        temp[i] = c;
-        
-        // Check if the modified word exists in the dictionary
-        if (dictionary[length].count(temp) > 0 && predecessor.count(temp) == 0) {
-          bfsQueue.push(temp);
-          predecessor[temp] = currentWord;
-          
-          if (temp == to) {
-            // Found the destination word, construct the chain
-            std::vector<std::string> chain;
-            std::string word = to;
-            while (word != from) {
-              chain.push_back(word);
-              word = predecessor[word];
-            }
-            chain.push_back(from);
-            std::reverse(chain.begin(), chain.end());
-            return chain;
-          }
-        }
-      }
+    if (from.size() != to.size()) {
+        throw InvalidWord("Invalid word.");
     }
-  }
-  
-  throw NoChain();
+    
+    int length = from.size();
+    
+    if (dictionary[length].find(from) == dictionary[length].end() ||
+        dictionary[length].find(to) == dictionary[length].end()) {
+        throw InvalidWord("Invalid word.");
+    }
+    
+    std::unordered_map<std::string, std::string> visited;
+    std::queue<std::string> queue;
+    queue.push(from);
+    visited[from] = "";
+    
+    while (!queue.empty()) {
+        std::string current = queue.front();
+        queue.pop();
+        
+        if (current == to) {
+            std::string word = current;
+            while (!word.empty()) {
+                path.push_back(word);
+                word = visited[word];
+            }
+            std::reverse(path.begin(), path.end());  // Reverse the path to get the correct order
+            return path;
+        }
+        
+        for (const auto& neighbor : dictionary[length][current]) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited[neighbor] = current;
+                queue.push(neighbor);
+            }
+        }
+    }
+    
+    throw NoChain();
 }
