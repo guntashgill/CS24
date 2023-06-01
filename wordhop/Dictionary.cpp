@@ -43,7 +43,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
   std::vector<std::string> path;
 
   if (from.size() != to.size()) {
-    throw NoChain(); // Words are not the same length, throw NoChain exception
+    throw NoChain();
   }
 
   int length = from.size();
@@ -68,7 +68,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
         path.push_back(word);
         word = visited[word];
       }
-      std::reverse(path.begin(), path.end());  // Reverse the path to get the correct order
+      std::reverse(path.begin(), path.end());
       return path;
     }
 
@@ -80,7 +80,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     }
   }
 
-  throw NoChain(); // No valid chain found
+  throw NoChain();
 }
 
 
