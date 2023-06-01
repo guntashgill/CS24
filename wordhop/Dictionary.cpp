@@ -82,7 +82,7 @@ std::vector<std::string> Dictionary::hop(const std::string& from, const std::str
     }
   }
 
-  if (!chainFound) {
+  if (!chainFound || path.empty() || path.front() != from || path.back() != to) {
     throw NoChain();  // No valid chain found
   }
 
