@@ -6,6 +6,8 @@
 #include "Report.h"
 
 class Database {
+private:
+  std::vector<const Report*> reports;
   // Member Variables
 
   // Helper Functions
