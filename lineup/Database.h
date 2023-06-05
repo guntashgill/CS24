@@ -2,12 +2,12 @@
 #define DATABASE_H
 
 #include <vector>
-
+#include <unordered_map>
 #include "Report.h"
 
 class Database {
 private:
-  std::vector<const Report*> reports;
+  std::unordered_map<unsigned int, const Report*> reports;
   // Member Variables
 
   // Helper Functions
