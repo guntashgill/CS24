@@ -8,14 +8,12 @@ Database* Database::create() {
 Database::Database() {}
 
 Database::~Database() {
-  // Clean up remaining reports in the database
   for (const Report* report : reports) {
     delete report;
   }
 }
 
 void Database::insert(const Report* report) {
-  // Check if a report with the same ID already exists
   for (const Report* existingReport : reports) {
     if (existingReport->id == report->id) {
       throw DuplicateReport(report->id);
@@ -29,7 +27,6 @@ std::vector<const Report*> Database::search(float age, float height, float weigh
   std::vector<const Report*> matchingReports;
 
   for (const Report* report : reports) {
-    // Check if the suspect's attributes fall within the ranges listed on the report
     if (age >= report->age.min && age <= report->age.max &&
         height >= report->height.min && height <= report->height.max &&
         weight >= report->weight.min && weight <= report->weight.max) {
