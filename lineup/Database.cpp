@@ -4,26 +4,22 @@
 Database* Database::create() {
   return new Database();
 }
-
 Database::Database() {}
-
 Database::~Database() {
   for (const auto& pair : reports) {
     delete pair.second;
   }
   reports.clear();
 }
-
 void Database::insert(const Report* report) {
   if (reports.count(report->id) > 0) {
     throw DuplicateReport(report->id);
   }
-
+  reports.reserve(reports.size() + 1);
   reports[report->id] = report;
 }
-
-std::vector<const Report*> Database::search(float age, float height, float weight) const {
-  std::vector<const Report*> matchingReports;
+std::vector<const Report> Database::search(float age, float height, float weight) const {
+  std::vector<const Report> matchingReports;
   matchingReports.reserve(reports.size());
 
   for (const auto& pair : reports) {
@@ -31,13 +27,12 @@ std::vector<const Report*> Database::search(float age, float height, float weigh
     if (age >= report->age.min && age <= report->age.max &&
         height >= report->height.min && height <= report->height.max &&
         weight >= report->weight.min && weight <= report->weight.max) {
-      matchingReports.push_back(report);
+      matchingReports.push_back(*report);
     }
   }
 
   return matchingReports;
 }
-
 void Database::remove(unsigned int id) {
   auto it = reports.find(id);
 

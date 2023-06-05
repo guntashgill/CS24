@@ -8,19 +8,13 @@
 class Database {
 private:
   std::unordered_map<unsigned int, const Report*> reports;
-  // Member Variables
-
-  // Helper Functions
-
 public:
   static Database* create();
-
 public:
   Database();
   ~Database();
-
   void insert(const Report* report);
-  std::vector<const Report*> search(float age, float height, float weight) const;
+  std::vector<const Report> search(float age, float height, float weight) const;
   void remove(unsigned int id);
 };
 

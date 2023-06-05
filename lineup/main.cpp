@@ -32,21 +32,30 @@ bool compare(const Report* lhs, const Report* rhs) {
 
 // Run and print the results of a case search
 void search(Database* db, unsigned int id, float age, float height, float weight, bool header = true) {
-  if(header) {
+  if (header) {
     std::cout << "Suspect " << id << ": age = " << age << "; height = " << height << "; weight = " << weight << ":\n";
   }
 
-  std::vector<const Report*> reports = db->search(age, height, weight);
-  // Sorted for convenience; the autograder skips this for speed.
-  std::sort(reports.begin(), reports.end(), compare);
+  std::vector<const Report> reports = db->search(age, height, weight);
 
-  for(const Report* report: reports) {
-    std::cout << " - Report " << report->id << '\n';
+  const size_t k = 10;
+
+  if (reports.size() > k) {
+    std::partial_sort(reports.begin(), reports.begin() + k, reports.end(), compare);
+    reports.resize(k);
+  } else {
+    std::sort(reports.begin(), reports.end(), compare);
   }
-  if(reports.size() == 0) {
+
+  for (size_t i = 0; i < reports.size(); ++i) {
+    std::cout << " - Report " << reports[i].id << '\n';
+  }
+
+  if (reports.empty()) {
     std::cout << " - (no matches)\n";
   }
 }
+
 
 void read_data_file(Database* db, const char* filename) {
   float age;
@@ -126,27 +135,27 @@ void read_user_queries(Database* db) {
 
 
 int main(int argc, char** argv) {
-  int  argi = 1;
+  int argi = 1;
   bool interactive = false;
 
-  if(argc > 1 && std::string(argv[1]) == "-i") {
+  if (argc > 1 && std::string(argv[1]) == "-i") {
     interactive = true;
     argi += 1;
   }
 
-  if(argi >= argc) {
+  if (argi >= argc) {
     std::cerr << "USAGE: " << argv[0] << " [-i] data-file [...]\n";
     return 1;
   }
 
   Database* db = Database::create();
 
-  while(argi < argc) {
+  while (argi < argc) {
     read_data_file(db, argv[argi]);
     argi += 1;
   }
 
-  if(interactive) {
+  if (interactive) {
     read_user_queries(db);
   }
 
