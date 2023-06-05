@@ -19,8 +19,7 @@ void Database::insert(const Report* report) {
   if (reports.count(report->id) > 0) {
     throw DuplicateReport(report->id);
   }
-
-  reports[report->id] = report;
+  reports.emplace(report->id, report);
 }
 
 std::vector<const Report*> Database::search(float age, float height, float weight) const {
@@ -38,7 +37,6 @@ std::vector<const Report*> Database::search(float age, float height, float weigh
 
   return matchingReports;
 }
-
 void Database::remove(unsigned int id) {
   auto it = reports.find(id);
 
