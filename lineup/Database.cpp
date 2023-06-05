@@ -1,31 +1,25 @@
-
 #include "Database.h"
 #include "Errors.h"
 
 Database* Database::create() {
   return new Database();
 }
-
 Database::Database() {}
-
 Database::~Database() {
   for (const auto& pair : reports) {
     delete pair.second;
   }
   reports.clear();
 }
-
 void Database::insert(const Report* report) {
   if (reports.count(report->id) > 0) {
     throw DuplicateReport(report->id);
   }
-  reports.emplace(report->id, report);
+  reports[report->id] = report;
 }
-
 std::vector<const Report*> Database::search(float age, float height, float weight) const {
   std::vector<const Report*> matchingReports;
   matchingReports.reserve(reports.size());
-
   for (const auto& pair : reports) {
     const Report* report = pair.second;
     if (age >= report->age.min && age <= report->age.max &&
@@ -34,7 +28,6 @@ std::vector<const Report*> Database::search(float age, float height, float weigh
       matchingReports.push_back(report);
     }
   }
-
   return matchingReports;
 }
 void Database::remove(unsigned int id) {
