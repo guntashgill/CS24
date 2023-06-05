@@ -47,8 +47,8 @@ void search(Database* db, unsigned int id, float age, float height, float weight
     std::sort(reports.begin(), reports.end(), compare);
   }
 
-  for (size_t i = 0; i < reports.size(); ++i) {
-    std::cout << " - Report " << reports[i].id << '\n';
+  for (const Report& report : reports) {
+    std::cout << " - Report " << report.id << '\n';
   }
 
   if (reports.empty()) {
