@@ -15,54 +15,71 @@ Move::Move() {
 }
 
 Move::Move(const std::string& input) {
+
+    //Move Number
     std::istringstream iss(input);
-
-    std::string moveInfo;
-    iss >> moveInfo;
-
-    size_t numberPos = moveInfo.find("number");
-    size_t playerPos = moveInfo.find("player");
-    size_t rowPos = moveInfo.find("row");
-    size_t columnPos = moveInfo.find("column");
-
-    if (numberPos == std::string::npos || playerPos == std::string::npos ||
-        rowPos == std::string::npos || columnPos == std::string::npos) {
-        throw ParseError("Invalid move format");
-    }
-
     try {
-        std::string numberStr = moveInfo.substr(numberPos + 6, playerPos - numberPos - 7);
-        number = std::stoi(numberStr);
+        if (isdigit(input[0]) == 0) {
+            throw ParseError("Invalid move number format");
+        }
+        std::string moveNumber;
+        iss >> moveNumber;
+        if (moveNumber.length() > 1) {
+            throw ParseError("Invalid move number format");
+        }
+        number = std::stoi(moveNumber);
         if (number < 1 || number > 9) {
-            throw ParseError("Invalid move number (should be between 1 and 9)");
-        }
-
-        std::string playerStr = moveInfo.substr(playerPos + 6, rowPos - playerPos - 7);
-        if (playerStr.length() != 1 || (playerStr[0] != 'X' && playerStr[0] != 'O')) {
-            throw ParseError("Invalid player");
-        }
-        player = playerStr[0];
-
-        std::string rowStr = moveInfo.substr(rowPos + 3, columnPos - rowPos - 4);
-        row = std::stoi(rowStr);
-        if (row < 1 || row > 3) {
-            throw ParseError("Invalid row");
-        }
-
-        std::string columnStr = moveInfo.substr(columnPos + 6);
-        column = std::stoi(columnStr);
-        if (column < 1 || column > 3) {
-            throw ParseError("Invalid column");
+            throw ParseError("Invalid move number above 1 or 9");
         }
     } catch (std::invalid_argument const&) {
-        throw ParseError("Invalid move format");
+        throw ParseError("Invalid move number");
+    }
+
+
+    //Player
+    std::string afterMoveNumber = "";
+    iss >> afterMoveNumber;
+    while (isspace((afterMoveNumber[0]))) {
+        afterMoveNumber = afterMoveNumber.substr(1);
+    }
+    if (afterMoveNumber[0] != 'X' && afterMoveNumber[0] != 'O' && afterMoveNumber[0] != 'x' && afterMoveNumber[0] != 'o') {
+        throw ParseError("Invalid player");
+    }
+    else {
+        player = toupper(afterMoveNumber[0]);
+    }
+    
+    //Move
+    try {
+        std::string afterPlayer = "";
+        iss >> afterPlayer;
+
+        if (afterPlayer.length() != 2) {
+            throw ParseError("Invalid row or column");
+        }
+        row = int(toupper(afterPlayer[0])) - 64;
+        column = int(toupper(afterPlayer[1])) - 48;
+        if (row < 1 || row > 3 || column < 1 || column > 3) {
+            throw ParseError("Invalid row or column");
+        }
+    } catch (std::invalid_argument const&) {
+        throw ParseError("Invalid row or column");
+    }
+    std::string afterMove = "";
+    iss >> afterMove;
+    if (afterMove != "") {
+        if (afterMove[0] != '#'){
+            throw ParseError("Invalid move");
+        }
     }
 }
 
-std::ostream& operator<<(std::ostream& stream, const Move& move) {
-    stream << "MoveInfo: number=" << move.number << " player=" << move.player
-           << " row=" << move.row << " column=" << move.column;
+std::ostream& operator << (std::ostream& stream, const Move& move) {
+    stream << move.number << ' ' << move.player << ' ' << static_cast<char>(move.row + 64) << move.column;
+
+
     return stream;
+
 }
 
 
