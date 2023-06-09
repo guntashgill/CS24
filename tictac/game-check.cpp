@@ -1,28 +1,45 @@
-#include "Move.h"
-#include "Errors.h"
 #include "Board.h"
+#include "Errors.h"
+#include "Move.h"
 #include <iostream>
-#include <string>
 
-int main() {
-  Board board;
-  std::string input;
-  bool validMoves = true;
 
-  while (std::getline(std::cin, input)) {
-    try {
-      Move move(input);
-      board.gameMove(move);
-    } catch (const ParseError& error) {
-      std::cerr << "Parse error." << std::endl;
+int main(int argc, char** argv){
+  bool verbose = false;
+  if (argc ==2 && std::string(argv[1]) == "-v"){
+    verbose = true;
+  }
+  if (verbose){
+    std::cout << "> ";
+  }
+  std::string line;
+  Board gameBoard;
+  while(std::getline(std::cin, line)){
+    try{
+      Move move(line);
+      gameBoard.gameMove(move);
+    }
+    catch(const ParseError& e){
+      if (verbose){
+        std::cout << "Parse error: " << e.what() << "\n";
+      }
+      else{
+        std::cout << "Parse error.\n";
+      }
       return 1;
-    } catch (const InvalidMove& error) {
-      std::cerr << "Invalid move." << std::endl;
+    }
+    catch(const InvalidMove& e){
+      if(verbose) {
+        std::cout << "Invalid move: " << e.what() << "\n";
+      }
+      else{
+        std::cout << "Invalid move.\n";
+      }
       return 2;
     }
   }
-
-  board.gameResult();
+  gameBoard.gameResult();
   return 0;
 }
+
 
