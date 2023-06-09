@@ -4,8 +4,12 @@
 
 #include "Move.h"
 #include "Errors.h"
-#include <vector>
 
+enum Player {
+  None, // Add None member
+  X,
+  O
+};
 
 class Board {
 public:
@@ -16,31 +20,30 @@ public:
 
   void applyMove(const Move& move);
 
-  bool checkWin(char player) const;
+  bool checkWin(Player player) const;
 
   bool isDraw() const;
 
   bool isGameOver() const;
 
-  char getCurrentPlayer() const;
+  Player getCurrentPlayer() const;
 
   friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
 private:
   char cells_[3][3];
 
-  char currentPlayer_;
+  Player currentPlayer_;
 
   bool isValidMove(const Move& move) const;
 
-  bool checkRowWin(char player) const;
+  bool checkRowWin(Player player) const;
 
-  bool checkColWin(char player) const;
+  bool checkColWin(Player player) const;
 
-  bool checkDiagonalWin(char player) const;
+  bool checkDiagonalWin(Player player) const;
 
   bool isBoardFull() const;
-  std::vector<std::vector<char>> board;
 };
 
 

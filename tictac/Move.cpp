@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 Move::Move(const std::string& input) {
   std::stringstream ss(input);
   std::string temp;
@@ -33,7 +32,7 @@ Move::Move(const std::string& input) {
   }
   player = temp[0]; 
 
-  if (!(player == 'X' || player == 'O' || player == 'x' || player == 'o')){
+  if (!(player == 'X' || player == 'O' || player == 'x' || player == 'o' || player == 'x' || player == 'o')) {
     throw ParseError("player out of range");
   }
 
