@@ -1,9 +1,10 @@
 #include "Errors.h"
 #include "Move.h"
+#include <string> 
+#include <vector>
 #include <iostream>
 #include <sstream>
-#include <string>
-#include <vector>
+
 
 Move::Move() {
     number = 0;
@@ -14,56 +15,66 @@ Move::Move() {
 
 Move::Move(const std::string& input) {
     std::istringstream iss(input);
-
-    std::string moveNumber;
-    if (!(iss >> moveNumber)) {
-        throw ParseError("Invalid move number format");
-    }
-
     try {
+        if (isdigit(input[0]) == 0) {
+            throw ParseError("Invalid move number format");
+        }
+        std::string moveNumber;
+        iss >> moveNumber;
+        if (moveNumber.length() > 1) {
+            throw ParseError("Invalid move number format");
+        }
         number = std::stoi(moveNumber);
         if (number < 1 || number > 9) {
             throw ParseError("Invalid move number above 1 or 9");
         }
-    } catch (const std::invalid_argument&) {
+    } catch (std::invalid_argument const&) {
         throw ParseError("Invalid move number");
     }
 
-    std::string afterMoveNumber;
-    if (!(iss >> afterMoveNumber)) {
+
+    //Player
+    std::string afterMoveNumber = "";
+    iss >> afterMoveNumber;
+    while (isspace((afterMoveNumber[0]))) {
+        afterMoveNumber = afterMoveNumber.substr(1);
+    }
+    if (afterMoveNumber[0] != 'X' && afterMoveNumber[0] != 'O' && afterMoveNumber[0] != 'x' && afterMoveNumber[0] != 'o') {
         throw ParseError("Invalid player");
     }
-    if (afterMoveNumber.length() != 1 || (afterMoveNumber[0] != 'X' && afterMoveNumber[0] != 'O')) {
-        throw ParseError("Invalid player");
+    else {
+        player = toupper(afterMoveNumber[0]);
     }
-    player = std::toupper(afterMoveNumber[0]);
+    
+    //Move
+    try {
+        std::string afterPlayer = "";
+        iss >> afterPlayer;
 
-    std::string afterPlayer;
-    if (!(iss >> afterPlayer)) {
+        if (afterPlayer.length() != 2) {
+            throw ParseError("Invalid row or column");
+        }
+        row = int(toupper(afterPlayer[0])) - 64;
+        column = int(toupper(afterPlayer[1])) - 48;
+        if (row < 1 || row > 3 || column < 1 || column > 3) {
+            throw ParseError("Invalid row or column");
+        }
+    } catch (std::invalid_argument const&) {
         throw ParseError("Invalid row or column");
     }
-
-    if (afterPlayer.length() != 2) {
-        throw ParseError("Invalid row or column");
-    }
-
-    row = static_cast<int>(std::toupper(afterPlayer[0])) - 'A' + 1;
-    column = afterPlayer[1] - '0';
-
-    if (row < 1 || row > 3 || column < 1 || column > 3) {
-        throw ParseError("Invalid row or column");
-    }
-
-    std::string afterMove;
-    if (iss >> afterMove && afterMove[0] != '#') {
-        throw ParseError("Invalid move");
+    std::string afterMove = "";
+    iss >> afterMove;
+    if (afterMove != "") {
+        if (afterMove[0] != '#'){
+            throw ParseError("Invalid move");
+        }
     }
 }
 
-std::ostream& operator<<(std::ostream& stream, const Move& move) {
-    stream << move.number << ' ' << move.player << ' ' << static_cast<char>(move.row - 1 + 'A') << move.column;
+std::ostream& operator << (std::ostream& stream, const Move& move) {
+    stream << move.number << ' ' << move.player << ' ' << static_cast<char>(move.row + 64) << move.column;
+
+
     return stream;
+
 }
-
-
-
