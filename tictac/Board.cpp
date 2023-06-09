@@ -1,76 +1,103 @@
 #include "Board.h"
+#include "Errors.h"
+#include <iostream>
 
-Board::Board() {
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      grid[i][j] = ' ';
+Board::Board(){
+  moveNumber = 0;
+  playerTurn = 'E';
+  for (size_t i = 0; i<3; ++i){
+    for (size_t j = 0; j<3; ++i){
+      boardCells[i][j] = ' ';
     }
   }
 }
-
-void Board::applyMove(const Move& move) {
-  grid[move.row][move.column] = move.player;
-}
-
-bool Board::isGameOver() {
-  // Check rows
-  for (int i = 0; i < 3; i++) {
-    if (grid[i][0] != ' ' && grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2]) {
-      return true;
-    }
+bool Board::isGameOver(){
+  bool gameOver = false;
+  if (hasPlayerWon('X')==true){
+    gameOver = true;
   }
-
-  // Check columns
-  for (int j = 0; j < 3; j++) {
-    if (grid[0][j] != ' ' && grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j]) {
-      return true;
-    }
+  if (hasPlayerWon('O')==true){
+    gameOver = true;
   }
-
-  // Check diagonals
-  if (grid[0][0] != ' ' && grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2]) {
-    return true;
-  }
-  if (grid[0][2] != ' ' && grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0]) {
-    return true;
-  }
-
-  return false;
-}
-
-bool Board::isDraw() {
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      if (grid[i][j] == ' ') {
-        return false;
+  bool fullBoard = true;
+  for (size_t i = 0; i < 3; ++i){
+    for (size_t j = 0; j < 3; ++i){
+      if (boardCells[i][j]== ' '){
+        fullBoard = false;
+        break;
       }
     }
+    if (fullBoard == false){
+      break;
+    }
   }
-  return true;
+  if (fullBoard == true){
+    gameOver = true;
+  }
+  return gameOver;
 }
-
-bool Board::hasPlayerWon(char player) {
-  // Check rows
-  for (int i = 0; i < 3; i++) {
-    if (grid[i][0] == player && grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2]) {
-      return true;
-    }
+void Board::gameMove(const Move& move){
+  if (move.player == playerTurn){
+    throw InvalidMove("Wrong turn.");
   }
-
-  // Check columns
-  for (int j = 0; j < 3; j++) {
-    if (grid[0][j] == player && grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j]) {
-      return true;
-    }
+  moveNumber +=1;
+  playerTurn = move.player;
+  if (move.number != moveNumber){
+    throw InvalidMove("Wrong move number.");
   }
-
-  // Check diagonals
-  if (grid[0][0] == player && grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2]) {
-    return true;
+  if (boardCells[move.row-1][move.column-1] != ' '){
+    throw InvalidMove("Box is already taken");
   }
-  if (grid[0][2] == player && grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0]) {
-    return true;
+  if (isGameOver() == true){
+    throw InvalidMove("Game is already over.");
   }
-
-  return false;
+  boardCells[move.row-1][move.column-1] = move.player;
+}
+bool Board::hasPlayerWon(char player){
+  bool winStatus = false;
+  if ((boardCells[0][0] == player) && (boardCells[0][1] == player) && (boardCells[0][2] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[1][0] == player) && (boardCells[1][1] == player) && (boardCells[1][2] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[2][0] == player) && (boardCells[2][1] == player) && (boardCells[2][2] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[0][0] == player) && (boardCells[1][0] == player) && (boardCells[2][0] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[0][1] == player) && (boardCells[1][1] == player) && (boardCells[2][1] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[0][2] == player) && (boardCells[1][2] == player) && (boardCells[2][2] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[0][0] == player) && (boardCells[1][1] == player) && (boardCells[2][2] == player)){
+    winStatus = true;
+  }
+  if ((boardCells[0][2] == player) && (boardCells[1][1] == player) && (boardCells[2][0] == player)){
+    winStatus = true;
+  }
+  return winStatus;
+}
+void Board::gameResult() {
+  if (playerTurn == 'E'){
+    std::cout << "Game in progress: New game.\n";
+  }
+  else if ((isGameOver() == false) && (playerTurn == 'O')){
+    std::cout << "Game in progress: X's turn.\n";
+  }
+  else if ((isGameOver() == false) && (playerTurn == 'X')){
+    std::cout << "Game in progress: O's turn.\n";
+  }
+  else if (hasPlayerWon('X') == true){
+    std::cout << "Game over: X wins.\n";
+  }
+  else if (hasPlayerWon('O') == true){
+    std::cout << "Game over: O wins.\n";
+  }
+  else if (isGameOver() == true){
+    std::cout << "Game over: Draw.\n";
+  }
 }

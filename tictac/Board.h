@@ -6,13 +6,15 @@
 class Board {
 public:
   Board();
-  void applyMove(const Move& move);
+  void gameMove(const Move& move);
   bool isGameOver();
-  bool isDraw();
+  void gameResult();
   bool hasPlayerWon(char player);
 
 private:
-  char grid[3][3];
+  char boardCells[3][3];
+  char playerTurn;
+  int moveNumber;
 };
 
 #endif

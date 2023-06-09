@@ -2,7 +2,6 @@
 #include "Move.h"
 
 #include <iostream>
-#include <string>
 
 int main(int argc, char** argv) {
   bool verbose = false;
@@ -22,15 +21,15 @@ int main(int argc, char** argv) {
     Move move(line);
     std::cout << move << '\n';
     return 0;
-  } catch (const ParseError& e) {
+  } 
+  catch (const ParseError& e) {
     if (verbose) {
       std::cout << "Parse error: " << e.what() << '\n';
-    } else {
+    } 
+    else {
       std::cout << "Parse error.\n";
     }
 
-    return 1;
-  } catch (...) {
     return 1;
   }
 }

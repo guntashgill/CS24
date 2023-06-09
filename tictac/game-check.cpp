@@ -1,72 +1,43 @@
 #include "Board.h"
 #include "Errors.h"
 #include "Move.h"
-
 #include <iostream>
-#include <string>
 
-int main() {
-  Board board;
+
+int main(int argc, char** argv){
+  bool verbose = false;
+  if (argc ==2 && std::string(argv[1]) == "-v"){
+    verbose = true;
+  }
+  if (verbose){
+    std::cout << "> ";
+  }
   std::string line;
-  int moveCount = 0;
-
-  while (std::getline(std::cin, line)) {
-    try {
+  Board gameBoard;
+  while(std::getline(std::cin, line)){
+    try{
       Move move(line);
-      moveCount++;
-
-      if (moveCount % 2 == 1 && move.player != 'X') {
-        throw InvalidMove("Invalid player for the current move.");
+      gameBoard.gameMove(move);
+    }
+    catch(const ParseError& e){
+      if (verbose){
+        std::cout << "Parse error: " << e.what() << "\n";
       }
-
-      if (moveCount % 2 == 0 && move.player != 'O') {
-        throw InvalidMove("Invalid player for the current move.");
+      else{
+        std::cout << "Parse error.\n";
       }
-
-      board.applyMove(move);
-
-      if (board.isGameOver()) {
-        if (board.hasPlayerWon('X')) {
-          std::cout << "Game over: X wins.\n";
-        } else if (board.hasPlayerWon('O')) {
-          std::cout << "Game over: O wins.\n";
-        } else {
-          std::cout << "Game over: Draw.\n";
-        }
-        return 0;
-      } else {
-        if (board.isDraw()) {
-          std::cout << "Game over: Draw.\n";
-          return 0;
-        } else {
-          if (moveCount % 2 == 1) {
-            std::cout << "Game in progress: O's turn.\n";
-          } else {
-            std::cout << "Game in progress: X's turn.\n";
-          }
-        }
-      }
-    } catch (const ParseError& e) {
-      std::cout << "Parse error: " << e.what() << '\n';
       return 1;
-    } catch (const InvalidMove& e) {
-      std::cout << "Invalid move: " << e.what() << '\n';
+    }
+    catch(const InvalidMove& e){
+      if(verbose) {
+        std::cout << "Invalid move: " << e.what() << "\n";
+      }
+      else{
+        std::cout << "Invalid move.\n";
+      }
       return 2;
     }
   }
-
-  if (moveCount == 0) {
-    std::cout << "Game in progress: New game.\n";
-  } else if (moveCount % 2 == 1) {
-    std::cout << "Game in progress: O's turn.\n";
-  } else {
-    std::cout << "Game in progress: X's turn.\n";
-  }
-
+  gameBoard.gameResult();
   return 0;
 }
-
-
-
-
-
