@@ -10,6 +10,7 @@ public:
   bool isGameOver();
   void gameResult();
   bool hasPlayerWon(char player);
+  char getPlayerTurn() const;
 
 private:
   char boardCells[3][3];
