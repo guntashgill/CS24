@@ -1,103 +1,82 @@
-#include "Board.h"
 #include "Errors.h"
-#include <iostream>
+#include "Board.h"
 
-Board::Board(){
-  moveNumber = 0;
-  playerTurn = 'E';
-  for (size_t i = 0; i<3; ++i){
-    for (size_t j = 0; j<3; ++i){
-      boardCells[i][j] = ' ';
+Board::Board() {
+  // Initialize the game board
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      grid[i][j] = ' ';
     }
   }
+
+  // Player X starts the game
+  currentPlayer = 'X';
 }
-bool Board::isGameOver(){
-  bool gameOver = false;
-  if (hasPlayerWon('X')==true){
-    gameOver = true;
+
+void Board::applyMove(const Move& move) {
+  // Check if the move is valid
+  if (move.row < 1 || move.row > 3 || move.column < 1 || move.column > 3 ||
+      grid[move.row - 1][move.column - 1] != ' ') {
+    throw InvalidMove("Invalid move");
   }
-  if (hasPlayerWon('O')==true){
-    gameOver = true;
+
+  // Apply the move
+  grid[move.row - 1][move.column - 1] = move.player;
+
+  // Switch to the next player
+  currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+}
+
+bool Board::isGameOver() {
+  // Check if any player has won
+  if (checkWin('X')) {
+    return true;
+  } else if (checkWin('O')) {
+    return true;
   }
-  bool fullBoard = true;
-  for (size_t i = 0; i < 3; ++i){
-    for (size_t j = 0; j < 3; ++i){
-      if (boardCells[i][j]== ' '){
-        fullBoard = false;
-        break;
+
+  // Check if the board is full
+  return isBoardFull();
+}
+
+bool Board::checkWin(char player) {
+  // Check rows
+  for (int i = 0; i < 3; ++i) {
+    if (grid[i][0] == player && grid[i][1] == player && grid[i][2] == player) {
+      return true;
+    }
+  }
+
+  // Check columns
+  for (int i = 0; i < 3; ++i) {
+    if (grid[0][i] == player && grid[1][i] == player && grid[2][i] == player) {
+      return true;
+    }
+  }
+
+  // Check diagonals
+  if (grid[0][0] == player && grid[1][1] == player && grid[2][2] == player) {
+    return true;
+  }
+  if (grid[0][2] == player && grid[1][1] == player && grid[2][0] == player) {
+    return true;
+  }
+
+  return false;
+}
+
+bool Board::isBoardFull() {
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (grid[i][j] == ' ') {
+        return false;
       }
     }
-    if (fullBoard == false){
-      break;
-    }
   }
-  if (fullBoard == true){
-    gameOver = true;
-  }
-  return gameOver;
+  return true;
 }
-void Board::gameMove(const Move& move){
-  if (move.player == playerTurn){
-    throw InvalidMove("Wrong turn.");
-  }
-  moveNumber +=1;
-  playerTurn = move.player;
-  if (move.number != moveNumber){
-    throw InvalidMove("Wrong move number.");
-  }
-  if (boardCells[move.row-1][move.column-1] != ' '){
-    throw InvalidMove("Box is already taken");
-  }
-  if (isGameOver() == true){
-    throw InvalidMove("Game is already over.");
-  }
-  boardCells[move.row-1][move.column-1] = move.player;
+
+char Board::getCurrentPlayer() {
+  return currentPlayer;
 }
-bool Board::hasPlayerWon(char player){
-  bool winStatus = false;
-  if ((boardCells[0][0] == player) && (boardCells[0][1] == player) && (boardCells[0][2] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[1][0] == player) && (boardCells[1][1] == player) && (boardCells[1][2] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[2][0] == player) && (boardCells[2][1] == player) && (boardCells[2][2] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[0][0] == player) && (boardCells[1][0] == player) && (boardCells[2][0] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[0][1] == player) && (boardCells[1][1] == player) && (boardCells[2][1] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[0][2] == player) && (boardCells[1][2] == player) && (boardCells[2][2] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[0][0] == player) && (boardCells[1][1] == player) && (boardCells[2][2] == player)){
-    winStatus = true;
-  }
-  if ((boardCells[0][2] == player) && (boardCells[1][1] == player) && (boardCells[2][0] == player)){
-    winStatus = true;
-  }
-  return winStatus;
-}
-void Board::gameResult() {
-  if (playerTurn == 'E'){
-    std::cout << "Game in progress: New game.\n";
-  }
-  else if ((isGameOver() == false) && (playerTurn == 'O')){
-    std::cout << "Game in progress: X's turn.\n";
-  }
-  else if ((isGameOver() == false) && (playerTurn == 'X')){
-    std::cout << "Game in progress: O's turn.\n";
-  }
-  else if (hasPlayerWon('X') == true){
-    std::cout << "Game over: X wins.\n";
-  }
-  else if (hasPlayerWon('O') == true){
-    std::cout << "Game over: O wins.\n";
-  }
-  else if (isGameOver() == true){
-    std::cout << "Game over: Draw.\n";
-  }
-}
+

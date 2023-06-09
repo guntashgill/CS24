@@ -5,17 +5,30 @@
 
 class Board {
 public:
+  // Default constructor
   Board();
-  void gameMove(const Move& move);
+
+  // Apply a move to the board
+  void applyMove(const Move& move);
+
+  // Check if the game is over
   bool isGameOver();
-  void gameResult();
-  bool hasPlayerWon(char player);
+
+  // Get the current player
+  char getCurrentPlayer();
 
 private:
-  char boardCells[3][3];
-  char playerTurn;
-  int moveNumber;
+  // Member Variables
+  char grid[3][3]; // Represents the game board
+  char currentPlayer; // Represents the current player ('X' or 'O')
+
+  // Helper function to check if a player has won
+  bool checkWin(char player);
+
+  // Helper function to check if the board is full
+  bool isBoardFull();
 };
 
 #endif
+
 

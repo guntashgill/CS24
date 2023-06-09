@@ -11,6 +11,9 @@ struct Move {
   int row;
   int column;
 
+  // Default constructor
+  Move();
+
   // The constructor parses a string.
   Move(const std::string& input);
 };
@@ -20,4 +23,5 @@ struct Move {
 std::ostream& operator<<(std::ostream& stream, const Move& move);
 
 #endif
+
 
