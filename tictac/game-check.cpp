@@ -1,57 +1,71 @@
-#include <iostream>
-#include <string>
 #include "Board.h"
 #include "Errors.h"
+#include "Move.h"
+
+#include <iostream>
+#include <string>
 
 int main() {
   Board board;
-  std::string input;
-  int moves = 0; 
+  std::string line;
+  int moveCount = 0;
 
-
-  while (std::getline(std::cin, input)) {
+  while (std::getline(std::cin, line)) {
     try {
-      if (input.empty() && moves == 0){
-        break;
+      Move move(line);
+      moveCount++;
+
+      if (moveCount % 2 == 1 && move.player != 'X') {
+        throw InvalidMove("Invalid player for the current move.");
       }
-      moves++; 
-      Move move(input); 
+
+      if (moveCount % 2 == 0 && move.player != 'O') {
+        throw InvalidMove("Invalid player for the current move.");
+      }
+
       board.applyMove(move);
 
       if (board.isGameOver()) {
-        if (board.checkWin(Player::X)) {
-          std::cout << "Game over: X wins." << std::endl;
-        } else if (board.checkWin(Player::O)) {
-          std::cout << "Game over: O wins." << std::endl;
-        } else if (board.isDraw()) {
-          std::cout << "Game over: Draw." << std::endl;
+        if (board.hasPlayerWon('X')) {
+          std::cout << "Game over: X wins.\n";
+        } else if (board.hasPlayerWon('O')) {
+          std::cout << "Game over: O wins.\n";
+        } else {
+          std::cout << "Game over: Draw.\n";
         }
         return 0;
       } else {
-        std::cout << "Game in progress: ";
-        if (board.getCurrentPlayer() == X) {
-          std::cout << "X's turn." << std::endl;
+        if (board.isDraw()) {
+          std::cout << "Game over: Draw.\n";
           return 0;
         } else {
-          std::cout << "O's turn." << std::endl;
-          return 0;
+          if (moveCount % 2 == 1) {
+            std::cout << "Game in progress: O's turn.\n";
+          } else {
+            std::cout << "Game in progress: X's turn.\n";
+          }
         }
       }
     } catch (const ParseError& e) {
-      std::cout << "Parse error." << std::endl; 
-      return 1; 
+      std::cout << "Parse error: " << e.what() << '\n';
+      return 1;
     } catch (const InvalidMove& e) {
-      std::cout << "Invalid move." << std::endl; 
-      return 2; 
-    } 
+      std::cout << "Invalid move: " << e.what() << '\n';
+      return 2;
+    }
   }
 
-  if (!board.isGameOver()) {
-    std::cout << "Game in progress: New game." << std::endl;
+  if (moveCount == 0) {
+    std::cout << "Game in progress: New game.\n";
+  } else if (moveCount % 2 == 1) {
+    std::cout << "Game in progress: O's turn.\n";
+  } else {
+    std::cout << "Game in progress: X's turn.\n";
   }
 
   return 0;
 }
+
 
 
 
